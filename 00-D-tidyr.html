@@ -9,10 +9,10 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Jes &amp; Tad" />
+<meta name="author" content="Jes" />
 
 
-<title>Student Projects</title>
+<title>Introduction to ggplot2 and dplyr</title>
 
 <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -368,124 +368,126 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Student Projects</h1>
-<h4 class="author">Jes &amp; Tad</h4>
+<h1 class="title toc-ignore">Introduction to ggplot2 and dplyr</h1>
+<h4 class="author">Jes</h4>
 
 </div>
 
 
-<div id="anna" class="section level4">
-<h4>Anna</h4>
-<p><strong>Spatiotemporal Analysis of the San Francisco Estuary Water
-Column Microbiome</strong></p>
-<p>I will explore environmental drivers on archaeal and bacterial
-communities in bottom waters of San Francisco Bay using 16S rRNA
-amplicon libraries and geochemical water column data from USGS water
-quality cruises.</p>
+<p><strong>Assigned Reading:</strong></p>
+<blockquote>
+<p>Chapters 1.1, 1.2, 2, 3, 9 and 10 in: Wickham, H. 2009. <em>ggplot2:
+Elegant Graphics for Data Analysis.</em> Springer. DOI: <a
+href="https://link.springer.com/book/10.1007%2F978-0-387-98141-3">Stanford
+Full Text</a></p>
+<p>The sections on mutating and filtering joins in <a
+href="https://cran.r-project.org/web/packages/dplyr/vignettes/two-table.html">this
+vignette</a></p>
+</blockquote>
+<p><strong>Optional Reading:</strong></p>
+<blockquote>
+<p>Chapter 4 in: Wickham, H. 2009. <em>ggplot2: Elegant Graphics for
+Data Analysis.</em> Springer. DOI: <a
+href="https://link.springer.com/book/10.1007%2F978-0-387-98141-3">Stanford
+Full Text</a></p>
+</blockquote>
+<p>RStudio has produced several helpful <a
+href="https://www.rstudio.com/resources/cheatsheets/">cheatsheets</a> on
+data management and visualization with ggplot2 and tidyr. You may want
+to view or print one or several of them.</p>
+<div id="before-class" class="section level3">
+<h3>Before Class</h3>
+<p>Download <a
+href="https://github.com/FukamiLab/BIO202/blob/master/code/02-A-tidyr-exercise-code.R">this
+R script</a> and save it in your code folder in the research project you
+created on the first day of class. You will need to click the ‘Raw’
+button and then download the text file that appears. Be sure to remove
+the .txt extension that may have been added when you saved the file to
+your computer so that the file ends in .R. You may want to run the first
+part of the script that downloads the data to be sure that there will be
+no issues with data access during class.</p>
 </div>
-<div id="beth" class="section level4">
-<h4>Beth</h4>
-<p><strong>The role of evolutionary history in network response to
-agricultural development</strong></p>
-<p>Species traits are often influenced by evolutionary history, and in
-plant-pollinator networks, certain species interaction traits may make
-species more or less vulnerable to a major disturbance like agricultural
-development. Thus, I want to know whether there is a phyogenetic signal
-in species interaction traits, and whether a nonrandom loss of
-phylogenetic diversity leads to predictable changes in overall
-plant-pollinator network structure.</p>
+<div id="key-points" class="section level3">
+<h3>Key Points</h3>
+<ul>
+<li>Data should be organized so that observations are in rows and
+attributes (variables) are in columns.</li>
+<li>The <code>dplyr</code> package contains functions for manipulating
+data:
+<ul>
+<li><code>spread</code> and <code>gather</code> change the format of
+data tables.</li>
+<li><code>separate</code> and <code>unite</code> change the format of
+variables.</li>
+<li><code>filter</code> creates a subset of a data table.</li>
+<li><code>mutate</code> creates new variables.</li>
+<li><code>group_by</code> and <code>summarise</code> are used to
+summarize observations according to the values of their variables.</li>
+</ul></li>
+<li>The pipe function <code>%&gt;%</code> is used to link several
+operations together (e.g. function composition).</li>
+<li>The <code>ggplot2</code> package is set of functions for visualizing
+data.
+<ul>
+<li>A ggplot2 plot contains three components: (1) the data, (2) the
+aesthetic mappings between variables and visual properties, and (3)
+layers describing how to display the observations.</li>
+<li>The aesthetic mapping <code>aes</code> must minimally describe which
+variables define the plot coordinate space.</li>
+<li><code>facet_wrap</code> creates plots for specified data
+subsets.</li>
+</ul></li>
+</ul>
 </div>
-<div id="jamie" class="section level4">
-<h4>Jamie</h4>
-<p><strong>Disentangling the importance of drivers that structure
-benthic communities</strong></p>
-<p>Determine what environmental and biological factors drive benthic
-community structure and how their importance varies spatially
-(i.e. local to regional), using data from 12 habitat types in the
-Bahamas.</p>
+<div id="manipulating-data-with-dplyr" class="section level3">
+<h3>Manipulating data with dplyr</h3>
+<p>Open the R project that you created on the first day of class. Then
+when R Studio opens, open the R script file that you downloaded for
+today’s class (see above). This script downloads a data set from our
+course website and then proceeds to manipulate and summarise the data.
+These data contain three tables from the Winter 2016 BIO46 class on
+lichen microorganisms:</p>
+<ol style="list-style-type: decimal">
+<li><strong>trees</strong> is a table where observations are trees on
+which lichens were collected. Columns describe each tree’s location,
+elevation, and species name.</li>
+<li><strong>lichens</strong> is a table where each observation is a
+lichen that was collected. Columns describe the tree on which the lichen
+was collected, the team that collected the lichen, the collection date,
+and the lichen species name.</li>
+<li><strong>algae</strong> is a table where each observation is a
+fragment of a lichen from which we attempted to amplify and sequence
+green algal ITS2 rDNA. We attempted to amplify algal DNA from four
+sections of each lichen in order to quantity algal diversity within a
+single lichen. If sequencing was successful then the DNA sequence is
+given along with a code identifying unique haplotype (GenotypeID). The
+TaxonID column indicates haplotypes that matched those reported in <a
+href="http://dw.doi.org/10.3732/ajb.0900276">Werth and Sork
+(2010)</a>.</li>
+</ol>
+<p>The R script explores algal diversity among lichens and trees.
+Working in pairs, execute each line of code and then add a comment
+(using <code>#</code>) above each line of code with a description of
+what the code does.</p>
+<p>When you have finished commenting the code, try to complete the
+following challenge:</p>
+<blockquote>
+<p><strong>Challenge:</strong></p>
+<p>How could you modify the code that creates the
+<code>lichenXgeno</code> table so that it displays the fraction of
+successful sequences belonging to each GenotypeID for each lichen.</p>
+</blockquote>
 </div>
-<div id="lizzie" class="section level4">
-<h4>Lizzie</h4>
-<p><strong>The Effect of Rotational Cattle Grazing on Soil Nutrient
-Dynamics</strong></p>
-<p>By investigating the fluxes in greenhouse gases and in soil nitrate
-and ammonia levels before, during, and after grazing events, I will
-study the effects of rotational cattle grazing on soil nutrient
-dynamics.</p>
-</div>
-<div id="marissa" class="section level4">
-<h4>Marissa</h4>
-<p><strong>Yellow fever and dengue interactions in Brazil</strong></p>
-<p>Using monthly human case data of yellow fever and dengue in Brazil, I
-will analyze the spatial trends of the two diseases to identify whether
-immunity dynamics with dengue contribute to determining the spatial
-distribution of yellow fever virus.</p>
-</div>
-<div id="meghan" class="section level4">
-<h4>Meghan</h4>
-<p><strong>Land Use as Driver of Aedes vector mosquito distribution in
-Costa Rica</strong></p>
-<p>I will assess how environmental characteristics drive Aedes aegypti
-and albopictus distribution by comparing field-collected mosquito data
-from a land use gradient, field-collected temperature and humidity data
-from those sites, and remote sensing data of environmental
-characteristics of those sites.</p>
-</div>
-<div id="nicole" class="section level4">
-<h4>Nicole</h4>
-<p><strong>What predicts pathogen sharing among host species across
-phylogenetic distance?</strong></p>
-<p>In this study, we are trying to determine which factors predict
-parasite-sharing (or a potential spillover event) for different host
-species. What factors matter most? Is it (1) phylogenetic distance
-between host species and pathogen species (evolutionary factor), or (2)
-similarity in host or pathogen traits, e.g., host behavior, host body
-size, range, pathogen type, mode of transmission, etc. (ecological
-factors)? We have data on such host and pathogen traits from about ~400
-mammalian hosts and ~2000 pathogens that we have gathered from the
-literature.</p>
-</div>
-<div id="priscilla" class="section level4">
-<h4>Priscilla</h4>
-<p><strong>Elucidating the influence of land use change on bird gut
-microbiomes via diet alterations</strong></p>
-<p>Do changes in diet correspond to the changes in gut microbial
-composition? I aim to determine the relationship between bird diet of
-arthopods and their gut microbiomes and how land use change influences
-this interaction. I will use arthopod and bacteria composition data
-derived from six species of birds, found in different land use
-types.</p>
-</div>
-<div id="sandra" class="section level4">
-<h4>Sandra</h4>
-<p>Spatial autocorrelation in a Pennsylvanian swamp forest</p>
-<p>I want to interrogate patterns of spatial autocorrelation of plants
-in a Paleozoic forest, at multiple taxonomic levels. I will use
-semi-quantitative data collected in a transect through a coal mine.</p>
-</div>
-<div id="tyler" class="section level4">
-<h4>Tyler</h4>
-<p><strong>Effects of anthropogenic disturbance on the structure of
-species interaction networks</strong></p>
-<p>How does anthropogenic disturbance affect the structure of species
-interaction networks? We (Beth and I) have compiled a database of ~30
-published datasets which examine changes in network structure across
-different levels of disturbance. Each dataset consists of two or more
-species interaction networks measured at study sites exhibiting
-different levels of anthropogenic disturbance (such as fragmentation,
-defaunation, invasive species, etc.). We will use network analysis to
-quantify the structure of each network, and then use meta-analytical
-techniques to draw conclusions about the general effects of distrubance
-on network structure across the ~30 datasets.</p>
-</div>
-<div id="nick" class="section level4">
-<h4>Nick</h4>
-<p><strong>Response of species traits to deforestation and agricultural
-intensification in Costa Rica</strong></p>
-<p>Which traits make birds most susceptible to deforestation and
-agricultural intensification? Here I plan to use bird banding data from
-southern Costa Rica in combination with species and individual-level
-traits and environmental covariates to address this question.</p>
+<div id="plotting-data-with-ggplot2" class="section level3">
+<h3>Plotting data with ggplot2</h3>
+<p>Working with your partner, create the following plots using
+<code>ggplot2</code>:</p>
+<ol style="list-style-type: decimal">
+<li>A plot that maps the locations where each lichen was collected and
+colors the point by the Chao1 richness estimator.</li>
+<li>Modify the above plot so that three plots are shown, one for each
+tree species.</li>
+</ol>
 </div>
 
 
