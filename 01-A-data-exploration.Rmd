@@ -1,7 +1,6 @@
 ---
 layout: topic
 title: "Data exploration"
-author: Roberts, Caleb
 output: html_document
 ---
 
@@ -51,6 +50,7 @@ repo_url <- "https://raw.githubusercontent.com/LivingLandscapes/Course_Ecologica
 5. Collinearity X
 + VIF of 10, 3, or 2 - reason for these values?
 + VIFs, or common sense or biological knowledge
++ Also... pairwise comparisons?
 
 6. Relationships Y & X
 + Multi-panel scatter plots for checking for outliers
@@ -61,6 +61,7 @@ repo_url <- "https://raw.githubusercontent.com/LivingLandscapes/Course_Ecologica
 8. Independence Y
 + Mixed effects, etc. to deal with non-independence
 + ACF or variograms for checking for temporal and spatial non-independence
++ We will cover this more in our Autocorrelation Topic.
 
 Not all steps always needed
 
@@ -78,15 +79,11 @@ Not all steps always needed
 The code below is built on data from Roberts et al. (2022) in *Ecological Solutions and Evidence*.
 
 ```{r, include=FALSE, eval = TRUE}
+
 # List of packages necessary to run this script:
 require(librarian)
 shelf(tidyverse, data.table, cowplot, gridExtra, grid, here, sp, rgdal,
       raster, rgeos, mapproj, maptools, vroom, vegan, mgcv, MuMIn, gratia)
-
-# # Set paths
-# DataPath <- "LoessCanyons_BBS_Data"
-# ResultsPath <- "LoessCanyons_BBS_Results"
-# FigurePath <- "LoessCanyons_BBS_Figures"
 
 # Path to Caleb's data
 dat_grass <- 
@@ -97,7 +94,6 @@ dat_grass <-
 #### Checking for outliers
 
 Zuur et al. recommends plotting your data using boxplots and dotcharts to detect outliers. Violin plots are also great options. Before removing suspected outliers, make sure they are actually outliers!
-
 
 **Boxplot**
 
@@ -126,7 +122,7 @@ ggplot(data = dat_grass,
 
 **Dotchart for multiple variables**
 
-I personally don't use these as much, but they can definitely be useful.
+I personally don't use these as much, but they can be useful.
 
 ```{r, eval = TRUE, include = TRUE}
 
@@ -142,11 +138,11 @@ dat_grass %>%
 
 
 
-#### Your data's distribution
+#### What's your data's distribution?
 
-Some statistical tests assume normal distributions, making it important to check the shape of your data. Plot a histogram with all of your data and then groups of your data.
+Some statistical tests assume normal distributions, making it important to check the shape of your data. Does this histogram of grassland bird richness appear to have a "normal" distribution (i.e., Gaussian distribution)? Why or why not?
 
-**Histogram**
+We will learn about probability distributions in our Probability Distributions Topic.
 
 ```{r, eval = TRUE, include = TRUE}
 
@@ -157,13 +153,60 @@ ggplot() +
   ylab("Frequency") +
   xlab("Grassland Bird Richness")
 
-ggplot(data = dat_grass,
-                   mapping = aes(x = Rich_Grass)) +
-    geom_histogram(binwidth = 1) +
-    facet_grid(rows = vars(TSF))
+```
+
+#### Collinearity? 
+
+It's absolutely important to check for pairwise correlations, which we can do with the "pairs()" function as below. However, this should be taken with a grain of salt too. See this quote from the R Documentation for the "performance::check_collinearity()" function:
+
+"*Multicollinearity should not be confused with a raw strong correlation between predictors... Remember: "Pairwise correlations are not the problem. It is the conditional associations - not correlations - that matter." (McElreath 2020, p. 169)*"
+
+We will talk about Zuur's preference of "variance inflation factors" to check for collinearity in the Linear models review Topic.
+
+```{r, eval = TRUE, include = TRUE}
+
+cor(dat_grass[ , c("Year", "Burned", "mean", "stdDev", "TSF")])
 
 ```
 
+
+#### Is there actually a relationship between X and Y?!
+
+For this, we want to plot the response/dependent variable (grassland bird richness) against potential predictor/independent variables. Here, I use quick-and-dirty generalized additive models per ggplot2::geom_smooth and then combine the plots with cowplot::plot_grid
+
+```{r, eval = TRUE, include = TRUE}
+
+# Making individual plots
+rich_treeMean <- 
+  dat_grass %>%
+  ggplot(aes(x = mean, y = Rich_Grass)) + 
+  geom_point() + 
+  geom_smooth(method = "gam", formula = y ~ s(x)) + # a simple generalized additive model!
+  ylab("Grassland Bird Richness") + 
+  xlab("Mean % Tree Cover") + 
+  theme_classic() # FYI: there are lots of fun pre-made themes in ggplot2
+rich_TSF <- 
+  dat_grass %>%
+  ggplot(aes(x = TSF, y = Rich_Grass)) + 
+  geom_point() + 
+  geom_smooth(method = "gam", formula = y ~ s(x)) +
+  ylab("Grassland Bird Richness") + 
+  xlab("Years-since-fire") + 
+  theme_bw() # Another theme
+
+# Combine plots
+cowplot::plot_grid(rich_treeMean, rich_TSF, ncol = 2)
+
+```
+
+#### Should we consider interactions between predictor variables?
+
+```{r, eval = TRUE, include = TRUE}
+
+pairs(dat_grass[ , c("Year", "Burned", "mean", "stdDev", "TSF")],
+      lower.panel = NULL)
+
+```
 
 <!-- *** -->
 

@@ -601,8 +601,9 @@ useful.</p>
 <div id="your-datas-distribution" class="section level4">
 <h4>Your data’s distribution</h4>
 <p>Some statistical tests assume normal distributions, making it
-important to check the shape of your data. Plot a histogram with all of
-your data and then groups of your data.</p>
+important to check the shape of your data. Does this histogram of
+grassland bird richness appear to have a “normal” distribution (i.e.,
+Gaussian distribution)? Why or why not?</p>
 <p><strong>Histogram</strong></p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>    <span class="fu">geom_histogram</span>(<span class="at">data =</span> dat_grass,</span>
@@ -611,11 +612,56 @@ your data and then groups of your data.</p>
 <span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Frequency&quot;</span>) <span class="sc">+</span></span>
 <span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Grassland Bird Richness&quot;</span>)</span></code></pre></div>
 <p><img src="images/03-A/unnamed-chunk-6-1.png" width="672" /></p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> dat_grass,</span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>                   <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> Rich_Grass)) <span class="sc">+</span></span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>    <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    <span class="fu">facet_grid</span>(<span class="at">rows =</span> <span class="fu">vars</span>(TSF))</span></code></pre></div>
-<p><img src="images/03-A/unnamed-chunk-6-2.png" width="672" /></p>
+</div>
+<div id="collinearity" class="section level4">
+<h4>Collinearity?</h4>
+<p>It’s absolutely important to check for pairwise correlations, which
+we can do with the “pairs()” function as below. However, this should be
+taken with a grain of salt too. See this quote from the R Documentation
+for the “performance::check_collinearity()” function:</p>
+<p>“<em>Multicollinearity should not be confused with a raw strong
+correlation between predictors… Remember: ”Pairwise correlations are not
+the problem. It is the conditional associations - not correlations -
+that matter.” (McElreath 2020, p. 169)</em>”</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">cor</span>(dat_grass[ , <span class="fu">c</span>(<span class="st">&quot;Year&quot;</span>, <span class="st">&quot;Burned&quot;</span>, <span class="st">&quot;mean&quot;</span>, <span class="st">&quot;stdDev&quot;</span>, <span class="st">&quot;TSF&quot;</span>)])</span></code></pre></div>
+<pre><code>##              Year      Burned        mean      stdDev          TSF
+## Year   1.00000000  0.08962018  0.07545786 0.142219843  0.091743735
+## Burned 0.08962018  1.00000000 -0.03778454 0.014892473  0.834689600
+## mean   0.07545786 -0.03778454  1.00000000 0.908534920 -0.040105035
+## stdDev 0.14221984  0.01489247  0.90853492 1.000000000  0.004607301
+## TSF    0.09174374  0.83468960 -0.04010504 0.004607301  1.000000000</code></pre>
+</div>
+<div id="is-there-actually-a-relationship-between-x-and-y"
+class="section level4">
+<h4>Is there actually a relationship between X and Y?!</h4>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Making individual plots</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>rich_treeMean <span class="ot">&lt;-</span> </span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  dat_grass <span class="sc">%&gt;%</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> mean, <span class="at">y =</span> Rich_Grass)) <span class="sc">+</span> </span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&quot;gam&quot;</span>, <span class="at">formula =</span> y <span class="sc">~</span> <span class="fu">s</span>(x)) <span class="sc">+</span> <span class="co"># a simple generalized additive model!</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Grassland Bird Richness&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Mean % Tree Cover&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>  <span class="fu">theme_classic</span>() <span class="co"># FYI: there are lots of fun pre-made themes in ggplot2</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>rich_TSF <span class="ot">&lt;-</span> </span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>  dat_grass <span class="sc">%&gt;%</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> TSF, <span class="at">y =</span> Rich_Grass)) <span class="sc">+</span> </span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&quot;gam&quot;</span>, <span class="at">formula =</span> y <span class="sc">~</span> <span class="fu">s</span>(x)) <span class="sc">+</span></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Grassland Bird Richness&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Years-since-fire&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="co"># Another theme</span></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a></span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a><span class="co"># Combine plots</span></span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>cowplot<span class="sc">::</span><span class="fu">plot_grid</span>(rich_treeMean, rich_TSF, <span class="at">ncol =</span> <span class="dv">2</span>)</span></code></pre></div>
+<p><img src="images/03-A/unnamed-chunk-8-1.png" width="672" /></p>
+</div>
+<div id="should-we-consider-interactions-between-predictor-variables"
+class="section level4">
+<h4>Should we consider interactions between predictor variables?</h4>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">pairs</span>(dat_grass[ , <span class="fu">c</span>(<span class="st">&quot;Year&quot;</span>, <span class="st">&quot;Burned&quot;</span>, <span class="st">&quot;mean&quot;</span>, <span class="st">&quot;stdDev&quot;</span>, <span class="st">&quot;TSF&quot;</span>)],</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>      <span class="at">lower.panel =</span> <span class="cn">NULL</span>)</span></code></pre></div>
+<p><img src="images/03-A/unnamed-chunk-9-1.png" width="672" /></p>
 <!-- *** -->
 <!-- ### Discussion Questions -->
 <!-- **Q1:** When should you let go of an outlier? -->
