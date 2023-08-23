@@ -1,65 +1,57 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Stanford University" />
 
 
-<title>Biology 202: Ecological Statistics</title>
+<title>Ecological Modeling</title>
 
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
 <script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 
-
-
-
 <style type="text/css">
-h1 {
-  font-size: 34px;
-}
-h1.title {
-  font-size: 38px;
-}
-h2 {
-  font-size: 30px;
-}
-h3 {
-  font-size: 24px;
-}
-h4 {
-  font-size: 18px;
-}
-h5 {
-  font-size: 16px;
-}
-h6 {
-  font-size: 12px;
-}
-.table th:not([align]) {
-  text-align: left;
-}
-</style>
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
 
 <link rel="stylesheet" href="style.css" type="text/css" />
 
-</head>
 
-<body>
 
 <style type = "text/css">
 .main-container {
@@ -67,58 +59,71 @@ h6 {
   margin-left: auto;
   margin-right: auto;
 }
-code {
-  color: inherit;
-  background-color: rgba(0, 0, 0, 0.04);
-}
 img {
   max-width:100%;
-  height: auto;
 }
 .tabbed-pane {
   padding-top: 12px;
 }
+.html-widget {
+  margin-bottom: 20px;
+}
 button.code-folding-btn:focus {
   outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
 }
 </style>
 
 
 <style type="text/css">
-/* padding for bootstrap navbar */
-body {
-  padding-top: 51px;
-  padding-bottom: 40px;
+.dropdown-submenu {
+  position: relative;
 }
-/* offset scroll position for anchor links (for fixed navbar)  */
-.section h1 {
-  padding-top: 56px;
-  margin-top: -56px;
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
 }
-
-.section h2 {
-  padding-top: 56px;
-  margin-top: -56px;
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
 }
-.section h3 {
-  padding-top: 56px;
-  margin-top: -56px;
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
 }
-.section h4 {
-  padding-top: 56px;
-  margin-top: -56px;
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
 }
-.section h5 {
-  padding-top: 56px;
-  margin-top: -56px;
+.dropdown-submenu.pull-left {
+  float: none;
 }
-.section h6 {
-  padding-top: 56px;
-  margin-top: -56px;
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
 }
 </style>
 
-<script>
+<script type="text/javascript">
 // manage active state of menu based on current page
 $(document).ready(function () {
   // active menu anchor
@@ -128,55 +133,83 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.parent().addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
 });
 </script>
-
-
-<div class="container-fluid main-container">
 
 <!-- tabsets -->
-<script>
-$(document).ready(function () {
-  window.buildTabsets("TOC");
-});
-</script>
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
 
 <!-- code folding -->
 
 
-
-
-<script>
-$(document).ready(function ()  {
-
-    // move toc-ignore selectors from section div to header
-    $('div.section.toc-ignore')
-        .removeClass('toc-ignore')
-        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
-
-    // establish options
-    var options = {
-      selectors: "h1,h2,h3",
-      theme: "bootstrap3",
-      context: '.toc-content',
-      hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
-      },
-      ignoreSelector: ".toc-ignore",
-      scrollTo: 0
-    };
-    options.showAndHide = false;
-    options.smoothScroll = true;
-
-    // tocify
-    var toc = $("#TOC").tocify(options).data("toc-tocify");
-});
-</script>
 
 <style type="text/css">
 
@@ -190,6 +223,12 @@ $(document).ready(function ()  {
 }
 }
 
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
 
 .toc-content {
   padding-left: 30px;
@@ -225,8 +264,6 @@ div.tocify {
 
 .tocify-subheader .tocify-item {
   font-size: 0.90em;
-  padding-left: 25px;
-  text-indent: 0;
 }
 
 .tocify .list-group-item {
@@ -242,8 +279,18 @@ div.tocify {
 
 </style>
 
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
 <!-- setup 3col/9col grid for toc_float and main content  -->
-<div class="row-fluid">
+<div class="row">
 <div class="col-xs-12 col-sm-4 col-md-3">
 <div id="TOC" class="tocify">
 </div>
@@ -257,7 +304,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -273,7 +320,7 @@ div.tocify {
   <a href="00-computer-setup.html">Computer Setup</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     W1
      
     <span class="caret"></span>
@@ -291,7 +338,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     W2
      
     <span class="caret"></span>
@@ -309,7 +356,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     W3
      
     <span class="caret"></span>
@@ -327,7 +374,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     W4
      
     <span class="caret"></span>
@@ -345,7 +392,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     W5
      
     <span class="caret"></span>
@@ -363,7 +410,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     W6
      
     <span class="caret"></span>
@@ -381,7 +428,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     W8
      
     <span class="caret"></span>
@@ -399,7 +446,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     W9
      
     <span class="caret"></span>
@@ -424,41 +471,25 @@ div.tocify {
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-<div class="fluid-row" id="header">
+<div id="header">
 
 
 
-<h1 class="title toc-ignore">Biology 202: Ecological Statistics</h1>
-<h4 class="author"><em>Stanford University</em></h4>
+<h1 class="title toc-ignore">Ecological Modeling</h1>
 
 </div>
 
 
-<div id="syllabus" class="section level2">
-<h2>Syllabus</h2>
-<p><strong>Instructors:</strong> Tadashi Fukami and Jes Coyle</p>
-<p><strong>Students:</strong></p>
-<p><strong>Course Goals:</strong></p>
-<p>Students will be able to:</p>
-<ul>
-<li>Design statistically sound data collection strategies to answer a given research questions.</li>
-<li>Choose among modern statistical tools and analyze data using R.</li>
-<li>Present results effectively using R for peer-reviewed papers.</li>
-<li>Advise colleagues about statistical analyses.</li>
-</ul>
-<p><strong>Class Format:</strong></p>
-<p>During the first few weeks, each student will briefly introduce their research question and data and we will go over basics of how to use R and interact with the course content on this website using R markdown files and GitHub. From then on, one selected topic will be covered during each class. First the instructor will briefly summarize the assigned reading (~15 min) and go over key concepts and analyses, R packages and how they should be used, how to differentiate among them, including time for questions and clarification. Then, a student will present an example of the topic (~15 min). This could be (1) going over an example presented in the text by walking through the procedure and details of the code that they think are important; or (2) applying these techniques to the student’s own data and walking others through the analysis, and present on their results/challenges faced, etc. Each class concludes with a ~20-min discussion led by the student (who will come prepared with questions to facilitate discussion and will share novel/important/interesting functions and pieces of R code). Each student will lead 1 or 2 topics during the quarter. We will also have a mid-term and final presentation and discussion on student projects. Students will prepare their lesson content ahead of time by modifying the Rmarkdown webpage on this site.</p>
-<p><strong>Final product:</strong></p>
-<p>Each student will complete the results section to include in a paper to submit for publication or data collection plans for a research proposal.</p>
-</div>
+<!-- ## Syllabus -->
+<p><strong>Instructor:</strong> Caleb Roberts</p>
 <div id="tentative-schedule" class="section level2">
 <h2>Tentative Schedule</h2>
 <table>
 <colgroup>
-<col width="5%" />
+<col width="4%" />
 <col width="4%" />
 <col width="8%" />
-<col width="63%" />
+<col width="64%" />
 <col width="9%" />
 <col width="9%" />
 </colgroup>
@@ -468,296 +499,322 @@ div.tocify {
 <th>Day</th>
 <th>Date</th>
 <th>Topic &amp; Reading</th>
-<th>Summary</th>
+<th>Discussion</th>
 <th>Discussion</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td>1</td>
-<td>Mon</td>
-<td>Sept. 25</td>
-<td><a href="01-A-R-intro.html">Intro to R &amp; RStudio</a></td>
-<td>Tad &amp; Jes</td>
+<td>Tue</td>
+<td>Aug. 22</td>
+<td>What is “modeling?”</td>
+<td>————</td>
 <td>————</td>
 </tr>
 <tr class="even">
 <td></td>
-<td>Wed</td>
-<td>Sept. 27</td>
-<td>Topic selection, <a href="01-B-Rmarkdown-intro.html">Intro to R markdown</a> &amp; class website</td>
-<td>Tad &amp; Jes</td>
+<td>Thu</td>
+<td>Aug. 24</td>
+<td><em>Why</em> are you modeling?</td>
+<td>Lauren</td>
 <td>————</td>
 </tr>
 <tr class="odd">
-<td></td>
-<td>Fri</td>
-<td>Sept. 29</td>
-<td><a href="01-C-R-workshop.html">R workshop</a> (optional)</td>
-<td>Jes</td>
-<td>————</td>
-</tr>
-<tr class="even">
 <td>2</td>
-<td>Mon</td>
-<td>Oct. 2</td>
-<td><a href="02-A-tidyr.html">Intro to ggplot2 and tidyr</a></td>
-<td>Jes</td>
+<td>Tue</td>
+<td>Aug. 29</td>
+<td>Data exploration</td>
 <td>————</td>
-</tr>
-<tr class="odd">
-<td></td>
-<td>Wed</td>
-<td>Oct. 4</td>
-<td><a href="02-B-git-intro.html">Intro to GitHub &amp; git</a></td>
-<td>Jes</td>
 <td>————</td>
 </tr>
 <tr class="even">
 <td></td>
-<td>Fri</td>
-<td>Oct. 6</td>
-<td>Each person introduces their questions &amp; data</td>
-<td>Tad &amp; Jes</td>
+<td>Thu</td>
+<td>Aug. 31</td>
+<td>Data exploration</td>
+<td>————</td>
 <td>————</td>
 </tr>
 <tr class="odd">
 <td>3</td>
-<td>Mon</td>
-<td>Oct. 9</td>
-<td>Topic 1. <a href="03-A-data-exploration.html">Data exploration</a></td>
-<td>Tad</td>
-<td>Priscilla</td>
+<td>Tue</td>
+<td>Sep. 5</td>
+<td>Review of linear models, probability distributions</td>
+<td>Ethan</td>
+<td>————</td>
 </tr>
 <tr class="even">
 <td></td>
-<td>Wed</td>
-<td>Oct. 11</td>
-<td>Topic 2. <a href="03-B-linear-models.html">Linear models</a></td>
-<td>Tad</td>
-<td>Sandra</td>
+<td>Thu</td>
+<td>Sep. 7</td>
+<td>Review of linear models, probability distributions</td>
+<td>————</td>
+<td>————</td>
 </tr>
 <tr class="odd">
-<td></td>
-<td>Fri</td>
-<td>Oct. 13</td>
-<td>Topic 3. <a href="03-C-heterogeneity.html">Dealing with heterogeneity</a></td>
-<td>Tad</td>
-<td>Anna</td>
-</tr>
-<tr class="even">
 <td>4</td>
-<td>Mon</td>
-<td>Oct. 16</td>
-<td>Topic 4. <a href="04-A-mixed-models.html">Mixed-effects models with nested data</a></td>
-<td>Tad</td>
-<td>Beth</td>
-</tr>
-<tr class="odd">
-<td></td>
-<td>Wed</td>
-<td>Oct. 18</td>
-<td>Topic 5. <a href="04-B-binary-data.html">GLM with binary &amp; proportional data</a></td>
-<td>Tad</td>
-<td>Meghan</td>
+<td>Tue</td>
+<td>Sep. 12</td>
+<td>Model selection</td>
+<td>Dylan</td>
+<td>————</td>
 </tr>
 <tr class="even">
 <td></td>
-<td>Fri</td>
-<td>Oct. 20</td>
-<td>Topic 6. <a href="04-C-zero-data.html">GLM with zero-inflated data</a></td>
-<td>Tad</td>
-<td>Nick</td>
+<td>Thu</td>
+<td>Sep. 14</td>
+<td>Model selection</td>
+<td>————</td>
+<td>————</td>
 </tr>
 <tr class="odd">
 <td>5</td>
-<td>Mon</td>
-<td>Oct. 23</td>
-<td>Topic 7. <a href="05-A-Bayesian-linear-models.html">Bayesian linear models</a></td>
-<td>Jes</td>
-<td>Jamie</td>
+<td>Tue</td>
+<td>Sep. 19</td>
+<td>Autocorrelation</td>
+<td>Shantanou</td>
+<td>————</td>
 </tr>
 <tr class="even">
 <td></td>
-<td>Wed</td>
-<td>Oct. 25</td>
-<td>Topic 8. <a href="05-B-Bayesian-priors.html">Bayesian inference with prior information</a></td>
-<td>Jes</td>
-<td>Nicole</td>
+<td>Thu</td>
+<td>Sep. 21</td>
+<td>Autocorrelation</td>
+<td>————</td>
+<td>————</td>
 </tr>
 <tr class="odd">
-<td></td>
-<td>Fri</td>
-<td>Oct. 27</td>
-<td>Topic 9. <a href="05-C-Advanced-bayesian-example.html">Advanced Bayesian model example</a></td>
-<td>Jes</td>
-<td>Lizzie</td>
-</tr>
-<tr class="even">
 <td>6</td>
-<td>Mon</td>
-<td>Oct. 30</td>
-<td>Topic 10. <a href="06-A-unconstrained-ordination.html">Unconstrained ordination</a></td>
-<td>Tad</td>
-<td>Anna</td>
-</tr>
-<tr class="odd">
-<td></td>
-<td>Wed</td>
-<td>Nov. 1</td>
-<td>Topic 11. <a href="06-B-constrained-ordination.html">Constrained ordination</a></td>
-<td>Tad</td>
-<td>Jamie</td>
+<td>Tue</td>
+<td>Sep. 26</td>
+<td>Mixed models: what, why, how?</td>
+<td>Reilly</td>
+<td>————</td>
 </tr>
 <tr class="even">
 <td></td>
-<td>Fri</td>
-<td>Nov. 3</td>
-<td>Topic 12. <a href="06-C-matrix-comparison.html">Comparing multivariate data</a> (symmetric methods)</td>
-<td>Jes</td>
-<td>Priscilla</td>
+<td>Thu</td>
+<td>Sep. 28</td>
+<td>Mixed models: LMM</td>
+<td>————</td>
+<td>————</td>
 </tr>
 <tr class="odd">
 <td>7</td>
-<td>Mon</td>
-<td>Nov. 6</td>
-<td>Mid-term project presentation &amp; discussion</td>
-<td></td>
-<td></td>
+<td>Tue</td>
+<td>Oct. 3</td>
+<td>Mixed models: GLMM</td>
+<td>————</td>
+<td>————</td>
 </tr>
 <tr class="even">
 <td></td>
-<td>Wed</td>
-<td>Nov. 8</td>
-<td>Mid-term project presentation &amp; discussion</td>
-<td></td>
-<td></td>
+<td>Thu</td>
+<td>Oct. 5</td>
+<td>Mixed models: confidence and diagnostics</td>
+<td>————</td>
+<td>————</td>
 </tr>
 <tr class="odd">
-<td></td>
-<td>Fri</td>
-<td>Nov. 10</td>
-<td>Mid-term project presentation &amp; discussion</td>
-<td></td>
-<td></td>
-</tr>
-<tr class="even">
 <td>8</td>
-<td>Mon</td>
-<td>Nov. 13</td>
-<td>Topic 13. <a href="08-A-mapping.html">Visualization of spatial data</a></td>
-<td>Tad</td>
-<td>Tyler</td>
-</tr>
-<tr class="odd">
-<td></td>
-<td>Wed</td>
-<td>Nov. 15</td>
-<td>Topic 14. <a href="08-B-spatial-regression.html">Spatial regression</a></td>
-<td>Jes</td>
-<td>Marissa</td>
+<td>Tue</td>
+<td>Oct. 10</td>
+<td>Generalized additive models</td>
+<td>Ben</td>
+<td>————</td>
 </tr>
 <tr class="even">
 <td></td>
-<td>Fri</td>
-<td>Nov. 17</td>
-<td>Topic 15. <a href="08-C-spatial-ordination.html">Ordination approach to spatial analysis</a></td>
-<td>Jes</td>
-<td>Sandra</td>
+<td>Thu</td>
+<td>Oct. 12</td>
+<td>No class</td>
+<td>————</td>
+<td>————</td>
 </tr>
 <tr class="odd">
-<td>RECESS</td>
-<td></td>
-<td></td>
-<td>Thanksgiving</td>
-<td></td>
-<td></td>
-</tr>
-<tr class="even">
 <td>9</td>
-<td>Mon</td>
-<td>Nov. 27</td>
-<td>Topic 16. Selected by class: <a href="09-A-time-series.html">time-series analysis</a></td>
-<td>Lizzie</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td></td>
-<td>Wed</td>
-<td>Nov. 29</td>
-<td>Topic 17. Selected by class: <a href="09-B-networks.html">network analysis</a></td>
-<td>Beth</td>
-<td>Nicole</td>
+<td>Tue</td>
+<td>Oct. 17</td>
+<td>No class: Fall Break</td>
+<td>————</td>
+<td>————</td>
 </tr>
 <tr class="even">
 <td></td>
-<td>Fri</td>
-<td>Dec. 1</td>
-<td>Topic 18. Selected by class: <a href="09-C-occupancy-models.html">occupancy models</a></td>
-<td>Nick</td>
-<td></td>
+<td>Thu</td>
+<td>Oct. 19</td>
+<td>Generalized additive models</td>
+<td>————</td>
+<td>————</td>
 </tr>
 <tr class="odd">
 <td>10</td>
-<td>Mon</td>
-<td>Dec. 4</td>
-<td>Final project presentations</td>
-<td></td>
-<td></td>
+<td>Tue</td>
+<td>Oct. 24</td>
+<td>Hierarchical generalized additive models</td>
+<td>Ken</td>
+<td>————</td>
 </tr>
 <tr class="even">
 <td></td>
-<td>Wed</td>
-<td>Dec. 6</td>
-<td>Final project presentations</td>
-<td></td>
-<td></td>
+<td>Thu</td>
+<td>Oct. 26</td>
+<td>Hierarchical generalized additive models</td>
+<td>————</td>
+<td>————</td>
 </tr>
 <tr class="odd">
+<td>11</td>
+<td>Tue</td>
+<td>Oct. 31</td>
+<td>Guest lecture: Dr. Brandon Edwards (Intro to Bayesian
+statistics)</td>
+<td>————</td>
+<td>————</td>
+</tr>
+<tr class="even">
 <td></td>
-<td>Fri</td>
-<td>Dec. 8</td>
-<td>Final project presentations</td>
+<td>Thu</td>
+<td>Nov. 2</td>
+<td>Hello, Bayes: setting things up</td>
+<td>Morgan</td>
+<td>Maddie</td>
+</tr>
+<tr class="odd">
+<td>12</td>
+<td>Tue</td>
+<td>Nov. 7</td>
+<td>Hello, Bayes: running models</td>
+<td>Rachel</td>
+<td>Casey</td>
+</tr>
+<tr class="even">
 <td></td>
+<td>Thu</td>
+<td>Nov. 9</td>
+<td>Hello, Bayes: running models</td>
+<td>————</td>
+<td>————</td>
+</tr>
+<tr class="odd">
+<td>13</td>
+<td>Tue</td>
+<td>Nov. 14</td>
+<td>Hello, Bayes: model diagnostics</td>
+<td>————</td>
+<td>————</td>
+</tr>
+<tr class="even">
 <td></td>
+<td>Thu</td>
+<td>Nov. 16</td>
+<td>No class</td>
+<td>————</td>
+<td>————</td>
+</tr>
+<tr class="odd">
+<td>14</td>
+<td>Tue</td>
+<td>Nov. 21</td>
+<td>No class</td>
+<td>————</td>
+<td>————</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>Thu</td>
+<td>Nov. 23</td>
+<td>No class: Thanksgiving</td>
+<td>————</td>
+<td>————</td>
+</tr>
+<tr class="odd">
+<td>15</td>
+<td>Tue</td>
+<td>Nov. 28</td>
+<td>Writing methods and results</td>
+<td>Jess</td>
+<td>————</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>Thu</td>
+<td>Nov. 30</td>
+<td>Writing methods and results</td>
+<td>————</td>
+<td>————</td>
 </tr>
 </tbody>
 </table>
-<p>Some possible additional topics: Cluster analysis, Series analysis, structural equation models, occupancy models, phylogenetic contrasts, rarefaction, null models for community analysis, multi-model inference and averaging</p>
-</div>
-<div id="before-class" class="section level2">
-<h2>Before Class</h2>
-<p>Before the first class please read through the <a href="00-computer-setup.html">computer setup instructions</a> that walk you through how to set up your computer to run R and Rstudio. Even if you have these programs already installed, make sure to check that you are running the latest versions of R and RStudio (which the instructions will tell you how to do).</p>
-<p>Our course website runs from a repository on GitHub. You can view this repository <a href="https://github.com/fukamilab/BIO202">here</a>. Notice that the repository has 2 files for each lesson webpage (named 00-lesson-topic), one is an html file (.html) that is displayed as a webpage while the other is a R markdown (.Rmd) file that will allow us to write R code and explanatory text in the same file. The html file is created by R Studio from the R markdown file. The repository also has a folder called “data”. This is where we will put data files used by our example code. Note that this repository can be downloaded by anyone on the internet. If you have data that you wish to use in class but do not wish to share with the entire WWW, you are welcome to email the data files to the rest of the class prior to your lesson.</p>
-<p>During class you will be editing the course webpages to include R code for the lesson discussion that you lead. If you are familiar with git and have a GitHub account, you should fork the repository to your account so that you can make changes there. If that is gibberish to you- don’t worry! You can either choose to edit the course webpages by downloading them and emailing any edits to Jes (see <a href="00-computer-setup.html">computer setup instructions</a>) or you can choose to learn a little git and create you own GitHub account during an optional class session during the first week.</p>
-</div>
-<div id="references-readings" class="section level2">
-<h2>References &amp; Readings</h2>
-<div id="assigned-readings" class="section level3">
-<h3>Assigned Readings</h3>
-<p>All assigned readings can be obtained for free through Stanford library online resources.</p>
-<ul>
-<li>Bivand, R. S., Pebesma, E., Gomez-Rubio, V. (2013), <em>Applied Spatial Data Analysis with R</em>, 2nd ed. Springer. <a href="https://link-springer-com.stanford.idm.oclc.org/book/10.1007%2F978-1-4614-7618-4">Stanford Full Text</a></li>
-<li>Borcard, D., Gillet, F. and Legendre, P. (2011), <em>Numerical Ecology with R.</em> Springer. <a href="https://link.springer.com/book/10.1007/978-1-4419-7976-6">Stanford Full Text</a></li>
-<li>Korner-Nievergelt et al. (2015), <em>Bayesian data analysis in ecology using linear models with R, BUGS, and Stan.</em> Elsevier. <a href="http://www.sciencedirect.com/science/book/9780128013700">Stanford Full Text</a></li>
-<li>Legendre, P. and Legendre, L. (2012), <em>Numerical Ecology</em>. Elsevier. <a href="http://www.sciencedirect.com/science/bookseries/01678892/24">Stanford Full Text</a></li>
-<li>Martin, T. G., Wintle, B. A., Rhodes, J. R., Kuhnert, P. M., Field, S. A., Low-Choy, S. J., Tyre, A. J. and Possingham, H. P. (2005), Zero tolerance ecology: improving ecological inference by modelling the source of zero observations. <em>Ecology Letters</em>, 8: 1235-1246. <a href="DOI:%5B10.1111/j.1461-0248.2005.00826.x%5D(http://dx.doi.org/10.1111/j.1461-0248.2005.00826.x)" class="uri">DOI:[10.1111/j.1461-0248.2005.00826.x](http://dx.doi.org/10.1111/j.1461-0248.2005.00826.x)</a></li>
-<li>Ramette, A. (2007), Multivariate analyses in microbial ecology. <em>FEMS Microbiology Ecology</em>, 62: 142-160. DOI: <a href="http:dx.doi.org/10.1111/j.1574-6941.2007.00375.x">10.1111/j.1574-6941.2007.00375.x</a></li>
-<li>Wickham, H. (2016), <em>ggplot2: Elegant Graphics for Data Analysis</em>. Springer. <a href="https://link-springer-com.stanford.idm.oclc.org/book/10.1007%2F978-3-319-24277-4">Stanford Full Text</a></li>
-<li>Zuur, A. F., Leno, E. N., Walker, N., Savliev, A. A. and Smith, G. M. (2009), <em>Mixed Effect Models and Extensions in Ecology with R.</em> Springer. <a href="https://link.springer.com/book/10.1007%2F978-0-387-87458-6">Stanford Full Text</a></li>
-<li>Zuur, A. F. (2010), A protocol for data exploration to avoid common statistical problems. <em>Methods in Ecology and Evolution</em>, 1: 3-14. DOI: <a href="http://dx.doi.org/10.1111/j.2041-210X.2009.00001.x">10.1111/j.2041-210X.2009.00001.x</a></li>
-</ul>
-</div>
-<div id="additional-suggested-references" class="section level3">
-<h3>Additional Suggested References</h3>
-<ul>
-<li>Beale, C. M., Lennon, J. J., Yearsley, J. M., Brewer, M. J. and Elston, D. A. (2010), Regression analysis of spatial data. <em>Ecology Letters</em>, 13: 246-264. <a href="DOI:%5B10.1111/j.1461-0248.2009.01422.x%5D(http://dx.doi.org/10.1111/j.1461-0248.2009.01422.x)" class="uri">DOI:[10.1111/j.1461-0248.2009.01422.x](http://dx.doi.org/10.1111/j.1461-0248.2009.01422.x)</a> +Hawkins, B. A. (2012), Eight (and a half) deadly sins of spatial analysis. <em>Journal of Biogeography</em>, 39: 1-9. <a href="http://dx.doi.org/10.1111/j.1365-2699.2011.02637.x">DOI: 10.1111/j.1365-2699.2011.02637.x</a></li>
-<li>McElreath, R. (2016), <em>Statistical rethinking: a Bayesian course with examples in R and Stan</em>. CRC Press. <em>Available in the Science and Marine libraries</em> <a href="http://xcelab.net/rm/statistical-rethinking/">Author’s website</a></li>
-<li>Venables, W. N., Smith, D. M. and the R Core Team. (2012), <em>An Introduction to R: Notes on R: A Programming Environment for Data Analysis and Graphics</em>. Version 2.15.1. <a href="https://cran.r-project.org/doc/manuals/r-release/R-intro.pdf">full text</a></li>
-<li>Wagner, H. H. and Fortin, M. J. (2005), Spatial analysis of landscapes: concepts and statistics. <em>Ecology</em>, 86: 1975–1987. DOI: <a href="http://dx.doi.org/10.1890/04-0914">10.1890/04-0914</a></li>
-<li>Zuur, A. F., Hilbe, J. M. and Ieno, E. N. (2013), <em>A beginner’s guide to GLM and GLMM with R: a frequentist and Bayesian perspective for ecologists.</em> Highland Statistics Ltd. <a href="https://searchworks.stanford.edu/view/11749213">Stanford Library Record</a></li>
-</ul>
-</div>
+<!-- **Course Goals:** -->
+<!-- Students will be able to: -->
+<!--   * Design statistically sound data collection strategies to answer a given research questions. -->
+<!--   * Choose among modern statistical tools and analyze data using R. -->
+<!--   * Present results effectively using R for peer-reviewed papers. -->
+<!--   * Advise colleagues about statistical analyses. -->
+<!-- **Class Format:** -->
+<!-- During the first few weeks, each student will briefly introduce their research question and data and we will go over basics of how to use R and interact with the course content on this website using R markdown files and GitHub. From then on, one selected topic will be covered during each class. First the instructor will briefly summarize the assigned reading (~15 min) and go over key concepts and analyses, R packages and how they should be used, how to differentiate among them, including time for questions and clarification. Then, a student will present an example of the topic (~15 min). This could be (1) going over an example presented in the text by walking through the procedure and details of the code that they think are important; or (2) applying these techniques to the student's own data and walking others through the analysis, and present on their results/challenges faced, etc. Each class concludes with a ~20-min discussion led by the student (who will come prepared with questions to facilitate discussion and will share novel/important/interesting functions and pieces of R code). Each student will lead 1 or 2 topics during the quarter. We will also have a mid-term and final presentation and discussion on student projects. Students will prepare their lesson content ahead of time by modifying the Rmarkdown webpage on this site. -->
+<!-- **Final product:** -->
+<!-- Each student will complete the results section to include in a paper to submit for publication or data collection plans for a research proposal. -->
+<!-- ## Tentative Schedule -->
+<!-- | Week | Day | Date     | Topic & Reading                                                                   | Summary   | Discussion | -->
+<!-- |------|-----|----------|-----------------------------------------------------------------------------------|-----------|------------| -->
+<!-- | 1    | Mon | Sept. 25 | [Intro to R & RStudio](01-A-R-intro.html)                                         | Tad & Jes |------------| -->
+<!-- |      | Wed | Sept. 27 | Topic selection, [Intro to R markdown](01-B-Rmarkdown-intro.html) & class website | Tad & Jes |------------| -->
+<!-- |      | Fri | Sept. 29 | [R workshop](01-C-R-workshop.html) (optional)                                     | Jes       |------------| -->
+<!-- | 2    | Mon | Oct. 2   | [Intro to ggplot2 and tidyr](02-A-tidyr.html)                                     | Jes       |------------| -->
+<!-- |      | Wed | Oct. 4   | [Intro to GitHub & git](02-B-git-intro.html)                                      | Jes       |------------| -->
+<!-- |      | Fri | Oct. 6   | Each person introduces their questions & data                                     | Tad & Jes |------------| -->
+<!-- | 3    | Mon | Oct. 9   | Topic 1. [Data exploration](03-A-data-exploration.html)                           | Tad       | Priscilla  | -->
+<!-- |      | Wed | Oct. 11  | Topic 2. [Linear models](03-B-linear-models.html)                                 | Tad       | Sandra     | -->
+<!-- |      | Fri | Oct. 13  | Topic 3. [Dealing with heterogeneity](03-C-heterogeneity.html)                    | Tad       | Anna       | -->
+<!-- | 4    | Mon | Oct. 16  | Topic 4. [Mixed-effects models with nested data](04-A-mixed-models.html)          | Tad       | Beth       | -->
+<!-- |      | Wed | Oct. 18  | Topic 5. [GLM with binary & proportional data](04-B-binary-data.html)             | Tad       | Meghan     | -->
+<!-- |      | Fri | Oct. 20  | Topic 6. [GLM with zero-inflated data](04-C-zero-data.html)                       | Tad       | Nick       | -->
+<!-- | 5    | Mon | Oct. 23  | Topic 7. [Bayesian linear models](05-A-Bayesian-linear-models.html)               | Jes       | Jamie      | -->
+<!-- |      | Wed | Oct. 25  | Topic 8. [Bayesian inference with prior information](05-B-Bayesian-priors.html)   | Jes       | Nicole     | -->
+<!-- |      | Fri | Oct. 27  | Topic 9. [Advanced Bayesian model example](05-C-Advanced-bayesian-example.html)   | Jes       | Lizzie     | -->
+<!-- | 6    | Mon | Oct. 30  | Topic 10. [Unconstrained ordination](06-A-unconstrained-ordination.html)          | Tad       | Anna       | -->
+<!-- |      | Wed | Nov. 1   | Topic 11. [Constrained ordination](06-B-constrained-ordination.html)              | Tad       | Jamie     | -->
+<!-- |      | Fri | Nov. 3   | Topic 12. [Comparing multivariate data](06-C-matrix-comparison.html) (symmetric methods)| Jes       | Priscilla  | -->
+<!-- | 7    | Mon | Nov. 6   | Mid-term project presentation & discussion                                        |           |            | -->
+<!-- |      | Wed | Nov. 8   | Mid-term project presentation & discussion                                        |           |            | -->
+<!-- |      | Fri | Nov. 10  | Mid-term project presentation & discussion                                        |           |            | -->
+<!-- | 8    | Mon | Nov. 13  | Topic 13. [Visualization of spatial data](08-A-mapping.html)                    | Tad       | Tyler    | -->
+<!-- |      | Wed | Nov. 15  | Topic 14. [Spatial regression](08-B-spatial-regression.html)  | Jes       | Marissa     | -->
+<!-- |      | Fri | Nov. 17  | Topic 15. [Ordination approach to spatial analysis](08-C-spatial-ordination.html)                       | Jes       | Sandra      | -->
+<!-- |RECESS|     |          | Thanksgiving                                                                      |           |            | -->
+<!-- | 9    | Mon | Nov. 27  | Topic 16. Selected by class: [time-series analysis](09-A-time-series.html)        | Lizzie    |       | -->
+<!-- |      | Wed | Nov. 29  | Topic 17. Selected by class: [network analysis](09-B-networks.html)               | Beth      | Nicole     | -->
+<!-- |      | Fri | Dec. 1   | Topic 18. Selected by class: [occupancy models](09-C-occupancy-models.html)       | Nick      |            | -->
+<!-- | 10   | Mon | Dec. 4   | Final project presentations                                                       |           |            | -->
+<!-- |      | Wed | Dec. 6   | Final project presentations                                                       |           |            | -->
+<!-- |      | Fri | Dec. 8   | Final project presentations                                                       |           |            | -->
+<!-- Some possible additional topics: Cluster analysis, Series analysis, structural equation models, occupancy models, phylogenetic contrasts, rarefaction, null models for community analysis, multi-model inference and averaging -->
+<!-- ## Before Class  -->
+<!-- Before the first class please read through the [computer setup instructions](00-computer-setup.html) that walk you through how to set up your computer to run R and Rstudio. Even if you have these programs already installed, make sure to check that you are running the latest versions of R and RStudio (which the instructions will tell you how to do).  -->
+<!-- Our course website runs from a repository on GitHub. You can view this repository [here](https://github.com/fukamilab/BIO202). Notice that the repository has 2 files for each lesson webpage (named 00-lesson-topic), one is an html file (.html) that is displayed as a webpage while the other is a R markdown (.Rmd) file that will allow us to write R code and explanatory text in the same file. The html file is created by R Studio from the R markdown file. The repository also has a folder called "data". This is where we will put data files used by our example code. Note that this repository can be downloaded by anyone on the internet. If you have data that you wish to use in class but do not wish to share with the entire WWW, you are welcome to email the data files to the rest of the class prior to your lesson. -->
+<!-- During class you will be editing the course webpages to include R code for the lesson discussion that you lead. If you are familiar with git and have a GitHub account, you should fork the repository to your account so that you can make changes there. If that is gibberish to you- don't worry! You can either choose to edit the course webpages by downloading them and emailing any edits to Jes (see [computer setup instructions](00-computer-setup.html)) or you can choose to learn a little git and create you own GitHub account during an optional class session during the first week.  -->
+<!-- ## References & Readings -->
+<!-- ### Assigned Readings -->
+<!-- All assigned readings can be obtained for free through Stanford library online resources.  -->
+<!-- + Bivand, R. S., Pebesma, E., Gomez-Rubio, V. (2013), *Applied Spatial Data Analysis with R*, 2nd ed. Springer. [Stanford Full Text](https://link-springer-com.stanford.idm.oclc.org/book/10.1007%2F978-1-4614-7618-4) -->
+<!-- + Borcard, D., Gillet, F. and Legendre, P. (2011), *Numerical Ecology with R.* Springer. [Stanford Full Text](https://link.springer.com/book/10.1007/978-1-4419-7976-6) -->
+<!-- + Korner-Nievergelt et al. (2015), *Bayesian data analysis in ecology using linear models with R, BUGS, and Stan.* Elsevier. [Stanford Full Text](http://www.sciencedirect.com/science/book/9780128013700) -->
+<!-- + Legendre, P. and Legendre, L. (2012), *Numerical Ecology*. Elsevier. [Stanford Full Text](http://www.sciencedirect.com/science/bookseries/01678892/24) -->
+<!-- + Martin, T. G., Wintle, B. A., Rhodes, J. R., Kuhnert, P. M., Field, S. A., Low-Choy, S. J., Tyre, A. J. and Possingham, H. P. (2005), Zero tolerance ecology: improving ecological inference by modelling the source of zero observations. *Ecology Letters*, 8: 1235-1246. DOI:[10.1111/j.1461-0248.2005.00826.x](http://dx.doi.org/10.1111/j.1461-0248.2005.00826.x) -->
+<!-- + Ramette, A. (2007), Multivariate analyses in microbial ecology. *FEMS Microbiology Ecology*, 62: 142-160. DOI: [10.1111/j.1574-6941.2007.00375.x](http:dx.doi.org/10.1111/j.1574-6941.2007.00375.x) -->
+<!-- + Wickham, H. (2016), *ggplot2: Elegant Graphics for Data Analysis*. Springer. [Stanford Full Text](https://link-springer-com.stanford.idm.oclc.org/book/10.1007%2F978-3-319-24277-4) -->
+<!-- + Zuur, A. F., Leno, E. N., Walker, N., Savliev, A. A. and Smith, G. M. (2009), *Mixed Effect Models and Extensions in Ecology with R.* Springer. [Stanford Full Text](https://link.springer.com/book/10.1007%2F978-0-387-87458-6) -->
+<!-- + Zuur, A. F. (2010), A protocol for data exploration to avoid common statistical problems. *Methods in Ecology and Evolution*, 1: 3-14. DOI: [10.1111/j.2041-210X.2009.00001.x](http://dx.doi.org/10.1111/j.2041-210X.2009.00001.x) -->
+<!-- ### Additional Suggested References -->
+<!-- + Beale, C. M., Lennon, J. J., Yearsley, J. M., Brewer, M. J. and Elston, D. A. (2010), Regression analysis of spatial data. *Ecology Letters*, 13: 246-264. DOI:[10.1111/j.1461-0248.2009.01422.x](http://dx.doi.org/10.1111/j.1461-0248.2009.01422.x) -->
+<!-- +Hawkins, B. A. (2012), Eight (and a half) deadly sins of spatial analysis. *Journal of Biogeography*, 39: 1-9. [DOI: 10.1111/j.1365-2699.2011.02637.x](http://dx.doi.org/10.1111/j.1365-2699.2011.02637.x) -->
+<!-- + McElreath, R. (2016), *Statistical rethinking: a Bayesian course with examples in R and Stan*. CRC Press. *Available in the Science and Marine libraries* [Author's website](http://xcelab.net/rm/statistical-rethinking/) -->
+<!-- + Venables, W. N., Smith, D. M. and the R Core Team. (2012), *An Introduction to R: Notes on R: A Programming Environment for Data Analysis and Graphics*. Version 2.15.1. [full text](https://cran.r-project.org/doc/manuals/r-release/R-intro.pdf) -->
+<!-- + Wagner, H. H. and Fortin, M. J. (2005), Spatial analysis of landscapes: concepts and statistics. *Ecology*, 86: 1975–1987. DOI: [10.1890/04-0914](http://dx.doi.org/10.1890/04-0914) -->
+<!-- + Zuur, A. F., Hilbe, J. M. and Ieno, E. N. (2013), *A beginner's guide to GLM and GLMM with R: a frequentist and Bayesian perspective for ecologists.* Highland Statistics Ltd. [Stanford Library Record](https://searchworks.stanford.edu/view/11749213)  -->
 </div>
 
 
@@ -771,13 +828,59 @@ div.tocify {
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();
 });
 
 
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
 </script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->

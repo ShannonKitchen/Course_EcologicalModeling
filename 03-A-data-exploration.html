@@ -1,108 +1,160 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Tad, Priscilla San Juan" />
+<meta name="author" content="Roberts, Caleb" />
 
 
 <title>Data exploration</title>
 
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
 <script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
-<style type="text/css">code{white-space: pre;}</style>
+
+
 <style type="text/css">
-div.sourceCode { overflow-x: auto; }
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code > span.dt { color: #902000; } /* DataType */
-code > span.dv { color: #40a070; } /* DecVal */
-code > span.bn { color: #40a070; } /* BaseN */
-code > span.fl { color: #40a070; } /* Float */
-code > span.ch { color: #4070a0; } /* Char */
-code > span.st { color: #4070a0; } /* String */
-code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code > span.ot { color: #007020; } /* Other */
-code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code > span.fu { color: #06287e; } /* Function */
-code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code > span.cn { color: #880000; } /* Constant */
-code > span.sc { color: #4070a0; } /* SpecialChar */
-code > span.vs { color: #4070a0; } /* VerbatimString */
-code > span.ss { color: #bb6688; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { color: #19177c; } /* Variable */
-code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code > span.op { color: #666666; } /* Operator */
-code > span.bu { } /* BuiltIn */
-code > span.ex { } /* Extension */
-code > span.pp { color: #bc7a00; } /* Preprocessor */
-code > span.at { color: #7d9029; } /* Attribute */
-code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-</style>
-<style type="text/css">
-  pre:not([class]) {
-    background-color: white;
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
   }
 </style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 
-
-<style type="text/css">
-h1 {
-  font-size: 34px;
-}
-h1.title {
-  font-size: 38px;
-}
-h2 {
-  font-size: 30px;
-}
-h3 {
-  font-size: 24px;
-}
-h4 {
-  font-size: 18px;
-}
-h5 {
-  font-size: 16px;
-}
-h6 {
-  font-size: 12px;
-}
-.table th:not([align]) {
-  text-align: left;
-}
 </style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
 
 <link rel="stylesheet" href="style.css" type="text/css" />
 
-</head>
 
-<body>
 
 <style type = "text/css">
 .main-container {
@@ -110,58 +162,71 @@ h6 {
   margin-left: auto;
   margin-right: auto;
 }
-code {
-  color: inherit;
-  background-color: rgba(0, 0, 0, 0.04);
-}
 img {
   max-width:100%;
-  height: auto;
 }
 .tabbed-pane {
   padding-top: 12px;
 }
+.html-widget {
+  margin-bottom: 20px;
+}
 button.code-folding-btn:focus {
   outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
 }
 </style>
 
 
 <style type="text/css">
-/* padding for bootstrap navbar */
-body {
-  padding-top: 51px;
-  padding-bottom: 40px;
+.dropdown-submenu {
+  position: relative;
 }
-/* offset scroll position for anchor links (for fixed navbar)  */
-.section h1 {
-  padding-top: 56px;
-  margin-top: -56px;
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
 }
-
-.section h2 {
-  padding-top: 56px;
-  margin-top: -56px;
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
 }
-.section h3 {
-  padding-top: 56px;
-  margin-top: -56px;
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
 }
-.section h4 {
-  padding-top: 56px;
-  margin-top: -56px;
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
 }
-.section h5 {
-  padding-top: 56px;
-  margin-top: -56px;
+.dropdown-submenu.pull-left {
+  float: none;
 }
-.section h6 {
-  padding-top: 56px;
-  margin-top: -56px;
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
 }
 </style>
 
-<script>
+<script type="text/javascript">
 // manage active state of menu based on current page
 $(document).ready(function () {
   // active menu anchor
@@ -171,55 +236,83 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.parent().addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
 });
 </script>
-
-
-<div class="container-fluid main-container">
 
 <!-- tabsets -->
-<script>
-$(document).ready(function () {
-  window.buildTabsets("TOC");
-});
-</script>
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
 
 <!-- code folding -->
 
 
-
-
-<script>
-$(document).ready(function ()  {
-
-    // move toc-ignore selectors from section div to header
-    $('div.section.toc-ignore')
-        .removeClass('toc-ignore')
-        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
-
-    // establish options
-    var options = {
-      selectors: "h1,h2,h3",
-      theme: "bootstrap3",
-      context: '.toc-content',
-      hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
-      },
-      ignoreSelector: ".toc-ignore",
-      scrollTo: 0
-    };
-    options.showAndHide = false;
-    options.smoothScroll = true;
-
-    // tocify
-    var toc = $("#TOC").tocify(options).data("toc-tocify");
-});
-</script>
 
 <style type="text/css">
 
@@ -233,6 +326,12 @@ $(document).ready(function ()  {
 }
 }
 
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
 
 .toc-content {
   padding-left: 30px;
@@ -268,8 +367,6 @@ div.tocify {
 
 .tocify-subheader .tocify-item {
   font-size: 0.90em;
-  padding-left: 25px;
-  text-indent: 0;
 }
 
 .tocify .list-group-item {
@@ -285,8 +382,18 @@ div.tocify {
 
 </style>
 
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
 <!-- setup 3col/9col grid for toc_float and main content  -->
-<div class="row-fluid">
+<div class="row">
 <div class="col-xs-12 col-sm-4 col-md-3">
 <div id="TOC" class="tocify">
 </div>
@@ -300,7 +407,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -316,146 +423,38 @@ div.tocify {
   <a href="00-computer-setup.html">Computer Setup</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    W1
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Hello, World!
      
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="01-A-R-intro.html">Intro to R</a>
+      <a href="00-A-R-intro.html">Intro to R</a>
     </li>
     <li>
-      <a href="01-B-Rmarkdown-intro.html">R markdown</a>
+      <a href="00-B-Rmarkdown-intro.html">R markdown</a>
     </li>
     <li>
-      <a href="01-C-R-workshop.html">R workshop</a>
+      <a href="00-C-R-workshop.html">R workshop</a>
+    </li>
+    <li>
+      <a href="00-D-tidyr.html">ggplot2 and tidyr</a>
+    </li>
+    <li>
+      <a href="00-E-git-intro.html">Intro to git</a>
     </li>
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    W2
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Data exploration
      
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="02-A-tidyr.html">ggplot2 and tidyr</a>
-    </li>
-    <li>
-      <a href="02-B-git-intro.html">Intro to git</a>
-    </li>
-    <li>
-      <a href="02-C-student-projects.html">Project introductions</a>
-    </li>
-  </ul>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    W3
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="03-A-data-exploration.html">Data exploration</a>
-    </li>
-    <li>
-      <a href="03-B-linear-models.html">Linear models</a>
-    </li>
-    <li>
-      <a href="03-C-heterogeneity.html">Heterogeneity</a>
-    </li>
-  </ul>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    W4
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="04-A-mixed-models.html">Mixed effects models</a>
-    </li>
-    <li>
-      <a href="04-B-binary-data.html">Binary &amp; proportional data</a>
-    </li>
-    <li>
-      <a href="04-C-zero-data.html">Zero-inflated data</a>
-    </li>
-  </ul>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    W5
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="05-A-Bayesian-linear-models.html">Bayesian linear models</a>
-    </li>
-    <li>
-      <a href="05-B-Bayesian-priors.html">Bayesian inference with prior information</a>
-    </li>
-    <li>
-      <a href="05-C-Advanced-bayesian-example.html">Advanced Bayesian model example</a>
-    </li>
-  </ul>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    W6
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="06-A-unconstrained-ordination.html">Unconstrained ordination</a>
-    </li>
-    <li>
-      <a href="06-B-constrained-ordination.html">Constrained ordination</a>
-    </li>
-    <li>
-      <a href="06-C-matrix-comparison.html">Comparing multivariate data</a>
-    </li>
-  </ul>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    W8
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="08-A-mapping.html">Visualizing spatial data</a>
-    </li>
-    <li>
-      <a href="08-B-spatial-regression.html">Spatial regression</a>
-    </li>
-    <li>
-      <a href="08-C-spatial-ordination.html">Ordination approach to spatial analysis</a>
-    </li>
-  </ul>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    W9
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="09-A-time-series.html">Time series</a>
-    </li>
-    <li>
-      <a href="09-B-networks.html">Network analysis</a>
-    </li>
-    <li>
-      <a href="09-C-occupancy-models.html">Occupancy models</a>
+      <a href="01-A-data-exploration.html">Data exploration: Lab</a>
     </li>
   </ul>
 </li>
@@ -467,19 +466,23 @@ div.tocify {
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-<div class="fluid-row" id="header">
+<div id="header">
 
 
 
 <h1 class="title toc-ignore">Data exploration</h1>
-<h4 class="author"><em>Tad, Priscilla San Juan</em></h4>
+<h4 class="author">Roberts, Caleb</h4>
 
 </div>
 
 
 <p><strong>Assigned Reading:</strong></p>
 <blockquote>
-<p>Zuur, A. F., E. N. Ieno, and C. S. Elphick. 2010. A protocol for data exploration to avoid common statistical problems. <em>Methods in Ecology and Evolution</em> <strong>1</strong>: 3-14. <a href="https://dx.doi.org/10.1111/j.2041-210X.2009.00001.x">DOI: 10.1111/j.2041-210X.2009.00001.x</a></p>
+<p>Zuur, A. F., E. N. Ieno, and C. S. Elphick. 2010. A protocol for data
+exploration to avoid common statistical problems. <em>Methods in Ecology
+and Evolution</em> <strong>1</strong>: 3-14. <a
+href="https://dx.doi.org/10.1111/j.2041-210X.2009.00001.x">DOI:
+10.1111/j.2041-210X.2009.00001.x</a></p>
 </blockquote>
 <div id="key-points" class="section level3">
 <h3>Key Points</h3>
@@ -489,15 +492,18 @@ div.tocify {
 <li>Outliers Y &amp; X</li>
 </ol>
 <ul>
-<li>Outliers in response variable vs in covariates - to be dealt with differently</li>
-<li>Transformation less desirable for response variable than in covariates?</li>
+<li>Outliers in response variable vs in covariates - to be dealt with
+differently</li>
+<li>Transformation less desirable for response variable than in
+covariates?</li>
 </ul>
 <ol start="2" style="list-style-type: decimal">
 <li><p>Homogeneity Y</p></li>
-<li>Normality Y</li>
+<li><p>Normality Y</p></li>
 </ol>
 <ul>
-<li>Example of importance of biological intuition and graphical investigation
+<li>Example of importance of biological intuition and graphical
+investigation
 <ul>
 <li>Fig 5b - transformation to get normality not desirable</li>
 </ul></li>
@@ -507,7 +513,8 @@ div.tocify {
 </ol>
 <ul>
 <li>Zero-inflated GLM</li>
-<li>Double zeros, or joint absences - what do they mean? e.g., spatial clumping</li>
+<li>Double zeros, or joint absences - what do they mean? e.g., spatial
+clumping</li>
 <li>Multivariate analysis that ignores double zeros</li>
 </ul>
 <ol start="5" style="list-style-type: decimal">
@@ -534,7 +541,8 @@ div.tocify {
 </ol>
 <ul>
 <li>Mixed effects, etc. to deal with non-independence</li>
-<li>ACF or variograms for checking for temporal and spatial non-independence</li>
+<li>ACF or variograms for checking for temporal and spatial
+non-independence</li>
 </ul>
 <p>Not all steps always needed</p>
 </div>
@@ -544,7 +552,8 @@ div.tocify {
 <li>Biological intuition = key to make decisions about stats</li>
 <li>Hypothesis testing vs hypothesis generation
 <ul>
-<li>One solution - two data sets - one to create hypotheses and one to test them</li>
+<li>One solution - two data sets - one to create hypotheses and one to
+test them</li>
 <li>But only practical for large data sets</li>
 </ul></li>
 <li>Emphasis on graphical tools</li>
@@ -553,100 +562,81 @@ div.tocify {
 </div>
 <div id="analysis-example" class="section level3">
 <h3>Analysis Example</h3>
-<p>The code below relies on the <code>phyloseq</code> package from <a href="https://www.bioconductor.org/">Bioconductor</a>. See these <a href="https://joey711.github.io/phyloseq/install.html">instructions</a> for how to install it.</p>
+<p>The code below is built on data from Roberts et al. (2022) in
+<em>Ecological Solutions and Evidence</em>.</p>
 <div id="checking-for-outliers" class="section level4">
 <h4>Checking for outliers</h4>
-<p>Zurr et al. recommends plotting your data using boxplots and dotcharts to detect outliers. Before removing suspected outliers, make sure they are actually outliers!</p>
-<p>Since my data is multivariate, I used sequence count per sample for outlier detection in the following examples.</p>
+<p>Zuur et al. recommends plotting your data using boxplots and
+dotcharts to detect outliers. Violin plots are also great options.
+Before removing suspected outliers, make sure they are actually
+outliers!</p>
 <p><strong>Boxplot</strong></p>
-<div class="figure">
-<img src="images/03-A/boxplot.png" />
-
-</div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">boxplot</span>(<span class="kw">sample_sums</span>(merged_data),  <span class="dt">ylab =</span> <span class="st">&quot;Sequences per sample&quot;</span>)</code></pre></div>
-<p><strong>Cleveland dotchart</strong></p>
-<div class="figure">
-<img src="images/03-A/dotchart.png" />
-
-</div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dotchart</span>(<span class="kw">sample_sums</span>(merged_data), <span class="dt">xlab =</span> <span class="st">&quot;Sequences per sample&quot;</span>,
-         <span class="dt">ylab =</span> <span class="st">&quot;Samples&quot;</span>, <span class="dt">labels =</span> F)</code></pre></div>
-<p><strong>Plotly - great visualization tool</strong></p>
-<div class="figure">
-<img src="images/03-A/ggplot.png" />
-
-</div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">seq_num &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">ID=</span><span class="kw">sample_data</span>(merged_data)$ID, <span class="dt">Seq=</span><span class="kw">sample_sums</span>(merged_data))
-dot_gg &lt;-<span class="st"> </span><span class="kw">ggplot</span>(seq_num, <span class="kw">aes</span>(<span class="dt">x=</span>Seq,<span class="dt">y=</span>ID)) +<span class="st"> </span><span class="kw">geom_point</span>(<span class="dt">col=</span><span class="st">&quot;coral&quot;</span>) +<span class="st"> </span>
-<span class="st">  </span><span class="kw">theme</span>(<span class="dt">axis.text.y =</span> <span class="kw">element_blank</span>(), <span class="dt">axis.ticks.y =</span> <span class="kw">element_blank</span>())
-<span class="kw">ggplotly</span>(dot_gg)</code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> dat_grass,</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>       <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">y =</span> Rich_Grass)) <span class="sc">+</span> </span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Grassland Bird Richness&quot;</span>)</span></code></pre></div>
+<p><img src="images/03-A/unnamed-chunk-3-1.png" width="672" /></p>
+<p><strong>Violin plots</strong></p>
+<p>Violin plots show more data distribution details, but they can be
+messy. These are conditional (by year) and display the 10th, 50th (i.e.,
+median), and 90th quantiles as horizontal lines.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> dat_grass,</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>       <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">as.factor</span>(Year), <span class="at">y =</span> Rich_Grass, <span class="at">group =</span> Year)) <span class="sc">+</span> </span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="fu">geom_violin</span>(<span class="at">draw_quantiles =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.5</span>, <span class="fl">0.9</span>)) <span class="sc">+</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Grassland Bird Richness&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Year&quot;</span>)</span></code></pre></div>
+<p><img src="images/03-A/unnamed-chunk-4-1.png" width="672" /></p>
 <p><strong>Dotchart for multiple variables</strong></p>
-<p>Since most of the variables in my dataset are categorical, here I used raw data (sequence count) subsetted by bird species.</p>
-<div class="figure">
-<img src="images/03-A/dotchart_variable.png" />
-
-</div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Z &lt;-<span class="st"> </span>qpcR:::<span class="kw">cbind.na</span>(<span class="kw">sample_sums</span>(data.BTSA), <span class="kw">sample_sums</span>(data.CCRO), <span class="kw">sample_sums</span>(data.OBNT),
-           <span class="kw">sample_sums</span>(data.RCWA), <span class="kw">sample_sums</span>(data.SWTH), <span class="kw">sample_sums</span>(data.YWAR))
-<span class="kw">colnames</span>(Z) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;BTSA&quot;</span>, <span class="st">&quot;CCRO&quot;</span>, <span class="st">&quot;OBNT&quot;</span>, <span class="st">&quot;RCWA&quot;</span>, <span class="st">&quot;SWTH&quot;</span>, <span class="st">&quot;YWAR&quot;</span>)
-<span class="kw">dotplot</span>(<span class="kw">as.matrix</span>(Z), <span class="dt">groups =</span> <span class="ot">FALSE</span>,
-        <span class="dt">strip =</span> <span class="kw">strip.custom</span>(<span class="dt">bg =</span> <span class="st">&#39;white&#39;</span>,
-        <span class="dt">par.strip.text =</span> <span class="kw">list</span>(<span class="dt">cex =</span> <span class="fl">0.8</span>)),
-        <span class="dt">scales =</span> <span class="kw">list</span>(<span class="dt">x =</span> <span class="kw">list</span>(<span class="dt">relation =</span> <span class="st">&quot;free&quot;</span>),
-                      <span class="dt">y =</span> <span class="kw">list</span>(<span class="dt">relation =</span> <span class="st">&quot;free&quot;</span>),
-                      <span class="dt">draw =</span> <span class="ot">FALSE</span>),
-        <span class="dt">col =</span> <span class="dv">1</span>, <span class="dt">cex  =</span> <span class="fl">0.5</span>, <span class="dt">pch =</span> <span class="dv">16</span>,
-        <span class="dt">xlab =</span> <span class="st">&quot;Number of sequences per sample&quot;</span>,
-        <span class="dt">ylab =</span> <span class="st">&quot;Order of the data from text file&quot;</span>)</code></pre></div>
-<hr />
+<p>I personally don’t use these as much, but they can definitely be
+useful.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>dat_grass <span class="sc">%&gt;%</span> </span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">arrange</span>(Rich_Grass) <span class="sc">%&gt;%</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">rowID =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>    <span class="fu">facet_wrap</span>(<span class="sc">~</span> Year) <span class="sc">+</span> </span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> Rich_Grass, <span class="at">y =</span> rowID, <span class="at">group =</span> Year)) <span class="sc">+</span> </span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>    <span class="fu">xlab</span>(<span class="st">&quot;Grassland Bird Richness&quot;</span>)</span></code></pre></div>
+<p><img src="images/03-A/unnamed-chunk-5-1.png" width="672" /></p>
 </div>
 <div id="your-datas-distribution" class="section level4">
 <h4>Your data’s distribution</h4>
-<p>Some statistical tests assume normal distributions, making it important to check the shape of your data. Plot a histogram with all of your data and then groups of your data.</p>
-<blockquote>
-<p>“If you want to apply a statistical test to determine whether there is significant group separation in a discriminant analysis, however, normality of observations of a particular variable within each group is important”</p>
-</blockquote>
+<p>Some statistical tests assume normal distributions, making it
+important to check the shape of your data. Plot a histogram with all of
+your data and then groups of your data.</p>
 <p><strong>Histogram</strong></p>
-<div class="figure">
-<img src="images/03-A/histogram.png" />
-
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>    <span class="fu">geom_histogram</span>(<span class="at">data =</span> dat_grass,</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>                   <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> Rich_Grass),</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>                   <span class="at">binwidth =</span> <span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Frequency&quot;</span>) <span class="sc">+</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Grassland Bird Richness&quot;</span>)</span></code></pre></div>
+<p><img src="images/03-A/unnamed-chunk-6-1.png" width="672" /></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> dat_grass,</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>                   <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> Rich_Grass)) <span class="sc">+</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>    <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    <span class="fu">facet_grid</span>(<span class="at">rows =</span> <span class="fu">vars</span>(TSF))</span></code></pre></div>
+<p><img src="images/03-A/unnamed-chunk-6-2.png" width="672" /></p>
+<!-- *** -->
+<!-- ### Discussion Questions -->
+<!-- **Q1:** When should you let go of an outlier? -->
+<!-- **Q2:** How can you check for independence using multivariate data?  -->
+<!-- > "Hence, it is important to check whether there is dependence in the raw data before doing the analysis, and also the residuals afterwards. These checks can be made by plotting the response variable vs. time or spatial coordinates." -->
+<!-- **Q3:** _To transform or not to transform? That is the question._ -->
+<!-- > "There are three main reasons for a transformation: **to reduce the effect of outliers** (especially in covariates), **to stabilize the variance** and **to linearize relationships**. However, using more advanced techniques like GLS and GAMs, heterogenity and nonlinearity problems can be solved, making transformation less important." -->
+<!-- **Q4:** What are some data exploration techniques you have used? -->
+<!-- *** -->
+<!-- ### After-class follow-up -->
+<!-- + beeswarm functions recommended by Anna to look at data distribution: -->
+<!-- [ggbeeswarm](https://cran.r-project.org/web/packages/ggbeeswarm/index.html) -->
+<!-- [ggbeeswarm vignette](https://cran.r-project.org/web/packages/ggbeeswarm/vignettes/usageExamples.pdf) -->
+<!-- [beeswarm](http://www.cbs.dtu.dk/~eklund/beeswarm/) -->
+<!-- + O'Hara and Kotze 2010 Do not log-transform count data: -->
+<!-- [Publication](http://onlinelibrary.wiley.com/doi/10.1111/j.2041-210X.2010.00021.x/abstract) -->
+<!-- [Blog post](https://www.r-bloggers.com/do-not-log-transform-count-data-bitches/) -->
+<!-- + Paper Tad mentioned that uses "principal coordinate analysis of a truncated distance matrix" (PCNM) to incorporate spaptial trends in multivariate data: -->
+<!-- [Toju et al. 2017](http://web.stanford.edu/~fukamit/toju-et-al-2017-accepted.pdf) -->
+<!-- Also, from Sandra: the PCNM (truncated distance matrix) method is discussed starting on page 244 of this book: https://link.springer.com/content/pdf/10.1007%2F978-1-4419-7976-6.pdf -->
 </div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">hist</span>(<span class="kw">sample_sums</span>(merged_data), <span class="dt">breaks =</span> <span class="dv">100</span>,<span class="dt">col =</span> <span class="st">&quot;#a6bddb&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;Sequences per sample&quot;</span>, <span class="dt">main =</span> <span class="st">&#39; &#39;</span>)</code></pre></div>
-<hr />
-</div>
-</div>
-<div id="discussion-questions" class="section level3">
-<h3>Discussion Questions</h3>
-<p><strong>Q1:</strong> When should you let go of an outlier?</p>
-<p><strong>Q2:</strong> How can you check for independence using multivariate data?</p>
-<blockquote>
-<p>“Hence, it is important to check whether there is dependence in the raw data before doing the analysis, and also the residuals afterwards. These checks can be made by plotting the response variable vs. time or spatial coordinates.”</p>
-</blockquote>
-<p><strong>Q3:</strong> <em>To transform or not to transform? That is the question.</em></p>
-<blockquote>
-<p>“There are three main reasons for a transformation: <strong>to reduce the effect of outliers</strong> (especially in covariates), <strong>to stabilize the variance</strong> and <strong>to linearize relationships</strong>. However, using more advanced techniques like GLS and GAMs, heterogenity and nonlinearity problems can be solved, making transformation less important.”</p>
-</blockquote>
-<p><strong>Q4:</strong> What are some data exploration techniques you have used?</p>
-<hr />
-</div>
-<div id="after-class-follow-up" class="section level3">
-<h3>After-class follow-up</h3>
-<ul>
-<li>beeswarm functions recommended by Anna to look at data distribution:</li>
-</ul>
-<p><a href="https://cran.r-project.org/web/packages/ggbeeswarm/index.html">ggbeeswarm</a></p>
-<p><a href="https://cran.r-project.org/web/packages/ggbeeswarm/vignettes/usageExamples.pdf">ggbeeswarm vignette</a></p>
-<p><a href="http://www.cbs.dtu.dk/~eklund/beeswarm/">beeswarm</a></p>
-<ul>
-<li>O’Hara and Kotze 2010 Do not log-transform count data:</li>
-</ul>
-<p><a href="http://onlinelibrary.wiley.com/doi/10.1111/j.2041-210X.2010.00021.x/abstract">Publication</a></p>
-<p><a href="https://www.r-bloggers.com/do-not-log-transform-count-data-bitches/">Blog post</a></p>
-<ul>
-<li>Paper Tad mentioned that uses “principal coordinate analysis of a truncated distance matrix” (PCNM) to incorporate spaptial trends in multivariate data:</li>
-</ul>
-<p><a href="http://web.stanford.edu/~fukamit/toju-et-al-2017-accepted.pdf">Toju et al. 2017</a></p>
-<p>Also, from Sandra: the PCNM (truncated distance matrix) method is discussed starting on page 244 of this book: <a href="https://link.springer.com/content/pdf/10.1007%2F978-1-4419-7976-6.pdf">https://link.springer.com/content/pdf/10.1007%2F978-1-4419-7976-6.pdf</a></p>
 </div>
 
 
@@ -660,13 +650,59 @@ dot_gg &lt;-<span class="st"> </span><span class="kw">ggplot</span>(seq_num, <sp
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();
 });
 
 
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
 </script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
