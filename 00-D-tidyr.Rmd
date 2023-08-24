@@ -1,7 +1,6 @@
 ---
 layout: topic
 title: "Introduction to ggplot2 and dplyr"
-author: Jes
 output: html_document
 ---
 
@@ -34,12 +33,12 @@ knitr::opts_chunk$set(fig.path = "images/02-A/")
 
 # Set the web address where R will look for files from this repository
 # Do not change this address
-repo_url <- "https://raw.githubusercontent.com/fukamilab/BIO202/master/"
+repo_url <- "https://raw.githubusercontent.com/LivingLandscapes/Course_EcologicalModeling/master/"
 ```
 
 ### Before Class
 
-Download [this R script](https://github.com/FukamiLab/BIO202/blob/master/code/02-A-tidyr-exercise-code.R) and save it in your code folder in the research project you created on the first day of class. You will need to click the 'Raw' button and then download the text file that appears. Be sure to remove the .txt extension that may have been added when you saved the file to your computer so that the file ends in .R. You may want to run the first part of the script that downloads the data to be sure that there will be no issues with data access during class.
+Download [this R script](https://github.com/LivingLandscapes/Course_EcologicalModeling/blob/master/code/00-D-tidyr-exercise-code.R) and save it in your code folder in the research project you created on the first day of class. You will need to click the 'Raw' button and then download the text file that appears. Be sure to remove the .txt extension that may have been added when you saved the file to your computer so that the file ends in .R. You may want to run the first part of the script that downloads the data to be sure that there will be no issues with data access during class.
 
 ### Key Points
 

@@ -9,12 +9,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Jes Coyle" />
 
 
 <title>Introduction to git and GitHub</title>
 
-<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.23/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -30,7 +29,7 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
@@ -369,7 +368,6 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Introduction to git and GitHub</h1>
-<h4 class="author">Jes Coyle</h4>
 
 </div>
 
@@ -404,10 +402,11 @@ Each project is called a <em>repository</em> and is accessed at the web
 url: <a href="https://github.com/name-of-project-owner/project-name"
 class="uri">https://github.com/name-of-project-owner/project-name</a>.
 We will be using GitHub to manage changes to our course website which is
-owned by the FukamiLab organization and is stored in a project named
-BIO202. Thus, you can find all of the files that make our course website
-at <a href="https://github.com/FukamiLab/BIO202"
-class="uri">https://github.com/FukamiLab/BIO202</a>.</p>
+owned by the LivingLandscapes organization and is stored in a project
+named Course_EcologicalModeling. Thus, you can find all of the files
+that make our course website at <a
+href="https://github.com/LivingLandscapes/Course_EcologicalModeling"
+class="uri">https://github.com/LivingLandscapes/Course_EcologicalModeling</a>.</p>
 <p>Anyone on the internet can see and download files from a GitHub
 repository (unless you pay to make it private). Keep this in mind when
 choosing which data to upload. However, you can restrict who is allowed
@@ -434,25 +433,20 @@ copy of the website project on your own account. This is called
 existing repository”. Go to the class webpage GitHub project and click
 the “Fork” button in the upper right corner. You will want to fork the
 repository to your account. Notice that you are taken to the webpage
-<code>https://github.com/your-username/BIO202</code>.</p>
+<code>https://github.com/your-username/Course_EcologicalModeling</code>.</p>
 <p>Any changes you make to this fork will not show up on the class
 website because the website looks at the version of the files owned by
-FukamiLab. You will make changes to your fork and then propose these
-changes (as a <em>pull request</em>) to the FukamiLab fork. The
-instructors will then accept your changes to make them show up on the
-class website. We will get to this later in the lesson.</p>
+LivingLandscapes. You will make changes to your fork and then propose
+these changes (as a <em>pull request</em>) to the LivingLandscapes fork.
+The instructors will then accept your changes to make them show up on
+the class website. We will get to this later in the lesson.</p>
 </div>
 <div id="editing-files-online" class="section level4">
 <h4>Editing files online</h4>
 <p>You can make changes to files in a project directly from your web
 browser. Let’s add your name to the webpage for the lesson that you will
 be leading.</p>
-<p>Click on the Rmarkdown file (.Rmd) corresponding to the lesson that
-you will be leading. The first number gives the week and the letter
-refers to the class session (A-Mon, B-Wed, C-Fri). This will show you
-the partially rendered contents of the file. Because the text file is
-written in Rmarkdown, GitHub attempts to display the formatting that it
-understands. To see the underlying text you can click “Raw”.</p>
+<!-- Click on the Rmarkdown file (.Rmd) corresponding to the lesson that you will be leading. The first number gives the week and the letter refers to the class session (A-Mon, B-Wed, C-Fri). This will show you the partially rendered contents of the file. Because the text file is written in Rmarkdown, GitHub attempts to display the formatting that it understands. To see the underlying text you can click "Raw".  -->
 <p>To edit this file, click the pencil button in the upper right corner.
 You will be taken to an editor where you can then type your name
 alongside the instructor name at the top of the document. Save the
@@ -470,26 +464,27 @@ will be commited to the “master” branch.</p>
 <div id="merging-changes-with-a-pull-request" class="section level4">
 <h4>Merging changes with a pull request</h4>
 <p>You have added your name to the lesson Rmd file in your fork of the
-class website. Next we will transfer these changes to the FukamiLab
-version. We will do this using a “pull request” which is a fancy name
-for proposing changes. You will propose to change FukamiLab/BIO202 based
-on the changes you made in your-username/BIO202.</p>
+class website. Next we will transfer these changes to the
+LivingLandscapes version. We will do this using a “pull request” which
+is a fancy name for proposing changes. You will propose to change
+LivingLandscapes/Course_EcologicalModeling based on the changes you made
+in your-username/Course_EcologicalModeling.</p>
 <p>Return to the main page of your fork at
-<code>https://github.com/your-username/BIO202</code> and click the “New
-pull request” button. The <em>base</em> is what you are proposing to
-change and the <em>head</em> is where the changes are coming from. What
-should the base and head be if you want to propose the changes you just
-made?</p>
-<p>You may need to click “compare across forks” to make the FukamiLab
-master branch show up as an option. Once you have selected the base (to)
-and head (from) branches you can scroll down to see how the files
-differ. Click the green “Create pull request” button to propose these
-changes. You will then be prompted to create a description of your
-changes so that a reviewer (e.g. the instructor) knows what to look for
-before accepting the changes. Click the green button again to create the
-request.</p>
+<code>https://github.com/your-username/Course_EcologicalModeling</code>
+and click the “New pull request” button. The <em>base</em> is what you
+are proposing to change and the <em>head</em> is where the changes are
+coming from. What should the base and head be if you want to propose the
+changes you just made?</p>
+<p>You may need to click “compare across forks” to make the
+LivingLandscapes master branch show up as an option. Once you have
+selected the base (to) and head (from) branches you can scroll down to
+see how the files differ. Click the green “Create pull request” button
+to propose these changes. You will then be prompted to create a
+description of your changes so that a reviewer (e.g. the instructor)
+knows what to look for before accepting the changes. Click the green
+button again to create the request.</p>
 <p>That’s it. Now someone will need to review your changes and accept
-them in order for the FukamiLab project to change.</p>
+them in order for the LivingLandscapes project to change.</p>
 <p>While it is useful to be able to edit files online, usually you will
 want to make changes to files on your computer and then propose changes
 from these files to a project repository on GitHub. The best way to do
@@ -513,7 +508,8 @@ tutorial</a> from GitHub. We will use git to track the changes to a
 version of the course website files that will be stored on your
 computer. Git will also allow us to merge any changes you make on your
 computer to your fork on your GitHub account, which you can then merge
-with the official FukamiLab course repository using a pull request.</p>
+with the official LivingLandscapes course repository using a pull
+request.</p>
 <p>If you have never set up git on your computer, the first step is to
 tell git who you are. Open a shell program like GitBash (Windows) or
 Terminal (Mac). Type:
@@ -564,10 +560,10 @@ PATH”.</li>
 </ul></li>
 <li>Copy the url of your fork of the class website repository into the
 line marked “Repository URL”. This should look like: <a
-href="https://github.com/your-username/BIO202"
-class="uri">https://github.com/your-username/BIO202</a>.</li>
+href="https://github.com/your-username/Course_EcologicalModeling"
+class="uri">https://github.com/your-username/Course_EcologicalModeling</a>.</li>
 <li>Name the project directory whatever you like (no spaces!).
-BIO202_website would be a good name.</li>
+Course_EcologicalModeling_website would be a good name.</li>
 <li>Choose the folder where you want to save the project folder by
 clicking Browse. Finish by clicking “Create Project”.</li>
 </ol>
@@ -577,7 +573,8 @@ clicking Browse. Finish by clicking “Create Project”.</li>
 <ol style="list-style-type: decimal">
 <li>Navigate to the location on your computer where you want to save the
 website files and create a new folder to hold them (no spaces in the
-name!). A good project folder name would be BIO202_website.</li>
+name!). A good project folder name would be
+Course_EcologicalModeling_website.</li>
 <li>Open a shell program lile GitBash (Windows) or Terminal (Mac). This
 will open an empty window with a blinking cursor.</li>
 <li>Navigate to the project folder that you just created using the
@@ -606,15 +603,15 @@ Pathname”.</li>
 </ul></li>
 <li>Use your web browser to go to your fork of the class website
 repository. It should be at <a
-href="https://github.com/your-username/BIO202"
-class="uri">https://github.com/your-username/BIO202</a>.</li>
+href="https://github.com/your-username/Course_EcologicalModeling"
+class="uri">https://github.com/your-username/Course_EcologicalModeling</a>.</li>
 <li>Click the green “Clone or download” button in the upper right. This
 will display a url. Copy this url.</li>
 <li>At the command line (in the shell program) type
 <code>git clone</code>, then paste the url you copied from GitHub, then
 type the name of your project folder. If you named the folder
-“BIO202_website”, it should look like:
-<code>git clone https://github.com/your-username/BIO202 BIO202_website</code>.</li>
+“Course_EcologicalModeling_website”, it should look like:
+<code>git clone https://github.com/your-username/Course_EcologicalModeling Course_EcologicalModeling_website</code>.</li>
 <li>Press ENTER. Lots of stuff should happen. When you navigate to the
 project folder you should now see lots of files.</li>
 <li>Open RStudio and create a new Project from an Existing
@@ -669,21 +666,12 @@ tutorial</a>.</p>
 <p>To send the committed changes you have made to the files on your
 computer to your GitHub repository, select “Push branch” from the git
 menu in RStudio. Then go online to <a
-href="http://github.com/your-username/BIO202"
-class="uri">http://github.com/your-username/BIO202</a> to see that the
-files have been updated.</p>
+href="http://github.com/your-username/Course_EcologicalModeling"
+class="uri">http://github.com/your-username/Course_EcologicalModeling</a>
+to see that the files have been updated.</p>
 <p>Finally, submit a pull request on GitHub to send these changes to the
-FukamiLab repository. We will see what happens when multiple people try
-to merge changes to the same file.</p>
-</div>
-</div>
-<div id="workflow-summary" class="section level3">
-<h3>Workflow Summary</h3>
-<div class="float">
-<img src="images/github_workflow_with_rstudio.png"
-alt="Workflow for editing the course website with git in RStudio" />
-<div class="figcaption">Workflow for editing the course website with git
-in RStudio</div>
+LivingLandscapes repository. We will see what happens when multiple
+people try to merge changes to the same file.</p>
 </div>
 </div>
 
