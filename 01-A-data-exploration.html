@@ -9,12 +9,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Roberts, Caleb" />
 
 
 <title>Data exploration</title>
 
-<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.23/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -30,7 +29,7 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
@@ -471,7 +470,6 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Data exploration</h1>
-<h4 class="author">Roberts, Caleb</h4>
 
 </div>
 
@@ -505,17 +503,19 @@ covariates?</li>
 <li>Example of importance of biological intuition and graphical
 investigation
 <ul>
-<li>Fig 5b - transformation to get normality not desirable</li>
+<li>Transformation to get normality may not be desirable–will learn more
+when we discuss generalized linear models.</li>
 </ul></li>
 </ul>
 <ol start="4" style="list-style-type: decimal">
-<li>Zero troble Y</li>
+<li>Zero trouble Y</li>
 </ol>
 <ul>
 <li>Zero-inflated GLM</li>
 <li>Double zeros, or joint absences - what do they mean? e.g., spatial
 clumping</li>
-<li>Multivariate analysis that ignores double zeros</li>
+<li>We will not be covering multivariate analyses in this course! (but
+they’re super cool, so go check them out)</li>
 </ul>
 <ol start="5" style="list-style-type: decimal">
 <li>Collinearity X</li>
@@ -523,6 +523,7 @@ clumping</li>
 <ul>
 <li>VIF of 10, 3, or 2 - reason for these values?</li>
 <li>VIFs, or common sense or biological knowledge</li>
+<li>Also… are pairwise comparisons worthwhile?</li>
 </ul>
 <ol start="6" style="list-style-type: decimal">
 <li>Relationships Y &amp; X</li>
@@ -534,15 +535,16 @@ clumping</li>
 <li>Interactions</li>
 </ol>
 <ul>
-<li>Are data balanced? Use coplot (Fig 11).</li>
+<li>Are data balanced?</li>
+<li>coplots (i.e., ggplot2::facet_wrap)</li>
 </ul>
 <ol start="8" style="list-style-type: decimal">
 <li>Independence Y</li>
 </ol>
 <ul>
-<li>Mixed effects, etc. to deal with non-independence</li>
-<li>ACF or variograms for checking for temporal and spatial
+<li>ACF, variograms, Moran’s I for checking for temporal and spatial
 non-independence</li>
+<li>We will focus on this in our Autocorrelation Topic.</li>
 </ul>
 <p>Not all steps always needed</p>
 </div>
@@ -587,8 +589,7 @@ median), and 90th quantiles as horizontal lines.</p>
 <span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Year&quot;</span>)</span></code></pre></div>
 <p><img src="images/03-A/unnamed-chunk-4-1.png" width="672" /></p>
 <p><strong>Dotchart for multiple variables</strong></p>
-<p>I personally don’t use these as much, but they can definitely be
-useful.</p>
+<p>I personally don’t use these as much, but they can be useful.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>dat_grass <span class="sc">%&gt;%</span> </span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">arrange</span>(Rich_Grass) <span class="sc">%&gt;%</span></span>
 <span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">rowID =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
@@ -598,13 +599,14 @@ useful.</p>
 <span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>    <span class="fu">xlab</span>(<span class="st">&quot;Grassland Bird Richness&quot;</span>)</span></code></pre></div>
 <p><img src="images/03-A/unnamed-chunk-5-1.png" width="672" /></p>
 </div>
-<div id="your-datas-distribution" class="section level4">
-<h4>Your data’s distribution</h4>
+<div id="whats-your-datas-distribution" class="section level4">
+<h4>What’s your data’s distribution?</h4>
 <p>Some statistical tests assume normal distributions, making it
 important to check the shape of your data. Does this histogram of
 grassland bird richness appear to have a “normal” distribution (i.e.,
 Gaussian distribution)? Why or why not?</p>
-<p><strong>Histogram</strong></p>
+<p>We will learn about probability distributions in our Probability
+Distributions Topic.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>    <span class="fu">geom_histogram</span>(<span class="at">data =</span> dat_grass,</span>
 <span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>                   <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> Rich_Grass),</span>
@@ -616,13 +618,17 @@ Gaussian distribution)? Why or why not?</p>
 <div id="collinearity" class="section level4">
 <h4>Collinearity?</h4>
 <p>It’s absolutely important to check for pairwise correlations, which
-we can do with the “pairs()” function as below. However, this should be
-taken with a grain of salt too. See this quote from the R Documentation
+we can do with the “cor()” function as below. I typically use the
+default “Pearson” method, but you should read the R Documentation for
+other options (kendall, spearman). However, pairwise correlations should
+be taken with a grain of salt. See this quote from the R Documentation
 for the “performance::check_collinearity()” function:</p>
 <p>“<em>Multicollinearity should not be confused with a raw strong
 correlation between predictors… Remember: ”Pairwise correlations are not
 the problem. It is the conditional associations - not correlations -
 that matter.” (McElreath 2020, p. 169)</em>”</p>
+<p>We will talk about Zuur’s preference of “variance inflation factors”
+to check for collinearity in the linear models review Topic.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">cor</span>(dat_grass[ , <span class="fu">c</span>(<span class="st">&quot;Year&quot;</span>, <span class="st">&quot;Burned&quot;</span>, <span class="st">&quot;mean&quot;</span>, <span class="st">&quot;stdDev&quot;</span>, <span class="st">&quot;TSF&quot;</span>)])</span></code></pre></div>
 <pre><code>##              Year      Burned        mean      stdDev          TSF
 ## Year   1.00000000  0.08962018  0.07545786 0.142219843  0.091743735
@@ -634,6 +640,11 @@ that matter.” (McElreath 2020, p. 169)</em>”</p>
 <div id="is-there-actually-a-relationship-between-x-and-y"
 class="section level4">
 <h4>Is there actually a relationship between X and Y?!</h4>
+<p>For this, we want to plot the response/dependent variable (grassland
+bird richness) against potential predictor/independent variables. Here,
+I use quick-and-dirty generalized additive models per
+ggplot2::geom_smooth and then combine the plots with
+cowplot::plot_grid</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Making individual plots</span></span>
 <span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>rich_treeMean <span class="ot">&lt;-</span> </span>
 <span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  dat_grass <span class="sc">%&gt;%</span></span>
@@ -655,13 +666,26 @@ class="section level4">
 <span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a><span class="co"># Combine plots</span></span>
 <span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>cowplot<span class="sc">::</span><span class="fu">plot_grid</span>(rich_treeMean, rich_TSF, <span class="at">ncol =</span> <span class="dv">2</span>)</span></code></pre></div>
 <p><img src="images/03-A/unnamed-chunk-8-1.png" width="672" /></p>
+<p>Also, we can use the “pairs()” function to create a bunch of
+scatterplots:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">pairs</span>(dat_grass[ , <span class="fu">c</span>(<span class="st">&quot;Year&quot;</span>, <span class="st">&quot;Burned&quot;</span>, <span class="st">&quot;mean&quot;</span>, <span class="st">&quot;stdDev&quot;</span>, <span class="st">&quot;TSF&quot;</span>)],</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>      <span class="at">lower.panel =</span> <span class="cn">NULL</span>)</span></code></pre></div>
+<p><img src="images/03-A/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
 <div id="should-we-consider-interactions-between-predictor-variables"
 class="section level4">
 <h4>Should we consider interactions between predictor variables?</h4>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">pairs</span>(dat_grass[ , <span class="fu">c</span>(<span class="st">&quot;Year&quot;</span>, <span class="st">&quot;Burned&quot;</span>, <span class="st">&quot;mean&quot;</span>, <span class="st">&quot;stdDev&quot;</span>, <span class="st">&quot;TSF&quot;</span>)],</span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>      <span class="at">lower.panel =</span> <span class="cn">NULL</span>)</span></code></pre></div>
-<p><img src="images/03-A/unnamed-chunk-9-1.png" width="672" /></p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Making individual plots</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>dat_grass <span class="sc">%&gt;%</span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> mean, <span class="at">y =</span> Rich_Grass)) <span class="sc">+</span> </span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> TSF) <span class="sc">+</span> <span class="co"># Make facet plots by Years-since-fire</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>  <span class="fu">stat_smooth</span>(<span class="at">method =</span> <span class="st">&quot;lm&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Grassland Bird Richness&quot;</span>) <span class="sc">+</span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Mean % Tree Cover&quot;</span>) <span class="sc">+</span></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
+<p><img src="images/03-A/unnamed-chunk-10-1.png" width="672" /></p>
 <!-- *** -->
 <!-- ### Discussion Questions -->
 <!-- **Q1:** When should you let go of an outlier? -->

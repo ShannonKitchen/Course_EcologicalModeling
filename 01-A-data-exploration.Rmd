@@ -33,35 +33,35 @@ repo_url <- "https://raw.githubusercontent.com/LivingLandscapes/Course_Ecologica
 #### Data exploration
 
 1. Outliers Y & X
-+ Outliers in response variable vs in covariates - to be dealt with differently
-+ Transformation less desirable for response variable than in covariates?
+  + Outliers in response variable vs in covariates - to be dealt with differently
+  + Transformation less desirable for response variable than in covariates?
 
 2. Homogeneity Y
 
 3. Normality Y
-+ Example of importance of biological intuition and graphical investigation
-    + Fig 5b - transformation to get normality not desirable
+  + Example of importance of biological intuition and graphical investigation
+    + Transformation to get normality may not be desirable--will learn more when we discuss generalized linear models.
 
-4. Zero troble Y
-+ Zero-inflated GLM
-+ Double zeros, or joint absences - what do they mean? e.g., spatial clumping
-+ Multivariate analysis that ignores double zeros
+4. Zero trouble Y
+  + Zero-inflated GLM
+  + Double zeros, or joint absences - what do they mean? e.g., spatial clumping
+  + We will not be covering multivariate analyses in this course! (but they're super cool, so go check them out)
 
 5. Collinearity X
-+ VIF of 10, 3, or 2 - reason for these values?
-+ VIFs, or common sense or biological knowledge
-+ Also... pairwise comparisons?
+  + VIF of 10, 3, or 2 - reason for these values?
+  + VIFs, or common sense or biological knowledge
+  + Also... are pairwise comparisons worthwhile?
 
 6. Relationships Y & X
-+ Multi-panel scatter plots for checking for outliers
+  + Multi-panel scatter plots for checking for outliers
 
 7. Interactions
-+ Are data balanced? Use coplot (Fig 11).
+  + Are data balanced?
+  + coplots (i.e., ggplot2::facet_wrap)
 
 8. Independence Y
-+ Mixed effects, etc. to deal with non-independence
-+ ACF or variograms for checking for temporal and spatial non-independence
-+ We will cover this more in our Autocorrelation Topic.
+  - ACF, variograms, Moran's I for checking for temporal and spatial non-independence
+  - We will focus on this in our Autocorrelation Topic.
 
 Not all steps always needed
 
@@ -82,8 +82,7 @@ The code below is built on data from Roberts et al. (2022) in *Ecological Soluti
 
 # List of packages necessary to run this script:
 require(librarian)
-shelf(tidyverse, data.table, cowplot, gridExtra, grid, here, sp, rgdal,
-      raster, rgeos, mapproj, maptools, vroom, vegan, mgcv, MuMIn, gratia)
+shelf(tidyverse, cowplot)
 
 # Path to Caleb's data
 dat_grass <- 
@@ -157,11 +156,11 @@ ggplot() +
 
 #### Collinearity? 
 
-It's absolutely important to check for pairwise correlations, which we can do with the "pairs()" function as below. However, this should be taken with a grain of salt too. See this quote from the R Documentation for the "performance::check_collinearity()" function:
+It's absolutely important to check for pairwise correlations, which we can do with the "cor()" function as below. I typically use the default "Pearson" method, but you should read the R Documentation for other options (kendall, spearman). However, pairwise correlations should be taken with a grain of salt. See this quote from the R Documentation for the "performance::check_collinearity()" function:
 
 "*Multicollinearity should not be confused with a raw strong correlation between predictors... Remember: "Pairwise correlations are not the problem. It is the conditional associations - not correlations - that matter." (McElreath 2020, p. 169)*"
 
-We will talk about Zuur's preference of "variance inflation factors" to check for collinearity in the Linear models review Topic.
+We will talk about Zuur's preference of "variance inflation factors" to check for collinearity in the linear models review Topic.
 
 ```{r, eval = TRUE, include = TRUE}
 
@@ -199,12 +198,28 @@ cowplot::plot_grid(rich_treeMean, rich_TSF, ncol = 2)
 
 ```
 
-#### Should we consider interactions between predictor variables?
+Also, we can use the "pairs()" function to create a bunch of scatterplots:
 
 ```{r, eval = TRUE, include = TRUE}
 
 pairs(dat_grass[ , c("Year", "Burned", "mean", "stdDev", "TSF")],
       lower.panel = NULL)
+
+```
+
+#### Should we consider interactions between predictor variables?
+
+```{r, eval = TRUE, include = TRUE}
+
+# Making individual plots
+dat_grass %>%
+  ggplot(aes(x = mean, y = Rich_Grass)) + 
+  facet_wrap(~ TSF) + # Make facet plots by Years-since-fire
+  geom_point() + 
+  stat_smooth(method = "lm") + 
+  ylab("Grassland Bird Richness") +
+  xlab("Mean % Tree Cover") +
+  theme_minimal()
 
 ```
 
