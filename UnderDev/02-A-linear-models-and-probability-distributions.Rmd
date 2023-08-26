@@ -34,33 +34,15 @@ repo_url <- "https://raw.githubusercontent.com/LivingLandscapes/Course_Ecologica
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 ```
 
-# Key Points
+# Overview
 
-## Data exploration: outliers and collinearity
-    + Normality not needed for explanatory variables
-    + Correlation - "value of 0.6 (and -0.6) is not large enough to worry us"?
-    + Use variance inflation factors (VIFs) to assess collinearity and iteratively remove it.
+We will be reviewing linear models (linear regression) using the [Palmer Penguins](https://allisonhorst.github.io/palmerpenguins/) dataset and R Package. 
 
-<!-- #### Linear regression: model selection -->
-<!-- + Which interactions to include - opinions vary (p. 537) -->
-<!-- + `summary(M1)`, `drop1(M1, test="F")`, `anova(M1)` - Is `drop1()` the best method? -->
-<!-- + Which explanatory variables to drop - opinions vary (p. 541) -->
-<!-- + `step(M1)` - easy one-line command; AIC-based backwards selection -->
+![Art by @allison_horst](paste0(repo_url, "images/penguins.png"))
 
-<!-- #### Linear regression: model validation -->
-<!-- + Mostly done graphically -->
-<!-- + But not very powerful when n is small (as common in ecological data?) -->
-<!-- + Model selection, then model validation - Is this always ok? -->
 
-<!-- #### Linear regression: model interpretation -->
-<!-- + Graphical presentation - Data should be plotted. -->
+We will start with data exploration, fit our first model, check that our model fits linear regression assumptions, and 
 
-<!-- #### Additive modeling -->
-<!-- + Zuur et al.'s favorite tool? (more in Ch 3) -->
-<!-- + Try model with all explanatory variables, to look at potential non-linear effect -->
-<!-- + Difficulties: overfitting and need for large data? -->
-
-***
 
 # Linear modeling example
 
@@ -72,7 +54,10 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 require(librarian, quietly = TRUE)
 shelf(tidyverse, cowplot, palmerpenguins, performance, quiet = TRUE)
 
-# Read in a data file from the data folder on the BIO 202 GitHub repository
+# # Here is the link to the R Package with the penguins data:
+# https://allisonhorst.github.io/palmerpenguins/
+
+# Read in a data file
 data(package = 'palmerpenguins')
 
 ```
@@ -102,7 +87,7 @@ ggplot(penguins,
 
 ## Let's try a model!
 
-A pretty reasonable hypothesis to test is "In penguins, males will have greater body mass than females, and body mass is also allometrically related to bill length and depth." We could also add that "body mass will vary across species."
+A pretty reasonable hypothesis to test is *"In penguins, males will have greater body mass than females, and body mass is also allometrically related to bill length and depth."* We could also add that *"body mass will vary across species."*
 
 To test this hypothesis, let's create a 'global' model containing all the variables that our hypotheses predict will influence body mass:
 
