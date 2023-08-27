@@ -32,17 +32,20 @@ repo_url <- "https://raw.githubusercontent.com/LivingLandscapes/Course_Ecologica
 
 # Suppress warnings and messages
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+
 ```
 
 # Overview
 
-We will be reviewing linear models (linear regression) using the [Palmer Penguins](https://allisonhorst.github.io/palmerpenguins/) dataset and R Package. 
+We will be reviewing linear models (linear regression) using the [Palmer Penguins](https://allisonhorst.github.io/palmerpenguins/) dataset and R Package. We will start with generating hypotheses, then move on to data exploration, fitting our first model, checking that our model fits linear regression assumptions, and finally interpretting our model. Meet the penguin species that we'll be working with:
 
-![Art by @allison_horst](paste0(repo_url, "images/penguins.png"))
+<p>
+![Artwork by @allison_horst](https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/penguins.png){width=300px}
+<p>
 
+Let's get started!
 
-We will start with data exploration, fit our first model, check that our model fits linear regression assumptions, and 
-
+---
 
 # Linear modeling example
 
@@ -72,7 +75,7 @@ head(penguins)
 
 Try out some data exploration techniques that we've learned. Here, I've plotted histograms of body mass by species by island. On your own, create pairwise scatterplots, look for outliers, and whatever else you want to try.
 
-```{r include = TRUE, eval = TRUE}
+```{r include = TRUE, eval = TRUE, fig.width = 8, fig.height = 3}
 
 ggplot(penguins, 
        aes(x = body_mass_g, fill = species)) +
@@ -80,6 +83,7 @@ ggplot(penguins,
   scale_fill_viridis_d() + # there are great pre-made color palettes in ggplot2. The viridis palette is color blind-friendly. 
   facet_wrap(~ island) +
   theme_bw() +
+  theme(axis.text.x = element_text(size = 7, angle = 320)) + 
   xlab("Body Mass (g)") +
   ylab("Frequency")
 
@@ -211,14 +215,10 @@ So our final model contains sex and an interaction of bill length and depth to e
 
 ## Discussion Questions
 
-1. Using words only, interpret our final model. In particular, how can we interpret (a) the interaction terms and (b) the fact that we dropped the 'species' predictor variable?
+1. If we were writing a manuscript based on our final model (and assuming we designed the study with the hypotheses we generated), how would we interpret the fact that we dropped the 'species' predictor variable from the final model?
 
-HINT: Interpreting interaction terms is tricky from the coefficients. How could we create a plot to help us?
+2. Interpreting interaction terms simply is tricky from the coefficients. How could we create a plot to help us? HINT: 1) Use expand.grid() to create a new data.frame based on the range of values of each predictor variable, 2) then use  predict(), 3) then plot the predicted relationships.
 
-<!-- 4. Page 539: Review: What is RSS (residual sum of squares) and what does it tell us? -->
-<!-- 5. Page 540: What are "nested models" in this context? -->
-<!-- 6. Page 541: Of the 3 possible ways to treat non-significant explanatory variables, which do you prefer and why? -->
-<!-- 7. Page 542: How does AIC "judge" model fit? -->
-<!-- 8. Page 546: What is it about the fit of the lines in figure A.3 (pg. 544) that suggests that a linear model may not be the best fit? -->
-<!-- 9. Page 546: What is a Generalized Additive Model and how does it work? -->
-<!-- 10. Page 546: What is a thin plate spline and how is it relevant here? -->
+3. Graphically, how can we characterize uncertainty in our model? HINT: look at the predict() "se.fit" argument.
+
+4. Using words only, interpret our final model. 
