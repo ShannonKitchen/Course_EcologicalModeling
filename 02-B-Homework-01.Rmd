@@ -1,5 +1,5 @@
 ---
-title: "01-B-Homework-01"
+title: "Homework 1"
 output: html_document
 ---
 
@@ -20,58 +20,59 @@ knitr::opts_chunk$set(eval = TRUE)
 # Do not change this address
 # repo_url <- "https://raw.githubusercontent.com/fukamilab/BIO202/master/"
 repo_url <- "https://raw.githubusercontent.com/LivingLandscapes/Course_EcologicalModeling/master/"
+
+# Suppress warnings and messages
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+
 ```
 
-Download the data file bleaching.csv into a fresh directory. This data file is derived from a paper on the regional severity of coral bleaching events triggered by high ocean temperatures (McWilliams et al, 2005). 
+## Overview
+
+For our first homework assignment, *we will be modeling the relationship between sea surface temperature anomalies and coral bleaching events*. This data is derived from a paper on the regional severity of coral bleaching events triggered by high ocean temperatures:
+
+*McWilliams, J et al (2005) Accelerating impacts of temperature-induced coral bleaching in the Caribbean. Ecology 86(5):2055-2060.*
+
+Do not use the analysis presented in the paper, although you can refer to the paper for the ecological background. Please provide a reproducible .Rmd script that answers all questions below and produces all of your analysis and plots. Some reminders:
+
+- **Reproducible:** This means when I run your .Rmd file, it will run all analyses and create all plots without errors, without me having to reset my working directory, and without forcing me to install anything on my machine (i.e., use the require(librarian); shelf(your packages, lib = tempdir()) approach as in the code block below).
+- **Format:** Please write/format your .Rmd file similar to a scientific report or manuscript. For this assignment, we will just need a 'Results' and 'Discussion' section.
 
 ```{r include = TRUE, eval = FALSE}
 
-```{r, include = TRUE, eval = TRUE}
-
 # List of packages necessary to run this script:
 require(librarian, quietly = TRUE)
-shelf(tidyverse, cowplot, quiet = TRUE)
+shelf(tidyverse, # for tidying data
+      mgcv, # for qq.gam
+      quiet = TRUE,
+      lib = tempdir())
 
-# Load Roberts et al. (2022) data:
+# Load data:
 bleach <- 
   read.csv("https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/data/bleach.csv")
 
-head(bleach)
-
-##### Data column descriptions: 
-# - Route: name of breeding bird survey route. 
-# - Stop: ID for each stop along survey route+
-# - Year: year of survey
-# - Rich_Grass: grassland bird species richness 
-# - Route_factor: name of breeding bird survey route. 
-# - Year_Num: survey years re-numbered from 1 (2010) to 7 (2016)
-# - Burned: if this stop was burned on or after the given year, 1, else 0
-# - Year_Burned: the year that a given stop was burned
-# - easting/northing: easting/northing coordinates in UTM 
-# - count: number of 30x30m pixels within 400m of each stop. Number of pixels
-#          vary because some are masked because they were not 'rangeland' 
-#          pixels. See Methods/Data Collection/Tree Cover for details.
-# - mean: mean percent tree cover across all 30x30m pixels within 400m of
-#         each stop
-# - stdDev: standard deviation of percent tree cover across all 30x30m pixels 
-#           within 400m of each stop
-# - TSF: years-since-fire
-
-
 ```
 
+### Data column descriptions: 
 
-The first column (SST) is Sea Surface Temperature “anomalies” – that is, the difference between the average sea surface temperature for the Caribbean between Aug and October, and the long run average from 1961 to 1990. Positive values represent years in which the water was warmer than average; negative values represent cool years. The second column in the dataset (BLEACH is the log10 transformed percentage of 1 latitude/longitude cells reporting at least one coral bleaching event in a given year. The final column (MASS) is an indicator marking those years which were considered “Mass Bleaching Events”. 
++ SST: sea surface temperature "anomalies." That is, the difference between the average sea surface temperature for the Caribbean between Aug and October, and the long run average from 1961 to 1990. Positive values represent years in which the water was warmer than average; negative values represent cool years.
++ LOGBLEACH: the log10 transformed percentage of 1 degree latitude/longitude cells reporting at least one coral bleaching event in a given year.
++ MASS: an indicator marking those years which were considered “Mass Bleaching Events”. 1 = mass bleaching event; 0 = not a mass bleaching event.
 
-1)	Load the data in R, and calculate a linear regression model relating LOGBLEACH to SST using any appropriate function. Provide a written interpretation of the results, including an assessment of the assumptions. 
 
-2)	The authors log transformed the bleaching variable “… to generate linear relationships with temperature.” In R, back transform LOGBLEACH to the original percentage scale, and plot against SST. Does a log-transformation make ecological sense, given the type of process and the data? 
+## Homework questions
 
-3)	At what range of values does the fitted model predict 100% bleaching will occur? (hint: in R you can use the predict function with options newdata and interval=”prediction”. See help(predict.lm) ).
-
-Please do the analyses yourself. Do not use the analysis presented in the paper, although you can refer to the paper for the ecological background. Please provide a script that produces all of your analysis and plots when “sourced” in addition to one file with all answers, in pdf or Microsoft word format. 
-
-McWilliams, J et al (2005) Accelerating impacts of temperature-induced coral bleaching in the Caribbean. Ecology 86(5):2055-2060.
+1. Create two models:
+    a. a linear regression model ( function = lm() ) relating LOGBLEACH to SST, with LOGBLEACH being the response variable. 
+    b. a generalized linear model ( function = glm() ) relating MASS to SST, with MASS being the response variable.
+        + NOTE: for this model, you will need to decide on the family and link function.
+2. Assess model assumptions (i.e., check model diagnostics) for both models.
+    a. Linear regression: revisit the Linear models and probability distributions lab for information on how to do this.
+    b. Generalized linear model: depending on your family/link choices, model diagnostics that assume normality may be useless. Instead, check out the mgcv::qq.gam function documentation and examples. Also, check out [Ben Bolker's logistic regression walkthrough](https://bbolker.github.io/stat4c03/notes/logistic.pdf), especially page 5.
+3. Summarize results from both models, as well as your model diagnostics. Be careful to differentiate the linear regression results from the generalized linear model results.
+4. The authors log transformed the bleaching variable “… to generate linear relationships with temperature.” In R, back transform LOGBLEACH to the original percentage scale, and plot against SST. Does a log-transformation make ecological sense, given the type of process and the data?
+5. At what range of values does the linear regression model predict % bleaching will occur? Provide an estimate of uncertainty for this prediction (Hint: use the predict.lm() function with options newdata and interval=”prediction”. See help(predict.lm) ). 
+6. Given the generalized linear model results, at what value of SST is there a >50% chance of a mass bleaching event occurring? Provide an estimate of uncertainty for this prediction. (Hint: check out the differences between ?predict.lm() and ?predict.glm(). I suggest setting 'type = link', 'se.fit = TRUE', and transforming the resultant predictions into probabilities using the plogis() function).
+7. Choose your favorite model and create a figure showing the relationship between the response and predictor. Include confidence intervals.
 
 
 
