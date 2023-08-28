@@ -459,13 +459,13 @@ div.tocify {
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    W2
+    Linear Models &amp; Prob Distributions
      
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="02-A-linear-models-and-probability-distributions.html">Linear models and probability distributions</a>
+      <a href="02-A-linear-models-and-probability-distributions.html">Lab</a>
     </li>
     <li>
       <a href="02-B-Homework-01.html">Homework 1</a>
@@ -494,25 +494,14 @@ data file is derived from a paper on the regional severity of coral
 bleaching events triggered by high ocean temperatures (McWilliams et al,
 2005).</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># List of packages necessary to run this script:</span></span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">require</span>(librarian, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<pre><code>## Warning: package &#39;librarian&#39; was built under R version 4.2.3</code></pre>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">shelf</span>(tidyverse, cowplot, <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<pre><code>## Warning: package &#39;tidyverse&#39; was built under R version 4.2.3</code></pre>
-<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 4.2.3</code></pre>
-<pre><code>## Warning: package &#39;tibble&#39; was built under R version 4.2.3</code></pre>
-<pre><code>## Warning: package &#39;tidyr&#39; was built under R version 4.2.3</code></pre>
-<pre><code>## Warning: package &#39;readr&#39; was built under R version 4.2.3</code></pre>
-<pre><code>## Warning: package &#39;purrr&#39; was built under R version 4.2.3</code></pre>
-<pre><code>## Warning: package &#39;dplyr&#39; was built under R version 4.2.3</code></pre>
-<pre><code>## Warning: package &#39;stringr&#39; was built under R version 4.2.3</code></pre>
-<pre><code>## Warning: package &#39;forcats&#39; was built under R version 4.2.3</code></pre>
-<pre><code>## Warning: package &#39;lubridate&#39; was built under R version 4.2.3</code></pre>
-<pre><code>## Warning: package &#39;cowplot&#39; was built under R version 4.2.3</code></pre>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co"># Load Roberts et al. (2022) data:</span></span>
-<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>bleach <span class="ot">&lt;-</span> </span>
-<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>  <span class="fu">read.csv</span>(<span class="st">&quot;https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/data/bleach.csv&quot;</span>)</span>
-<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a></span>
-<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a><span class="fu">head</span>(bleach)</span></code></pre></div>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">require</span>(librarian, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">shelf</span>(tidyverse, cowplot, <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co"># Load Roberts et al. (2022) data:</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>bleach <span class="ot">&lt;-</span> </span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  <span class="fu">read.csv</span>(<span class="st">&quot;https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/data/bleach.csv&quot;</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="fu">head</span>(bleach)</span></code></pre></div>
 <pre><code>##   X     SST LOGBLEACH MASS
 ## 1 1 -0.5128  0.006138    0
 ## 2 2 -0.4542  0.308400    0
@@ -520,24 +509,24 @@ bleaching events triggered by high ocean temperatures (McWilliams et al,
 ## 4 4 -0.1892  0.309800    0
 ## 5 5 -0.1356  0.308400    0
 ## 6 6 -0.0450  0.306000    0</code></pre>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="do">##### Data column descriptions: </span></span>
-<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="co"># - Route: name of breeding bird survey route. </span></span>
-<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="co"># - Stop: ID for each stop along survey route+</span></span>
-<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="co"># - Year: year of survey</span></span>
-<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a><span class="co"># - Rich_Grass: grassland bird species richness </span></span>
-<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a><span class="co"># - Route_factor: name of breeding bird survey route. </span></span>
-<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a><span class="co"># - Year_Num: survey years re-numbered from 1 (2010) to 7 (2016)</span></span>
-<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a><span class="co"># - Burned: if this stop was burned on or after the given year, 1, else 0</span></span>
-<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a><span class="co"># - Year_Burned: the year that a given stop was burned</span></span>
-<span id="cb17-10"><a href="#cb17-10" tabindex="-1"></a><span class="co"># - easting/northing: easting/northing coordinates in UTM </span></span>
-<span id="cb17-11"><a href="#cb17-11" tabindex="-1"></a><span class="co"># - count: number of 30x30m pixels within 400m of each stop. Number of pixels</span></span>
-<span id="cb17-12"><a href="#cb17-12" tabindex="-1"></a><span class="co">#          vary because some are masked because they were not &#39;rangeland&#39; </span></span>
-<span id="cb17-13"><a href="#cb17-13" tabindex="-1"></a><span class="co">#          pixels. See Methods/Data Collection/Tree Cover for details.</span></span>
-<span id="cb17-14"><a href="#cb17-14" tabindex="-1"></a><span class="co"># - mean: mean percent tree cover across all 30x30m pixels within 400m of</span></span>
-<span id="cb17-15"><a href="#cb17-15" tabindex="-1"></a><span class="co">#         each stop</span></span>
-<span id="cb17-16"><a href="#cb17-16" tabindex="-1"></a><span class="co"># - stdDev: standard deviation of percent tree cover across all 30x30m pixels </span></span>
-<span id="cb17-17"><a href="#cb17-17" tabindex="-1"></a><span class="co">#           within 400m of each stop</span></span>
-<span id="cb17-18"><a href="#cb17-18" tabindex="-1"></a><span class="co"># - TSF: years-since-fire</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="do">##### Data column descriptions: </span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co"># - Route: name of breeding bird survey route. </span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co"># - Stop: ID for each stop along survey route+</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co"># - Year: year of survey</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co"># - Rich_Grass: grassland bird species richness </span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co"># - Route_factor: name of breeding bird survey route. </span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co"># - Year_Num: survey years re-numbered from 1 (2010) to 7 (2016)</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co"># - Burned: if this stop was burned on or after the given year, 1, else 0</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co"># - Year_Burned: the year that a given stop was burned</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co"># - easting/northing: easting/northing coordinates in UTM </span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co"># - count: number of 30x30m pixels within 400m of each stop. Number of pixels</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#          vary because some are masked because they were not &#39;rangeland&#39; </span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#          pixels. See Methods/Data Collection/Tree Cover for details.</span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co"># - mean: mean percent tree cover across all 30x30m pixels within 400m of</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#         each stop</span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co"># - stdDev: standard deviation of percent tree cover across all 30x30m pixels </span></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co">#           within 400m of each stop</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="co"># - TSF: years-since-fire</span></span></code></pre></div>
 <p>The first column (SST) is Sea Surface Temperature “anomalies” – that
 is, the difference between the average sea surface temperature for the
 Caribbean between Aug and October, and the long run average from 1961 to

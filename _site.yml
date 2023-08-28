@@ -20,9 +20,9 @@ navbar:
       menu:
         - text: "Data exploration: Lab"
           href: 01-A-data-exploration.html
-    - text: "W2"
+    - text: "Linear Models & Prob Distributions"
       menu:
-        - text: "Linear models and probability distributions"
+        - text: "Lab"
           href: 02-A-linear-models-and-probability-distributions.html
         - text: "Homework 1"
           href: 02-B-Homework-01.html
