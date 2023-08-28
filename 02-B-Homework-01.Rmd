@@ -34,7 +34,9 @@ shelf(tidyverse, cowplot, quiet = TRUE)
 
 # Load Roberts et al. (2022) data:
 bleach <- 
-  read.csv("https://raw.githubusercontent.com/LivingLandscapes/Course_EcologicalModeling/data/bleach.csv")
+  read.csv("https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/data/bleach.csv")
+
+head(bleach)
 
 ##### Data column descriptions: 
 # - Route: name of breeding bird survey route. 
