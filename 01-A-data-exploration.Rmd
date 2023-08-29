@@ -26,6 +26,10 @@ knitr::opts_chunk$set(eval = TRUE)
 # Do not change this address
 # repo_url <- "https://raw.githubusercontent.com/fukamilab/BIO202/master/"
 repo_url <- "https://raw.githubusercontent.com/LivingLandscapes/Course_EcologicalModeling/master/"
+
+# Suppress warnings and messages
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+
 ```
 
 ## Key takeaways from Zuur et al. (2010):
