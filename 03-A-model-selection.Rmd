@@ -71,7 +71,7 @@ As always, take some time to explore the data. No need to do every data explorat
 
 As we learned from the lecture, the model selection / multi-model inference framework is built off of a "strong inference" philosophy. That is, we should be testing multiple hypotheses simultaneously. Given our goal is to **determine drivers of fiddler crab body size**, we need to generate hypotheses that explain fiddler crab body size using the collected covariates. For instance:
 
-- $H_a_1$ : Fiddler crab size is best explained by a quadratic relationship with latitude, by variation in water and air temperature, and by the sampling location. *This will be our most complicated model.*
+- $H_a1$ : Fiddler crab size is best explained by a quadratic relationship with latitude, by variation in water and air temperature, and by the sampling location. *This will be our most complicated model.*
 - $H_0$ : Fiddler crab size is best explained the null model (i.e., none of our covariates are useful).
 
 *NOTE: It's worth saying that it's best to generate these hypotheses (at least loosely) before one collects any data!*
