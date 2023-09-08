@@ -132,7 +132,7 @@ Before we get too morose, let's try a few things to double-check these VIFs are 
 penguins <- 
   penguins %>%
   mutate(across(c(bill_length_mm, bill_depth_mm),
-                .fns = scale,
+                .fns = function(X) as.numeric(scale(X)),
                 .names = "{.col}_scaled"))
 
 # fit the global linear regression

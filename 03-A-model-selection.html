@@ -13,7 +13,7 @@
 
 <title>Model Selection</title>
 
-<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.23/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -29,7 +29,7 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
@@ -501,8 +501,8 @@ using information-theoretic methods. The Journal of wildlife management,
 <div id="overview" class="section level1">
 <h1>Overview</h1>
 <p>For our model selection lab, we will be using data from the <a
-href="https://lter.github.io/lterdatasampler/index.html">ltersampler R
-package</a>. Specifically, we will be using the <a
+href="https://lter.github.io/lterdatasampler/index.html">lterdatasampler
+R package</a>. Specifically, we will be using the <a
 href="https://lter.github.io/lterdatasampler/reference/pie_crab.html">pie_crab
 dataset</a>, which includes records of “Fiddler crab body size in salt
 marshes from Florida to Massachusetts, USA at PIE and VCR LTER and NOAA
@@ -516,12 +516,9 @@ buoys for 2016.”</p>
 fiddler crab body size.</strong> We will do so using the model
 selection/multi-model inference framework. Let’s get started!</p>
 <p>
-<div class="float">
 <img
 src="https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/ltersampler_logo.png"
-width="300" alt="ltersampler logo" />
-<div class="figcaption">ltersampler logo</div>
-</div>
+width="300" />
 <p>
 <hr />
 </div>
@@ -531,12 +528,18 @@ width="300" alt="ltersampler logo" />
 <h2>Data exploration</h2>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># List of packages necessary to run this script:</span></span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">require</span>(librarian, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">shelf</span>(tidyverse, cowplot, MuMIn, performance, lterdatasampler, </span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>      <span class="at">lib =</span> <span class="fu">tempdir</span>(),</span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>      <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co"># Read in a data file</span></span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;pie_crab&quot;</span>)</span></code></pre></div>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">shelf</span>(tidyverse, cowplot, performance, </span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>      AICcmodavg, <span class="co"># For model selection, model averaging</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>      lterdatasampler, <span class="co"># For LTER data</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>      <span class="at">lib =</span> <span class="fu">tempdir</span>(),</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>      <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: there are other packages for model selection/model averaging work</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co"># (e.g., MuMIn) that have strengths and weaknesses relative to AICcmodavg. Feel</span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co"># free to check them out!</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co"># Read in a data file</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;pie_crab&quot;</span>)</span></code></pre></div>
 <p>As always, take some time to explore the data. No need to do every
 data exploration step we learned from our data exploration lab, but I
 suggest at least familiarizing yourself with the response variable
@@ -547,193 +550,154 @@ dataset</a> page.</p>
 </div>
 <div id="create-hypotheses" class="section level2">
 <h2>Create hypotheses</h2>
-<p>As we learned from the assigned readings, the model selection /
-multi-model inference framework is built off of a “strong inference”
-philosophy. That is, we should be testing multiple hypotheses
-simultaneously. Given our goal is to <strong>determine drivers of
-fiddler crab body size</strong>, we need to generate hypotheses that
-explain fiddler crab body size using the collected covariates. For
-instance:</p>
+<p>As we learned from the lecture, the model selection / multi-model
+inference framework is built off of a “strong inference” philosophy.
+That is, we should be testing multiple hypotheses simultaneously. Given
+our goal is to <strong>determine drivers of fiddler crab body
+size</strong>, we need to generate hypotheses that explain fiddler crab
+body size using the collected covariates. For instance:</p>
 <ul>
-<li><span class="math inline">\(Ha_1\)</span> : Fiddler crab size is
-best explained by latitude, mean and variation in water temperature,
-mean and variation in air temperature, and the sampling location.</li>
-<li><span class="math inline">\(Ha_2\)</span> : Fiddler crab size is
-best explained by latitude alone.</li>
+<li><span class="math inline">\(H_a_1\)</span> : Fiddler crab size is
+best explained by a quadratic relationship with latitude, by variation
+in water and air temperature, and by the sampling location. <em>This
+will be our most complicated model.</em></li>
+<li><span class="math inline">\(H_0\)</span> : Fiddler crab size is best
+explained the null model (i.e., none of our covariates are useful).</li>
 </ul>
 <p><em>NOTE: It’s worth saying that it’s best to generate these
-hypotheses (at least loosely) before one collects any data! For this
-example, we can trust that the LTER folks chose covariates
-wisely.</em></p>
-<p>On your own, write out 2 - 4 additional hypotheses, using the
-covariates in the ‘pie_crab’ dataset. Yes, literally write or type them
-out in <em>words</em> somewhere.</p>
+hypotheses (at least loosely) before one collects any data!</em></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Square the latitude column to create a quadratic term.</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>pie_crab<span class="sc">$</span>latitude_2 <span class="ot">&lt;-</span> pie_crab<span class="sc">$</span>latitude<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co"># Create a named list of models</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>mods <span class="ot">&lt;-</span> </span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">global =</span> <span class="st">&quot;size ~ latitude + latitude_2 + water_temp_sd +  air_temp_sd + name&quot;</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>       <span class="at">null =</span> <span class="st">&quot;size ~ 1&quot;</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co"># Fit the models</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>fits <span class="ot">&lt;-</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>  <span class="fu">lapply</span>(mods, </span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>         glm, <span class="at">family =</span> <span class="fu">gaussian</span>(<span class="at">link =</span> <span class="st">&quot;log&quot;</span>), <span class="at">data =</span> pie_crab)</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co"># # Get model fit summaries</span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co"># lapply(fits, summary)</span></span></code></pre></div>
+<p>Carefully look at the code chunk above. You will see I’m doing two
+things:</p>
+<ol style="list-style-type: decimal">
+<li>I am creating a <em>named</em> <strong>list</strong> object with
+models. Lists are a critical tool and concept in R (and many other
+coding languages), and they are super helpful for model selection. Check
+out ?list if you need more info.</li>
+<li>I used the <em>lapply()</em> function to apply the glm() function to
+all models in the “mods” list. The lapply() function is part of the
+“apply family” of functions, and they are also <em>very</em> useful for
+model selection work. Check out ?lapply for more information.</li>
+</ol>
+<p>I also commented out the lapply(fits, summary) call, but you’re
+welcome to run it if you wish!</p>
+<div id="refining-the-global-model" class="section level3">
+<h3>Refining the “global” model</h3>
+<p>Before we move on, we need to do a very important step: refine the
+“global” model by checking for collinearity. <em>The global model is the
+most complicated model in our candidate model set.</em> If we reduce
+collinearity to our desired threshold (e.g., VIF &lt; 5) in the global
+model, all simpler models should have acceptable levels of
+collinearity.</p>
+<p><em>NOTE: There are many procedures for doing model selection, and
+creating a global model to start out is just one of them. For example,
+you could just write out hypotheses and create models without a global
+model, or you could create a balanced model set (e.g., same number of
+parameters in each model) for model averaging purposes. The advantage of
+creating a global model and a null model is that you create “upper and
+lower bounds” of complexity to compare simpler models to. However, your
+ultimate choice should be determined a priori and be based on your
+research questions and goals.</em></p>
+<p>That said, let’s check for collinearity in our global model.
+<strong>On your own, systematically refine the global model until all
+VIFs are less than 5. </strong></p>
+<p>Pausing while you refine… Don’t look ahead and spoil the fun!</p>
 <p>…</p>
-<p>Okay, now that you have your written hypotheses, convert those to
-models in R syntax and fit them!</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Create a named list of models</span></span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>mods <span class="ot">&lt;-</span> </span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">global =</span> <span class="st">&quot;size ~ latitude + water_temp + water_temp_sd + air_temp + air_temp_sd&quot;</span>,</span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>       <span class="at">latitude =</span> <span class="st">&quot;size ~ latitude&quot;</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co"># Fit the models</span></span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>fits <span class="ot">&lt;-</span></span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>  <span class="fu">lapply</span>(mods, </span>
-<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>         glm, <span class="at">family =</span> <span class="fu">gaussian</span>(<span class="at">link =</span> <span class="st">&quot;log&quot;</span>), <span class="at">data =</span> pie_crab)</span>
-<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a></span>
-<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co"># Get model fit summaries</span></span>
-<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="fu">lapply</span>(fits, summary)</span></code></pre></div>
-<pre><code>## $global
-## 
-## Call:
-## FUN(formula = X[[i]], family = ..1, data = ..2)
-## 
-## Deviance Residuals: 
-##     Min       1Q   Median       3Q      Max  
-## -8.4930  -1.8307  -0.0264   1.8222   7.9206  
-## 
-## Coefficients:
-##                Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)    7.157305   1.169279   6.121 2.29e-09 ***
-## latitude      -0.077756   0.022290  -3.488 0.000542 ***
-## water_temp     0.048221   0.009356   5.154 4.08e-07 ***
-## water_temp_sd  0.013585   0.009233   1.471 0.142015    
-## air_temp      -0.167092   0.026647  -6.271 9.64e-10 ***
-## air_temp_sd    0.004139   0.018461   0.224 0.822726    
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## (Dispersion parameter for gaussian family taken to be 7.222869)
-## 
-##     Null deviance: 4798.8  on 391  degrees of freedom
-## Residual deviance: 2788.0  on 386  degrees of freedom
-## AIC: 1895.5
-## 
-## Number of Fisher Scoring iterations: 5
-## 
-## 
-## $latitude
-## 
-## Call:
-## FUN(formula = X[[i]], family = ..1, data = ..2)
-## 
-## Deviance Residuals: 
-##     Min       1Q   Median       3Q      Max  
-## -7.9179  -1.8066   0.1086   1.9312   7.0819  
-## 
-## Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept) 1.386269   0.096880   14.31   &lt;2e-16 ***
-## latitude    0.034187   0.002482   13.77   &lt;2e-16 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## (Dispersion parameter for gaussian family taken to be 8.016606)
-## 
-##     Null deviance: 4798.8  on 391  degrees of freedom
-## Residual deviance: 3126.5  on 390  degrees of freedom
-## AIC: 1932.4
-## 
-## Number of Fisher Scoring iterations: 4</code></pre>
-<!-- Try out some data exploration techniques that we've learned. Here, I've plotted histograms of body mass by species by island. On your own, create pairwise scatterplots, look for outliers, and whatever else you want to try. -->
-<!-- ```{r include = TRUE, eval = TRUE, fig.width = 8, fig.height = 3} -->
-<!-- ggplot(penguins, -->
-<!--        aes(x = body_mass_g, fill = species)) + -->
-<!--   geom_histogram(alpha = 0.4, position = "identity") + -->
-<!--   scale_fill_viridis_d() + # there are great pre-made color palettes in ggplot2. The viridis palette is color blind-friendly. -->
-<!--   facet_wrap(~ island) + -->
-<!--   theme_bw() + -->
-<!--   theme(axis.text.x = element_text(size = 7, angle = 320)) + -->
-<!--   xlab("Body Mass (g)") + -->
-<!--   ylab("Frequency") -->
-<!-- ``` -->
-<!-- ## Let's try a model! -->
-<!-- A pretty reasonable hypothesis to test is *"In penguins, males will have greater body mass than females, and body mass is also allometrically related to bill length and depth."* We could also add that *"body mass will vary across species."* -->
-<!-- To test this hypothesis, let's create a 'global' model containing all the variables that our hypotheses predict will influence body mass: -->
-<!-- ```{r include = TRUE, eval = TRUE} -->
-<!-- # fit the global linear regression -->
-<!-- fit_global <- -->
-<!--   lm(body_mass_g ~ sex + bill_length_mm * bill_depth_mm + species, -->
-<!--      data = penguins) -->
-<!-- # Check out the global model's coefficients, R^2 values, and p-values. -->
-<!-- summary(fit_global) -->
-<!-- ``` -->
-<!-- We did it! On your own, please go line-by-line through the summary table and--in words--communicate to yourself and/or your neighbors if each hypothesis is supported and why. -->
-<!-- Additionally, you may be asking a common question for folks using categorical variables in regression. In this case, it's probably "why are there no coefficient estimates for sex:female or species:Adelie?" On your own, search Google and/or StackOverflow for an answer. -->
-<!-- ### Collinearity? -->
-<!-- But wait--we forgot a critical step: checking for collinearity in the predictor variables! Now that we have a fitted model, we can use VIFs to assess collinearity: -->
-<!-- ```{r include = TRUE, eval = TRUE} -->
-<!-- # Use performance::check_collinearity to calculate VIFs: -->
-<!-- check_collinearity(fit_global) -->
-<!-- ``` -->
-<!-- Uh oh. Looks like we have >>> 10 VIFs for all predictor variables except sex! Are our species and allometric hypotheses scuppered?! -->
-<!-- Before we get too morose, let's try a few things to double-check these VIFs are giving us accurate information. First, it stands to reason that if we have interaction terms such as 'x', 'y' and 'xy,' then 'x' and 'y' will be correlated with their product 'xy,' right? One way to demonstrate this is by standardizing (i.e., centering or scaling) the offending numeric predictor variables and recalculating VIFs. This should reduce the collinearity at least for the interaction terms. Let's try it: -->
-<!-- ```{r include = TRUE, eval = TRUE} -->
-<!-- # Create a new data.frame with -->
-<!-- penguins <- -->
-<!--   penguins %>% -->
-<!--   mutate(across(c(bill_length_mm, bill_depth_mm), -->
-<!--                 .fns = scale, -->
-<!--                 .names = "{.col}_scaled")) -->
-<!-- # fit the global linear regression -->
-<!-- fit_global_scaled <- -->
-<!--   lm(body_mass_g ~ sex + bill_length_mm_scaled * bill_depth_mm_scaled + species, -->
-<!--      data = penguins) -->
-<!-- # Use performance::check_collinearity to calculate VIFs: -->
-<!-- check_collinearity(fit_global_scaled) -->
-<!-- ``` -->
-<!-- Okay, so far so good. The second thing to check is whether coefficient, p-values, and $R^2$ values have changed between the un-standardized global model and the standardized global model. Run this block on your own and see what happens: -->
-<!-- ```{r include = TRUE, eval = FALSE} -->
-<!-- # Compare coefficients and p-values. -->
-<!-- summary(fit_global)$coefficients # Note: summary() creates a list that you can index for specific model information. -->
-<!-- summary(fit_global_scaled)$coefficients -->
-<!-- # Compare R^2 values -->
-<!-- summary(fit_global)$adj.r.squared -->
-<!-- summary(fit_global_scaled)$adj.r.squared -->
-<!-- ``` -->
-<!-- Great! Both our expectations for the interaction terms were confirmed, and we don't need to worry about high VIFs there. -->
-<!-- However, we still need to deal with the > 10 VIF for species, which does appear to be accurate. Fortunately, the answer is simple: drop the species variable from the model and recheck for collinearity. On your own, consider model outputs from the code chunk below and compare these to previous model outputs: -->
-<!-- ```{r include = TRUE, eval = TRUE} -->
-<!-- # fit the global linear regression -->
-<!-- fit_global_scaled_noSpecies <- -->
-<!--   lm(body_mass_g ~ sex + bill_length_mm_scaled * bill_depth_mm_scaled, -->
-<!--      data = penguins) -->
-<!-- # Check collinearity -->
-<!-- check_collinearity(fit_global_scaled_noSpecies) -->
-<!-- # Check out the global model's coefficients, R^2 values, and p-values. -->
-<!-- summary(fit_global_scaled_noSpecies) -->
-<!-- ``` -->
-<!-- ### Model diagnostics -->
-<!-- As a last step, we need to make sure our final model meets all required assumptions for a linear regression: -->
-<!-- - Linear relationship between response and predictor variables -->
-<!-- - Reasonable levels of collinearity (e.g., VIF < 3 or 5 or 10) -->
-<!-- - Homogeneity of variances between groups (i.e., homoscedasticity [i.e., NOT heteroscedasticity]) -->
-<!-- - Errors are normally distributed -->
-<!-- - Independent sampling (i.e., no autocorrelation or pseudoreplication) -->
-<!-- We've already dealt with collinearity, we know there is a linear relationship between response and predictor variables. On your own, go back through our previous work to determine where and how we checked for collinearity and the linear relationship--and what the outcomes were. -->
-<!-- We will wait until our Autocorrelation topic to check for independence, but we let's definitely check for homogeneity of variances and normal error distributions: -->
-<!-- ```{r include = TRUE, eval = TRUE} -->
-<!-- # Check for heteroscedasticity via the fancy ggplot2 way of plotting fitted values vs. residuals: -->
-<!-- ggplot() + -->
-<!--   geom_point(aes(x = fit_global_scaled_noSpecies$fitted.values, -->
-<!--                  y = fit_global_scaled_noSpecies$residuals)) + -->
-<!--   geom_hline(data = data.frame(yintercept = 0), -->
-<!--              aes(yintercept = 0), -->
-<!--              linetype = 2, -->
-<!--              color = "red") + -->
-<!--   xlab("Fitted values") + -->
-<!--   ylab("Residuals") -->
-<!-- # Built-in model diagnostics for checking for heteroscedasticity, errors are normally distributed, etc. -->
-<!-- par(mfrow = c(2, 2)) # To make all plots be panels of a single figure. -->
-<!-- plot(fit_global_scaled_noSpecies) -->
-<!-- ``` -->
-<!-- So our final model contains sex and an interaction of bill length and depth to explain body mass in penguins. We've successfully created our first linear model! -->
-<!-- ## Discussion Questions -->
-<!-- 1. If we were writing a manuscript based on our final model (and assuming we designed the study with the hypotheses we generated), how would we interpret the fact that we dropped the 'species' predictor variable from the final model? -->
-<!-- 2. Interpreting interaction terms simply is tricky from the coefficients. How could we create a plot to help us? HINT: 1) Use expand.grid() to create a new data.frame based on the range of values of each predictor variable, 2) then use  predict(), 3) then plot the predicted relationships. -->
-<!-- 3. Graphically, how can we characterize uncertainty in our model? HINT: look at the predict() "se.fit" argument. -->
-<!-- 4. Using words only, interpret our final model. -->
+<p>Now that you’ve got a refined model, overwrite the original global in
+our model set list and rerun the models:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Overwrite original global model with refined model. Notice how I&#39;m just</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co"># indexing the list we already created to overwrite the global.</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>mods[[<span class="st">&quot;global&quot;</span>]] <span class="ot">&lt;-</span> <span class="st">&quot;size ~ latitude + water_temp_sd + air_temp_sd&quot;</span></span></code></pre></div>
 </div>
+</div>
+<div id="creating-more-hypotheses" class="section level2">
+<h2>Creating more hypotheses</h2>
+<p><strong>On your own, write out 2 - 3 additional hypotheses, using the
+covariates in the ‘pie_crab’ dataset.</strong> Yes, literally write or
+type them out in <em>words</em> somewhere. For the sake of this example,
+use only the covariates in the refined global model, and don’t add any
+additional polynomials or interactions.</p>
+<p>Pausing while you write…</p>
+<p>Okay, now that you have your written hypotheses, convert those to
+models in R syntax and fit them! <strong>Add your models to the code
+below.</strong></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Create new models for your hypotheses. Notice how you can simply create a new</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co"># named element in your existing list. For instance, I bet you&#39;ve created a</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co"># simple &#39;latitude&#39; model. Add the other models you&#39;ve created on your own.</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>mods[[<span class="st">&quot;latitude&quot;</span>]] <span class="ot">&lt;-</span> <span class="st">&quot;size ~ latitude&quot;</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co"># And then fit the models again</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>fits <span class="ot">&lt;-</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  <span class="fu">lapply</span>(mods, </span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>         glm, <span class="at">family =</span> <span class="fu">gaussian</span>(<span class="at">link =</span> <span class="st">&quot;log&quot;</span>), <span class="at">data =</span> pie_crab)</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co"># # Get model fit summaries</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co"># lapply(fits, summary)</span></span></code></pre></div>
+</div>
+<div id="rank-your-models-with-aicc" class="section level2">
+<h2>Rank your models with AICc</h2>
+<p>Now comes the part we’ve been waiting for! Create an AICc table to
+rank the models in your candidate pool. Run the code below, and then
+<strong>on your own, interpret the AICc table relative to your
+hypotheses IN WORDS. Pay careful attention to the delta AICc and
+cumulative weight columns.</strong></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Create AICc ranking table</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>modTab <span class="ot">&lt;-</span> <span class="fu">aictab</span>(fits,</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>                 <span class="at">second.ord =</span> <span class="cn">TRUE</span> <span class="co"># This tells function to calculate *AICc*</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>                 )</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co"># # Print model fit summaries</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co"># modTab</span></span></code></pre></div>
+</div>
+<div id="model-averaging" class="section level2">
+<h2>Model averaging</h2>
+<p>And finally, if our <em>a priori</em> goal was model averaging, we
+can now do so. Below, we’re using conditional model averaging for all
+covariates. <strong>On your own, interpret the model averaged
+coefficients and standard errors.</strong></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Model averaged coefficients for all covariates.</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>modavg_coefs <span class="ot">&lt;-</span> </span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="fu">lapply</span>(<span class="fu">c</span>(<span class="st">&quot;latitude&quot;</span>, <span class="st">&quot;air_temp_sd&quot;</span>, <span class="st">&quot;water_temp_sd&quot;</span>),</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>         <span class="cf">function</span>(X) {</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>           out <span class="ot">&lt;-</span> <span class="fu">modavg</span>(<span class="at">cand.set =</span> fits,</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>                         <span class="at">parm =</span> X,</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>                         <span class="at">second.ord =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>           <span class="fu">return</span>(out)</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>         })</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co"># # Print model averaged coefficients</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co"># modavg_coefs</span></span></code></pre></div>
+</div>
+</div>
+<div id="discussion-questions" class="section level1">
+<h1>Discussion questions</h1>
+<ol style="list-style-type: decimal">
+<li><p>How different are the model averaged coefficients (and standard
+errors) from the coefficients in the top-ranked model (i.e., the model
+with the smallest AICc value)? In your other models?</p></li>
+<li><p>Go back and create a different global model. For instance, add
+the ‘water_temp’ and ‘air_temp’ covariates. Now, go back through all our
+steps. Does this change our model rankings in the AICc table? Does this
+change the model averaged coefficient estimates? Does it change our
+conclusions?!</p></li>
+<li><p>Given the results from question #2, how do you feel about this
+whole model selection/multi-model inference framework? What do you like?
+What are your misgivings?</p></li>
+</ol>
 </div>
 
 
