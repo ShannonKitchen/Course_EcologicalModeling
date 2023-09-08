@@ -13,7 +13,7 @@
 
 <title>Review of linear models, probability distributions</title>
 
-<script src="site_libs/header-attrs-2.23/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -29,7 +29,7 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
-<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
@@ -507,7 +507,7 @@ href="https://allisonhorst.github.io/palmerpenguins/">Palmer
 Penguins</a> dataset and R Package. We will start with generating
 hypotheses, then move on to data exploration, fitting our first model,
 checking that our model fits linear regression assumptions, and finally
-interpretting our model. Meet the penguin species that we’ll be working
+interpreting our model. Meet the penguin species that we’ll be working
 with:</p>
 <p>
 <div class="float">
@@ -542,15 +542,15 @@ function on <em>character</em> columns.</p>
 package. We will use the cleaned ‘penguins’ dataset.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">head</span>(penguins)</span></code></pre></div>
 <pre><code>## # A tibble: 6 × 8
-##   species island    bill_length_mm bill_depth_mm flipper_length_mm body_mass_g
-##   &lt;fct&gt;   &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt;             &lt;int&gt;       &lt;int&gt;
-## 1 Adelie  Torgersen           39.1          18.7               181        3750
-## 2 Adelie  Torgersen           39.5          17.4               186        3800
-## 3 Adelie  Torgersen           40.3          18                 195        3250
-## 4 Adelie  Torgersen           NA            NA                  NA          NA
-## 5 Adelie  Torgersen           36.7          19.3               193        3450
-## 6 Adelie  Torgersen           39.3          20.6               190        3650
-## # ℹ 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;</code></pre>
+##   species island    bill_length_mm bill_depth_mm flipper_l…¹ body_…² sex    year
+##   &lt;fct&gt;   &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt;       &lt;int&gt;   &lt;int&gt; &lt;fct&gt; &lt;int&gt;
+## 1 Adelie  Torgersen           39.1          18.7         181    3750 male   2007
+## 2 Adelie  Torgersen           39.5          17.4         186    3800 fema…  2007
+## 3 Adelie  Torgersen           40.3          18           195    3250 fema…  2007
+## 4 Adelie  Torgersen           NA            NA            NA      NA &lt;NA&gt;   2007
+## 5 Adelie  Torgersen           36.7          19.3         193    3450 fema…  2007
+## 6 Adelie  Torgersen           39.3          20.6         190    3650 male   2007
+## # … with abbreviated variable names ¹​flipper_length_mm, ²​body_mass_g</code></pre>
 <p>Try out some data exploration techniques that we’ve learned. Here,
 I’ve plotted histograms of body mass by species by island. On your own,
 create pairwise scatterplots, look for outliers, and whatever else you
@@ -643,8 +643,8 @@ assess collinearity:</p>
 variables except sex! Are our species and allometric hypotheses
 scuppered?!</p>
 <p>Before we get too morose, let’s try a few things to double-check
-these VIFs are giving us accurate information. First, logically,
-interaction terms such as ‘x’, ‘y’ and ‘xy,’ it stands to reason that
+these VIFs are giving us accurate information. First, it stands to
+reason that if we have interaction terms such as ‘x’, ‘y’ and ‘xy,’ then
 ‘x’ and ‘y’ will be correlated with their product ‘xy,’ right? One way
 to demonstrate this is by standardizing (i.e., centering or scaling) the
 offending numeric predictor variables and recalculating VIFs. This
@@ -689,9 +689,10 @@ try it:</p>
 ##     Term   VIF     VIF 95% CI Increased SE Tolerance Tolerance 95% CI
 ##  species 28.03 [22.85, 34.43]         5.29      0.04     [0.03, 0.04]</code></pre>
 <p>Okay, so far so good. The second thing to check is whether
-coefficient, p-values, and R^2 values have changed between the
-un-standardized global model and the standardized global model. Run this
-block on your own and see what happens:</p>
+coefficient, p-values, and <span class="math inline">\(R^2\)</span>
+values have changed between the un-standardized global model and the
+standardized global model. Run this block on your own and see what
+happens:</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Compare coefficients and p-values.</span></span>
 <span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="fu">summary</span>(fit_global)<span class="sc">$</span>coefficients <span class="co"># Note: summary() creates a list that you can index for specific model information.</span></span>
 <span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="fu">summary</span>(fit_global_scaled)<span class="sc">$</span>coefficients</span>
@@ -704,8 +705,8 @@ confirmed, and we don’t need to worry about high VIFs there.</p>
 <p>However, we still need to deal with the &gt; 10 VIF for species,
 which does appear to be accurate. Fortunately, the answer is simple:
 drop the species variable from the model and recheck for collinearity.
-On your own, consider the differences between all our model outputs
-given what we see below:</p>
+On your own, consider model outputs from the code chunk below and
+compare these to previous model outputs:</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># fit the global linear regression</span></span>
 <span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>fit_global_scaled_noSpecies <span class="ot">&lt;-</span> </span>
 <span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>  <span class="fu">lm</span>(body_mass_g <span class="sc">~</span> sex <span class="sc">+</span> bill_length_mm_scaled <span class="sc">*</span> bill_depth_mm_scaled,</span>
@@ -762,12 +763,16 @@ given what we see below:</p>
 <div id="model-diagnostics" class="section level3">
 <h3>Model diagnostics</h3>
 <p>As a last step, we need to make sure our final model meets all
-required assumptions for a linear regression: + Linear relationship
-between response and predictor variables + Reasonable levels of
-collinearity (e.g., VIF &lt; 3 or 5 or 10) + Homogeneity of variances
-between groups (i.e., homoscedasticity [i.e., NOT heteroscedasticity]) +
-Errors are normally distributed + Independent sampling (i.e., no
-autocorrelation or pseudoreplication)</p>
+required assumptions for a linear regression:</p>
+<ul>
+<li>Linear relationship between response and predictor variables</li>
+<li>Reasonable levels of collinearity (e.g., VIF &lt; 3 or 5 or 10)</li>
+<li>Homogeneity of variances between groups (i.e., homoscedasticity
+[i.e., NOT heteroscedasticity])</li>
+<li>Errors are normally distributed</li>
+<li>Independent sampling (i.e., no autocorrelation or
+pseudoreplication)</li>
+</ul>
 <p>We’ve already dealt with collinearity, we know there is a linear
 relationship between response and predictor variables. On your own, go
 back through our previous work to determine where and how we checked for
@@ -788,8 +793,7 @@ and normal error distributions:</p>
 <p><img src="02-A-linear-models-and-probability-distributions_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="co"># Built-in model diagnostics for checking for heteroscedasticity, errors are normally distributed, etc.</span></span>
 <span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>)) <span class="co"># To make all plots be panels of a single figure. </span></span>
-<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="fu">plot</span>(fit_global_scaled_noSpecies)</span>
-<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="fu">plot</span>(fit_global_scaled_noSpecies)</span></code></pre></div>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="fu">plot</span>(fit_global_scaled_noSpecies)</span></code></pre></div>
 <p><img src="02-A-linear-models-and-probability-distributions_files/figure-html/unnamed-chunk-10-2.png" width="672" /></p>
 <p>So our final model contains sex and an interaction of bill length and
 depth to explain body mass in penguins. We’ve successfully created our

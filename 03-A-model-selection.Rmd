@@ -1,0 +1,244 @@
+---
+layout: topic
+title: "Model Selection"
+output: html_document
+---
+
+**Assigned Reading:**
+
+- *Chapters 3 and 4 of* Powell, L. A., & Gale, G. A. (2015). Estimation of parameters for animal populations. Lincoln: Caught Napping Publications.
+- Anderson, D. R., & Burnham, K. P. (2002). Avoiding pitfalls when using information-theoretic methods. The Journal of wildlife management, 912-918.
+
+```{r include = FALSE}
+# This code block sets up the r session when the page is rendered to html
+# include = FALSE means that it will not be included in the html document
+
+# Write every code block to the html document 
+knitr::opts_chunk$set(echo = TRUE)
+
+# Write the results of every code block to the html document 
+knitr::opts_chunk$set(eval = TRUE)
+
+# Set the web address where R will look for files from this repository
+# Do not change this address
+repo_url <- "https://raw.githubusercontent.com/LivingLandscapes/Course_EcologicalModeling/master/"
+
+# Suppress warnings and messages
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+
+```
+
+# Overview
+
+For our model selection lab, we will be using data from the [ltersampler R package](https://lter.github.io/lterdatasampler/index.html). Specifically, we will be using the [pie_crab dataset](https://lter.github.io/lterdatasampler/reference/pie_crab.html), which includes records of "Fiddler crab body size in salt marshes from Florida to Massachusetts, USA at PIE and VCR LTER and NOAA NERR sites during summer 2016."  Per the dataset description: 
+
+"We collected ~30 male, adult Minuca pugnax from thirteen marshes from Florida to Massachusetts and measured their carapace width with calipers. Water and air temperature data were collected from monitoring programs (i.e., LTER, NERR sites), nearby weather stations, and ocean buoys for 2016."
+
+**Our goal is to test multiple hypotheses concerning drivers of fiddler crab body size.** We will do so using the model selection/multi-model inference framework. Let's get started!
+
+<p>
+![ltersampler logo](https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/ltersampler_logo.png){width=300px}
+<p>
+
+---
+
+# Model selection example
+
+## Data exploration
+
+```{r include = TRUE, eval = TRUE, message = FALSE}
+
+# List of packages necessary to run this script:
+require(librarian, quietly = TRUE)
+shelf(tidyverse, cowplot, MuMIn, performance, lterdatasampler, 
+      lib = tempdir(),
+      quiet = TRUE)
+
+# Read in a data file
+data("pie_crab")
+
+```
+
+As always, take some time to explore the data. No need to do every data exploration step we learned from our data exploration lab, but I suggest at least familiarizing yourself with the response variable (i.e., pie_crab$size) and the covariates. Also, read through the variable descriptions on the [pie_crab dataset](https://lter.github.io/lterdatasampler/reference/pie_crab.html) page.
+
+## Create hypotheses
+
+As we learned from the assigned readings, the model selection / multi-model inference framework is built off of a "strong inference" philosophy. That is, we should be testing multiple hypotheses simultaneously. Given our goal is to **determine drivers of fiddler crab body size**, we need to generate hypotheses that explain fiddler crab body size using the collected covariates. For instance:
+
+- $Ha_1$ : Fiddler crab size is best explained by latitude, mean and variation in water temperature, mean and variation in air temperature, and the sampling location.
+- $Ha_2$ : Fiddler crab size is best explained by latitude alone.
+
+*NOTE: It's worth saying that it's best to generate these hypotheses (at least loosely) before one collects any data! For this example, we can trust that the LTER folks chose covariates wisely.*
+
+On your own, write out 2 - 4 additional hypotheses, using the covariates in the 'pie_crab' dataset. Yes, literally write or type them out in *words* somewhere.
+
+...
+
+Okay, now that you have your written hypotheses, convert those to models in R syntax and fit them!
+
+```{r include = TRUE, eval = TRUE}
+
+# Create a named list of models
+mods <- 
+  list(global = "size ~ latitude + water_temp + water_temp_sd + air_temp + air_temp_sd",
+       latitude = "size ~ latitude")
+
+# Fit the models
+fits <-
+  lapply(mods, 
+         glm, family = gaussian(link = "log"), data = pie_crab)
+
+# # Get model fit summaries
+# lapply(fits, summary)
+
+```
+
+<!-- Try out some data exploration techniques that we've learned. Here, I've plotted histograms of body mass by species by island. On your own, create pairwise scatterplots, look for outliers, and whatever else you want to try. -->
+
+<!-- ```{r include = TRUE, eval = TRUE, fig.width = 8, fig.height = 3} -->
+
+<!-- ggplot(penguins, -->
+<!--        aes(x = body_mass_g, fill = species)) + -->
+<!--   geom_histogram(alpha = 0.4, position = "identity") + -->
+<!--   scale_fill_viridis_d() + # there are great pre-made color palettes in ggplot2. The viridis palette is color blind-friendly. -->
+<!--   facet_wrap(~ island) + -->
+<!--   theme_bw() + -->
+<!--   theme(axis.text.x = element_text(size = 7, angle = 320)) + -->
+<!--   xlab("Body Mass (g)") + -->
+<!--   ylab("Frequency") -->
+
+<!-- ``` -->
+
+<!-- ## Let's try a model! -->
+
+<!-- A pretty reasonable hypothesis to test is *"In penguins, males will have greater body mass than females, and body mass is also allometrically related to bill length and depth."* We could also add that *"body mass will vary across species."* -->
+
+<!-- To test this hypothesis, let's create a 'global' model containing all the variables that our hypotheses predict will influence body mass: -->
+
+<!-- ```{r include = TRUE, eval = TRUE} -->
+
+<!-- # fit the global linear regression -->
+<!-- fit_global <- -->
+<!--   lm(body_mass_g ~ sex + bill_length_mm * bill_depth_mm + species, -->
+<!--      data = penguins) -->
+
+<!-- # Check out the global model's coefficients, R^2 values, and p-values. -->
+<!-- summary(fit_global) -->
+
+<!-- ``` -->
+
+<!-- We did it! On your own, please go line-by-line through the summary table and--in words--communicate to yourself and/or your neighbors if each hypothesis is supported and why. -->
+
+<!-- Additionally, you may be asking a common question for folks using categorical variables in regression. In this case, it's probably "why are there no coefficient estimates for sex:female or species:Adelie?" On your own, search Google and/or StackOverflow for an answer. -->
+
+<!-- ### Collinearity? -->
+
+<!-- But wait--we forgot a critical step: checking for collinearity in the predictor variables! Now that we have a fitted model, we can use VIFs to assess collinearity: -->
+
+<!-- ```{r include = TRUE, eval = TRUE} -->
+
+<!-- # Use performance::check_collinearity to calculate VIFs: -->
+<!-- check_collinearity(fit_global) -->
+
+<!-- ``` -->
+
+<!-- Uh oh. Looks like we have >>> 10 VIFs for all predictor variables except sex! Are our species and allometric hypotheses scuppered?! -->
+
+<!-- Before we get too morose, let's try a few things to double-check these VIFs are giving us accurate information. First, it stands to reason that if we have interaction terms such as 'x', 'y' and 'xy,' then 'x' and 'y' will be correlated with their product 'xy,' right? One way to demonstrate this is by standardizing (i.e., centering or scaling) the offending numeric predictor variables and recalculating VIFs. This should reduce the collinearity at least for the interaction terms. Let's try it: -->
+
+<!-- ```{r include = TRUE, eval = TRUE} -->
+
+<!-- # Create a new data.frame with -->
+<!-- penguins <- -->
+<!--   penguins %>% -->
+<!--   mutate(across(c(bill_length_mm, bill_depth_mm), -->
+<!--                 .fns = scale, -->
+<!--                 .names = "{.col}_scaled")) -->
+
+<!-- # fit the global linear regression -->
+<!-- fit_global_scaled <- -->
+<!--   lm(body_mass_g ~ sex + bill_length_mm_scaled * bill_depth_mm_scaled + species, -->
+<!--      data = penguins) -->
+
+<!-- # Use performance::check_collinearity to calculate VIFs: -->
+<!-- check_collinearity(fit_global_scaled) -->
+
+<!-- ``` -->
+
+<!-- Okay, so far so good. The second thing to check is whether coefficient, p-values, and $R^2$ values have changed between the un-standardized global model and the standardized global model. Run this block on your own and see what happens: -->
+
+<!-- ```{r include = TRUE, eval = FALSE} -->
+
+<!-- # Compare coefficients and p-values. -->
+<!-- summary(fit_global)$coefficients # Note: summary() creates a list that you can index for specific model information. -->
+<!-- summary(fit_global_scaled)$coefficients -->
+
+<!-- # Compare R^2 values -->
+<!-- summary(fit_global)$adj.r.squared -->
+<!-- summary(fit_global_scaled)$adj.r.squared -->
+
+<!-- ``` -->
+
+<!-- Great! Both our expectations for the interaction terms were confirmed, and we don't need to worry about high VIFs there. -->
+
+<!-- However, we still need to deal with the > 10 VIF for species, which does appear to be accurate. Fortunately, the answer is simple: drop the species variable from the model and recheck for collinearity. On your own, consider model outputs from the code chunk below and compare these to previous model outputs: -->
+
+<!-- ```{r include = TRUE, eval = TRUE} -->
+
+<!-- # fit the global linear regression -->
+<!-- fit_global_scaled_noSpecies <- -->
+<!--   lm(body_mass_g ~ sex + bill_length_mm_scaled * bill_depth_mm_scaled, -->
+<!--      data = penguins) -->
+
+<!-- # Check collinearity -->
+<!-- check_collinearity(fit_global_scaled_noSpecies) -->
+
+<!-- # Check out the global model's coefficients, R^2 values, and p-values. -->
+<!-- summary(fit_global_scaled_noSpecies) -->
+
+<!-- ``` -->
+
+<!-- ### Model diagnostics -->
+
+<!-- As a last step, we need to make sure our final model meets all required assumptions for a linear regression: -->
+
+<!-- - Linear relationship between response and predictor variables -->
+<!-- - Reasonable levels of collinearity (e.g., VIF < 3 or 5 or 10) -->
+<!-- - Homogeneity of variances between groups (i.e., homoscedasticity [i.e., NOT heteroscedasticity]) -->
+<!-- - Errors are normally distributed -->
+<!-- - Independent sampling (i.e., no autocorrelation or pseudoreplication) -->
+
+<!-- We've already dealt with collinearity, we know there is a linear relationship between response and predictor variables. On your own, go back through our previous work to determine where and how we checked for collinearity and the linear relationship--and what the outcomes were. -->
+
+<!-- We will wait until our Autocorrelation topic to check for independence, but we let's definitely check for homogeneity of variances and normal error distributions: -->
+
+<!-- ```{r include = TRUE, eval = TRUE} -->
+
+<!-- # Check for heteroscedasticity via the fancy ggplot2 way of plotting fitted values vs. residuals: -->
+<!-- ggplot() + -->
+<!--   geom_point(aes(x = fit_global_scaled_noSpecies$fitted.values, -->
+<!--                  y = fit_global_scaled_noSpecies$residuals)) + -->
+<!--   geom_hline(data = data.frame(yintercept = 0), -->
+<!--              aes(yintercept = 0), -->
+<!--              linetype = 2, -->
+<!--              color = "red") + -->
+<!--   xlab("Fitted values") + -->
+<!--   ylab("Residuals") -->
+
+<!-- # Built-in model diagnostics for checking for heteroscedasticity, errors are normally distributed, etc. -->
+<!-- par(mfrow = c(2, 2)) # To make all plots be panels of a single figure. -->
+<!-- plot(fit_global_scaled_noSpecies) -->
+
+<!-- ``` -->
+
+<!-- So our final model contains sex and an interaction of bill length and depth to explain body mass in penguins. We've successfully created our first linear model! -->
+
+<!-- ## Discussion Questions -->
+
+<!-- 1. If we were writing a manuscript based on our final model (and assuming we designed the study with the hypotheses we generated), how would we interpret the fact that we dropped the 'species' predictor variable from the final model? -->
+
+<!-- 2. Interpreting interaction terms simply is tricky from the coefficients. How could we create a plot to help us? HINT: 1) Use expand.grid() to create a new data.frame based on the range of values of each predictor variable, 2) then use  predict(), 3) then plot the predicted relationships. -->
+
+<!-- 3. Graphically, how can we characterize uncertainty in our model? HINT: look at the predict() "se.fit" argument. -->
+
+<!-- 4. Using words only, interpret our final model. -->

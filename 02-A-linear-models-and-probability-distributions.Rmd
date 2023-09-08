@@ -37,7 +37,7 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 # Overview
 
-We will be reviewing linear models (linear regression) using the [Palmer Penguins](https://allisonhorst.github.io/palmerpenguins/) dataset and R Package. We will start with generating hypotheses, then move on to data exploration, fitting our first model, checking that our model fits linear regression assumptions, and finally interpretting our model. Meet the penguin species that we'll be working with:
+We will be reviewing linear models (linear regression) using the [Palmer Penguins](https://allisonhorst.github.io/palmerpenguins/) dataset and R Package. We will start with generating hypotheses, then move on to data exploration, fitting our first model, checking that our model fits linear regression assumptions, and finally interpreting our model. Meet the penguin species that we'll be working with:
 
 <p>
 ![Artwork by @allison_horst](https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/penguins.png){width=300px}
@@ -124,7 +124,7 @@ check_collinearity(fit_global)
 
 Uh oh. Looks like we have >>> 10 VIFs for all predictor variables except sex! Are our species and allometric hypotheses scuppered?!
 
-Before we get too morose, let's try a few things to double-check these VIFs are giving us accurate information. First, logically, interaction terms such as 'x', 'y' and 'xy,' it stands to reason that 'x' and 'y' will be correlated with their product 'xy,' right? One way to demonstrate this is by standardizing (i.e., centering or scaling) the offending numeric predictor variables and recalculating VIFs. This should reduce the collinearity at least for the interaction terms. Let's try it:
+Before we get too morose, let's try a few things to double-check these VIFs are giving us accurate information. First, it stands to reason that if we have interaction terms such as 'x', 'y' and 'xy,' then 'x' and 'y' will be correlated with their product 'xy,' right? One way to demonstrate this is by standardizing (i.e., centering or scaling) the offending numeric predictor variables and recalculating VIFs. This should reduce the collinearity at least for the interaction terms. Let's try it:
 
 ```{r include = TRUE, eval = TRUE}
 
@@ -145,7 +145,7 @@ check_collinearity(fit_global_scaled)
 
 ```
 
-Okay, so far so good. The second thing to check is whether coefficient, p-values, and R^2 values have changed between the un-standardized global model and the standardized global model. Run this block on your own and see what happens:
+Okay, so far so good. The second thing to check is whether coefficient, p-values, and $R^2$ values have changed between the un-standardized global model and the standardized global model. Run this block on your own and see what happens:
 
 ```{r include = TRUE, eval = FALSE}
 
@@ -161,7 +161,7 @@ summary(fit_global_scaled)$adj.r.squared
 
 Great! Both our expectations for the interaction terms were confirmed, and we don't need to worry about high VIFs there.
 
-However, we still need to deal with the > 10 VIF for species, which does appear to be accurate. Fortunately, the answer is simple: drop the species variable from the model and recheck for collinearity. On your own, consider the differences between all our model outputs given what we see below:
+However, we still need to deal with the > 10 VIF for species, which does appear to be accurate. Fortunately, the answer is simple: drop the species variable from the model and recheck for collinearity. On your own, consider model outputs from the code chunk below and compare these to previous model outputs:
 
 ```{r include = TRUE, eval = TRUE}
 
@@ -181,11 +181,12 @@ summary(fit_global_scaled_noSpecies)
 ### Model diagnostics
 
 As a last step, we need to make sure our final model meets all required assumptions for a linear regression:
-    + Linear relationship between response and predictor variables
-    + Reasonable levels of collinearity (e.g., VIF < 3 or 5 or 10)
-    + Homogeneity of variances between groups (i.e., homoscedasticity [i.e., NOT heteroscedasticity])
-    + Errors are normally distributed
-    + Independent sampling (i.e., no autocorrelation or pseudoreplication)
+
+- Linear relationship between response and predictor variables
+- Reasonable levels of collinearity (e.g., VIF < 3 or 5 or 10)
+- Homogeneity of variances between groups (i.e., homoscedasticity [i.e., NOT heteroscedasticity])
+- Errors are normally distributed
+- Independent sampling (i.e., no autocorrelation or pseudoreplication)
 
 We've already dealt with collinearity, we know there is a linear relationship between response and predictor variables. On your own, go back through our previous work to determine where and how we checked for collinearity and the linear relationship--and what the outcomes were.
 
@@ -206,7 +207,6 @@ ggplot() +
 
 # Built-in model diagnostics for checking for heteroscedasticity, errors are normally distributed, etc.
 par(mfrow = c(2, 2)) # To make all plots be panels of a single figure. 
-plot(fit_global_scaled_noSpecies)
 plot(fit_global_scaled_noSpecies)
 
 ```
