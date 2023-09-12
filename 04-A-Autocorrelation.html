@@ -459,7 +459,7 @@ div.tocify {
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Linear Models &amp; Prob Distributions
+    Linear Models
      
     <span class="caret"></span>
   </a>
@@ -481,6 +481,18 @@ div.tocify {
   <ul class="dropdown-menu" role="menu">
     <li>
       <a href="03-A-model-selection.html">Lab</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Autocorrelation
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="04-A-Autocorrelation.html">Lab</a>
     </li>
   </ul>
 </li>
@@ -683,7 +695,7 @@ things:</p>
 <p>As with the maps, I hope you can visually detect the temporal
 autocorrelation in these lake data. There are ways to statistically test
 for temporal autocorrelation, but unlike our spatial example, they’re
-pretty simple! Check out this code using the acf() “autocorrelation
+very quick to run! Check out this code using the acf() “autocorrelation
 function” and ccf() “cross correlation function”. On your own, interpret
 the resultant plots.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Plot temporal auto-correlation for ice duration at Lake Mendota:</span></span>
