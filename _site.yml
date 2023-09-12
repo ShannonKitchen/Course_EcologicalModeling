@@ -20,7 +20,7 @@ navbar:
       menu:
         - text: "Lab"
           href: 01-A-data-exploration.html
-    - text: "Linear Models & Prob Distributions"
+    - text: "Linear Models"
       menu:
         - text: "Lab"
           href: 02-A-linear-models-and-probability-distributions.html
@@ -30,14 +30,10 @@ navbar:
       menu:
         - text: "Lab"
           href: 03-A-model-selection.html
-    # - text: "W5"
-    #   menu:
-    #     - text: "Bayesian linear models"
-    #       href: 05-A-Bayesian-linear-models.html
-    #     - text: "Bayesian inference with prior information"
-    #       href: 05-B-Bayesian-priors.html
-    #     - text: "Advanced Bayesian model example"
-    #       href: 05-C-Advanced-bayesian-example.html
+    - text: "Autocorrelation"
+      menu:
+        - text: "Lab"
+          href: 04-A-Autocorrelation.html
     # - text: "W6"
     #   menu:
     #     - text: "Unconstrained ordination"
