@@ -1,0 +1,143 @@
+---
+layout: topic
+title: "Autocorrelation"
+output: html_document
+---
+
+**Assigned Reading:**
+
+- Dynamic Ecology blog. (Oct 2, 2013). Autocorrelation: Friend or Foe? https://dynamicecology.wordpress.com/2013/10/02/autocorrelation-friend-or-foe/
+- Diniz‐Filho, J. A. F., Bini, L. M., & Hawkins, B. A. (2003). Spatial autocorrelation and red herrings in geographical ecology. Global Ecology and Biogeography, 12(1), 53-64.
+- Guélat, J., & Kéry, M. (2018). Effects of spatial autocorrelation and imperfect detection on species distribution models. Methods in Ecology and Evolution, 9(6), 1614-1625.
+
+```{r include = FALSE}
+# This code block sets up the r session when the page is rendered to html
+# include = FALSE means that it will not be included in the html document
+
+# Write every code block to the html document 
+knitr::opts_chunk$set(echo = TRUE)
+
+# Write the results of every code block to the html document 
+knitr::opts_chunk$set(eval = TRUE)
+
+# Set the web address where R will look for files from this repository
+# Do not change this address
+repo_url <- "https://raw.githubusercontent.com/LivingLandscapes/Course_EcologicalModeling/master/"
+
+# Suppress warnings and messages
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+
+```
+
+# Overview
+
+For our autocorrelation lab, 
+
+<p>
+![](https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/ltersampler_logo.png){width=300px}
+<p>
+
+---
+
+
+```{r include = TRUE, eval = TRUE, message = FALSE, results = 'hide'}
+
+# List of packages necessary to run this script:
+require(librarian, quietly = TRUE)
+shelf(tidyverse, cowplot,
+      lterdatasampler, # For LTER data
+      sf, # For geospatial analyses and plotting
+      ncf, # For spline.correlog
+      nlme, # For gls
+      lib = tempdir(),
+      quiet = TRUE)
+
+# Read in a data file
+data("nwt_pikas")
+data("ntl_icecover")
+
+```
+
+# Example 1: Peaked pikas
+
+
+
+
+```{r include = TRUE, eval = TRUE, message = FALSE}
+
+# Convert to sf object
+pika_sf <-
+  sf::st_as_sf(
+    nwt_pikas,
+    coords = c("utm_easting", "utm_northing"),
+    crs = st_crs(32613)  # UTM zone 13 (Niwot Ridge LTER)
+  )
+
+# Map the pika locations with variables of interest varying by size/color
+pika_conc_map <- 
+  ggplot(pika_sf) + 
+  geom_sf(aes(size = concentration_pg_g, # sf::geom_sf is for creating spatial ggplot
+              color = sex),
+          alpha = 0.5)
+pika_elev_map <-
+  ggplot(pika_sf) +
+  geom_sf(aes(color = elev_m)) +
+  scale_color_viridis_c()
+plot_grid(pika_elev_map, pika_conc_map, ncol = 1, align = "hv")
+
+```
+
+Do you see any evidence of spatial autocorrelation in these data?
+
+```{r include = TRUE, eval = TRUE, message = FALSE, results='hide'}
+
+# # Spline Correlograms using the "ncf" package.
+# # NOTE: depending on your data, these can take a LONG time. Beware.
+# pika_elev_splcor <-
+#   spline.correlog(x = nwt_pikas$utm_easting,
+#                   y = nwt_pikas$utm_northing,
+#                   z = nwt_pikas$elev_m,
+#                   resamp = 500) # Number of bootstrap samples.
+# pika_conc_splcor <-
+#   spline.correlog(x = nwt_pikas$utm_easting,
+#                   y = nwt_pikas$utm_northing,
+#                   z = nwt_pikas$concentration_pg_g,
+#                   resamp = 500)
+# 
+# # Plot the spline correlograms!
+# plot(pika_elev_splcor)
+# plot(pika_conc_splcor)
+
+```
+
+## Example 2: Thawing lakes
+
+```{r include = TRUE, eval = TRUE, message = FALSE}
+
+# Plot ice duration by lake
+ice_duration_plot <- 
+  ggplot(ntl_icecover,
+       aes(x = year, y = ice_duration, color = lakeid, group = lakeid)) +
+  geom_smooth(method = "lm", formula = y ~ x) + 
+  geom_line() + 
+  xlab("Year") + 
+  ylab("Ice duration (days)")
+
+# Convert the "ice off" date to the POSIX* format and extract Julian day
+ice_off_plot <- 
+  ntl_icecover %>%
+  mutate(ice_off_julian = as.POSIXlt(ntl_icecover$ice_off,
+                                     format = "%d%b%y")$yday) %>%
+  ggplot(aes(x = year, y = ice_off_julian, color = lakeid, group = lakeid)) +
+  geom_smooth(method = "lm", formula = y ~ x) + 
+  geom_line() + 
+  xlab("Year") + 
+  ylab("Date ice off\n(Julian date)")
+
+# 
+
+```
+
+# Discussion questions
+
+1. 
