@@ -13,7 +13,7 @@
 
 <title>Autocorrelation</title>
 
-<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.23/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -29,7 +29,7 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
@@ -482,6 +482,9 @@ div.tocify {
     <li>
       <a href="03-A-model-selection.html">Lab</a>
     </li>
+    <li>
+      <a href="03-B-Homework-02.html">Homework 2</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -651,15 +654,14 @@ dates to the POSIX* format (see ?POSIXlt):</p>
 <span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co"># Print the data.frame to see what we did:</span></span>
 <span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="fu">head</span>(ntl_icecover)</span></code></pre></div>
 <pre><code>## # A tibble: 6 × 7
-##   lakeid       ice_on     ice_off    ice_duration  year ice_off_julian ice_on_…¹
-##   &lt;fct&gt;        &lt;date&gt;     &lt;date&gt;            &lt;dbl&gt; &lt;dbl&gt;          &lt;int&gt;     &lt;int&gt;
-## 1 Lake Mendota NA         1853-04-05           NA  1852             94        NA
-## 2 Lake Mendota 1853-12-27 NA                   NA  1853             NA       360
-## 3 Lake Mendota 1855-12-18 1856-04-14          118  1855            104       351
-## 4 Lake Mendota 1856-12-06 1857-05-06          151  1856            125       340
-## 5 Lake Mendota 1857-11-25 1858-03-26          121  1857             84       328
-## 6 Lake Mendota 1858-12-08 1859-03-14           96  1858             72       341
-## # … with abbreviated variable name ¹​ice_on_julian</code></pre>
+##   lakeid   ice_on     ice_off    ice_duration  year ice_off_julian ice_on_julian
+##   &lt;fct&gt;    &lt;date&gt;     &lt;date&gt;            &lt;dbl&gt; &lt;dbl&gt;          &lt;int&gt;         &lt;int&gt;
+## 1 Lake Me… NA         1853-04-05           NA  1852             94            NA
+## 2 Lake Me… 1853-12-27 NA                   NA  1853             NA           360
+## 3 Lake Me… 1855-12-18 1856-04-14          118  1855            104           351
+## 4 Lake Me… 1856-12-06 1857-05-06          151  1856            125           340
+## 5 Lake Me… 1857-11-25 1858-03-26          121  1857             84           328
+## 6 Lake Me… 1858-12-08 1859-03-14           96  1858             72           341</code></pre>
 <p>Now that we’ve done that, first make sure you understand what “Julian
 date” is.</p>
 <p>Okay, let’s check out the patterns in how long ice is staying on the

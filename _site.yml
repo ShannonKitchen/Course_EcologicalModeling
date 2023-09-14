@@ -30,6 +30,8 @@ navbar:
       menu:
         - text: "Lab"
           href: 03-A-model-selection.html
+        - text: "Homework 2"
+          href: 03-B-Homework-02.html
     - text: "Autocorrelation"
       menu:
         - text: "Lab"

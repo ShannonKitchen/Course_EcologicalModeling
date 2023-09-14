@@ -9,10 +9,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Instructor and Student names" />
 
 
-<title>Lesson Title</title>
+<title>Homework 2</title>
 
 <script src="site_libs/header-attrs-2.23/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -512,84 +511,156 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Lesson Title</h1>
-<h4 class="author">Instructor and Student names</h4>
+<h1 class="title toc-ignore">Homework 2</h1>
 
 </div>
 
 
-<p>The instructor will edit the header above to reflect the lesson
-content and add their and the student’s names as authors. The instructor
-should also update the text below to give a link to the assigned
-reading:</p>
-<p><strong>Assigned Reading:</strong></p>
-<blockquote>
-<p>Coyle, JR. 2017. <em>Intraspecific variation in functional traits
-reveals limited effects of microclimate on community assemble in
-temperatedeciduous oak canopies.</em> Oikos <strong>126</strong>:
-111-120. DOI: <a
-href="http://dx.doi.org/10.1111/oik.03239">10.1111/oik.03239</a></p>
-</blockquote>
-<div id="key-points" class="section level3">
-<h3>Key Points</h3>
-<p>The instructor will fill in a description of the topic here followed
-by a bulleted list describing key features of the statistical analysis
-method. For example:</p>
+<div id="overview" class="section level2">
+<h2>Overview</h2>
+<p>The discipline of landscape ecology frequently postulates that the
+spatial pattern of habitat is important, in addition to local
+characteristics such as patch area, vegetation type, and climate.
+Westphal et al (2003) analyzed data from the South Australian Bird Atlas
+using a series of landscape pattern metrics estimated at 3 spatial
+scales. They concluded that landscape structure had a positive effect on
+many bird species. However, this dataset was never designed to be
+analyzed using logistic regression, and consequently their conclusions
+were somewhat weak, and badly compromised by model selection
+uncertainty. They used AIC rather than AICc, because the number of
+datapoints was relatively large (n=499) compared to the number of
+parameters in the most complex model (K = 5) so n/K ~ 100 and AIC is
+probably adequate. However the number of models considered (R = 45) is
+quite large. In addition, because of the way the Atlas data were
+archived, it was not possible to directly compare the effect of local
+patch variables to landscape pattern covariates.</p>
+<p>At the same time, Dr. Scott Field and colleagues of the University of
+Adelaide collected an independent data set at 34 woodland sites in the
+Mt. Lofty Ranges using a standard 2 ha, 20 min timed count procedure in
+each of 2 years. Field et al. (2002) describe some of the issues related
+to designing this survey; we have data for 34 of the 38 sites in that
+study. The bird data has sites and years in rows, and bird species in
+columns; for a given site in a particular year, a 1 indicates that the
+species was observed at least once out of three visits to the site, and
+a zero indicates that the species was not observed in three visits. This
+provides some correction for the problem of false negatives. <em>FYI: if
+you’re thinking “duh–these folks should have just used an occupancy
+model,” check out the date of the OG occupancy modeling papers (e.g.,
+MacKenzie et al. 2002 in Ecology).</em></p>
+<p>Here are citations for the papers mentioned above:</p>
 <ul>
-<li>When to use this analysis</li>
-<li>When <em>not</em> to use this analysis</li>
+<li><em>Westphal, M. I., Field, S. A., Tyre, A. J., Paton, D., &amp;
+Possingham, H. P. (2003). Effects of landscape pattern on bird species
+distribution in the Mt. Lofty Ranges, South Australia. Landscape
+Ecology, 18, 413-426.</em></li>
+<li><em>Field, S. A., Tyre, A. J., &amp; Possingham, H. P. (2002).
+Estimating bird species richness: how should repeat surveys be organized
+in time?. Austral Ecology, 27(6), 624-629.</em></li>
+</ul>
+<p>Do not use the analysis presented in these papers, although you can
+refer to the paper for the ecological background. Please provide a
+reproducible .Rmd script that answers all questions below and produces
+all of your analysis and plots. Some reminders:</p>
+<ul>
+<li><strong>Reproducible:</strong> This means when I run your .Rmd file,
+it will run all analyses and create all plots without errors, without me
+having to reset my working directory, and without forcing me to install
+anything on my machine (i.e., use the require(librarian); shelf(your
+packages, lib = tempdir()) approach as in the code block below).</li>
+<li><strong>Format:</strong> Please write/format your .Rmd file similar
+to a scientific report or manuscript. For this assignment, we will just
+need a ‘Results’ and ‘Discussion’ section.</li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># List of packages necessary to run this script:</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">require</span>(librarian, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">shelf</span>(tidyverse, cowplot,</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>      AICcmodavg, <span class="co"># for aic.tab, model averaging, etc.</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>      mgcv, <span class="co"># for qq.gam</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>      <span class="at">quiet =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>      <span class="at">lib =</span> <span class="fu">tempdir</span>())</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co"># Load data:</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>mlrbird <span class="ot">&lt;-</span> </span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>  <span class="fu">read.csv</span>(<span class="st">&quot;https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/data/mlrbird.csv&quot;</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>mlrland <span class="ot">&lt;-</span> </span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>  <span class="fu">read.csv</span>(<span class="st">&quot;https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/data/mlrland.csv&quot;</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: You will need to join these datasets to conduct the analysis.</span></span></code></pre></div>
+</div>
+<div id="data-descriptions" class="section level2">
+<h2>Data descriptions:</h2>
+<p>We have two datasets for this homework. First, we have the bird
+occurrence data in mlrbird:</p>
+<ul>
+<li>Year - year codes.</li>
+<li>Patch - patch code</li>
+<li>Name - Name of survey location</li>
+<li>East - UTM easting</li>
+<li>North - UTM northing</li>
+<li>All the rest are four-letter bird species codes.</li>
+</ul>
+<p>We also have landscape pattern variables similar to those used by
+Westphal et al at 2 km, 5 km, and 10 km scales, as well as three “local”
+covariates. Each of the landscape variables starts with the name,
+followed by 2k, 5k, or 10K according to which buffer size was used. The
+variables used by Westphal et al are indicated with an asterisk, and
+“local” covariates are indicated by two asterisks. These landscape data
+are in mlrland. Note that these data have NOT been modified to reduce
+correlations among the variables as Westphal et al described (This is a
+hint, maybe).</p>
+<p><strong>NOTE:</strong> There are twice as many rows in mlrbird than
+mlrland. This is because the bird surveys were conducted over two years,
+but landscape variables were only collected once… How should you deal
+with this?</p>
+<ul>
+<li>Patch - patch code</li>
+<li>Name - Name of survey location</li>
+<li>*TLA - total landscape area</li>
+<li>NumP - number of patches</li>
+<li>MPS - mean patch size</li>
+<li>LPI - largest patch index (% of TLA covered by largest patch)</li>
+<li>*LSI - landscape shape index (measure of edge) = 1.0 if one circular
+patch, increases with edge</li>
+<li>PSSD - patch size std. Dev.</li>
+<li>*MNN - mean nearest neighbor distance (not if NumP is 0, it should
+be NA not 0 - check)</li>
+<li>TE - total edge</li>
+<li>*MPAR = (TE/TLA/NumP) = mean patch perimeter area ratio. Note that
+MPAR is a derived variable not found in the provided dataset.</li>
+<li>**MRF - mean annual rainfall</li>
+<li>**PA - patch area</li>
+<li>**PP - patch perimeter</li>
 </ul>
 </div>
-<div id="analysis-example" class="section level3">
-<h3>Analysis Example</h3>
-<p>The student discussion leader will place their example code in this
-section, including text that describe the purpose of each code
-block.</p>
-<p>First you will probably need to read in data. If you have uploaded
-the data file on the course GitHub repository in the data folder then
-you should be able to read in the data as follows by changing the name
-of the file after <code>data/</code>:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Read in a data file from the data folder on the BIO 202 GitHub repository</span></span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="fu">file.path</span>(repo_url, <span class="st">&quot;data/macrolichen_traits_Coyle_2016.csv&quot;</span>))</span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co"># Or, read in the data file from a folder on your computer</span></span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co"># Remove # from the following 3 lines and change the file path assigned to my_dir</span></span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co"># my_dir &lt;- &quot;/Path/to/your/working_directory&quot;</span></span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co"># setwd(my_dir)</span></span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co"># dat &lt;- read.csv(&quot;lichen_traits_Coyle_2016.csv&quot;)</span></span></code></pre></div>
-<p>Make a code block that loads any packages needed for the analysis. It
-can be helpful to indicate which functions come from which packages.
-Note that you may need to install packages using
-<code>install.packages('package_name')</code>.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Load dplyr: filter</span></span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co"># Load ggplot2: ggplot</span></span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code></pre></div>
-<p>Next describe how you will manipulate the data in order to perform
-the anaylsis.</p>
-<p>Include any relevant code below, making sure to include a
-<code># comment</code> for each line.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Subset the data to foliose lichens</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>fol_dat <span class="ot">&lt;-</span> dat <span class="sc">%&gt;%</span></span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="fu">filter</span>(Growth_form <span class="sc">==</span> <span class="st">&#39;foliose&#39;</span>)</span></code></pre></div>
-<p>Describe the steps of the example analysis, including code blocks as
-needed. Describe the functions and packages used.</p>
-<pre><code>## Warning: Removed 213 rows containing missing values
-## (`geom_point()`).</code></pre>
-<p><img src="images/chl_fig-1.png" width="672" /></p>
-<p><strong>Figure 1. Total chlorophyll versus ratio of chlorophyll A to
-B.</strong> Looks like we have some data cleaning to do!</p>
-</div>
-<div id="discussion-questions" class="section level3">
-<h3>Discussion Questions</h3>
-<p>Include any questions or issues here that you want to discuss or ask
-about in class. After the class session, update this section with any
-important notes discussed.</p>
+<div id="homework-questions" class="section level2">
+<h2>Homework questions</h2>
 <ol style="list-style-type: decimal">
-<li>Question 1:</li>
-<li>Question 2:</li>
-<li>Question 3:</li>
+<li>Describe a set of 7 - 10 hypotheses (i.e., models comprised of
+combinations of covariates) that will allow you to compare patch
+vs. landscape explanations for variation in patch use of woodland birds,
+and estimate the best scale for landscape effects.</li>
+<li>Fit your selected models to the data using binomial generalized
+linear models (GLMs) for at least two bird species. I recommend using
+grcu (Grey Currawong), silv (Silvereye), or yfhe (Yellow faced
+Honeyeater) – at first glance they appear to have something interesting
+to say with this limited dataset.</li>
+<li>Use AIC – based model selection (or your preferred alternative!) to
+compare your approximating models with each other, and draw conclusions
+about the relative importance of patch vs. landscape effects for the
+species you considered. Be sure to justify the model selection criterion
+(e.g. AIC, AICc, QAIC, QAICc or whatever) you use.</li>
+<li>Calculate a model averaged estimate for one or more of the
+biologically important parameters in your models. For example, the
+effect of patch area (PA) is directly relevant to estimating the effects
+of proposed land use changes (e.g. vegetation clearance) on bird
+species.</li>
+<li>Create model ranking tables (e.g., AICc tables) and create “marginal
+effects” plots for the model-averaged parameters from question #4.
+Marginal effects tells us how the response variable changes when a
+specific predictor variable changes. Other covariates held constant
+(e.g., at zero, at their means, etc.).</li>
+<li>Interpret the results of your model selection and model
+averaging.</li>
 </ol>
 </div>
 
