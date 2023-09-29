@@ -89,7 +89,6 @@ pika_elev_map <-
 
 # Plot maps together
 plot_grid(pika_elev_map, pika_conc_map, ncol = 1, align = "hv")
-
 ```
 
 Do you see any evidence of spatial autocorrelation in these maps? **On your own, try changing the color scales, the dot sizes, etc. to further investigate.**
