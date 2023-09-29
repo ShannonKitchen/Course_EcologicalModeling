@@ -41,9 +41,13 @@ shelf(tidyverse, cowplot, performance,
       lib = tempdir(),
       quiet = TRUE)
 
+# Set the web address where R will look for files from this repository
+# Do not change this address
+repo_url <- "https://raw.githubusercontent.com/LivingLandscapes/Course_EcologicalModeling/master/"
+
 # Load data
 ecervi <- 
-  read.table("https://raw.githubusercontent.com/LivingLandscapes/Course_EcologicalModeling/data/DeerEcervi.txt", 
+  read.table(paste0(repo_url, "/data/DeerEcervi.txt"), 
              header = TRUE)
 
 ```
