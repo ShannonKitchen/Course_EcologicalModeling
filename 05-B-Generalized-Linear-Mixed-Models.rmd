@@ -1,6 +1,6 @@
 ---
 layout: topic
-title: "Mixed models: Part I"
+title: "Generalized Linear Mixed Models"
 output: html_document
 ---
 
@@ -31,13 +31,16 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 The first dataset we'll look at is from Zuur et al. (2009); the data are from Vicente et al. (2005) who looked at the distribution and faecal shedding patterns of 1st stage larvae of *Elaphostrongylus cervi* in red deer. Here we're interested in the presence and absence of larvae in deer as functions of size (length in cm), sex, and farm identity. 
 
-```{r, include = TRUE, eval = TRUE}
+```{r, include = TRUE, eval = TRUE, message = FALSE}
 
 # List of packages necessary to run this script:
 require(librarian, quietly = TRUE)
 shelf(tidyverse, cowplot, performance, 
-      AICcmodavg, # For model selection, model averaging
+      MuMIn, # for model selection
       lme4, # For mixed modeling
+      pander,
+      DHARMa, # For quantile residuals
+      broom.mixed,
       lib = tempdir(),
       quiet = TRUE)
 
@@ -56,8 +59,9 @@ The average number of larvae in a fecal sample is highly skewed to the right -- 
 
 ```{r, responseHist}
 
+
 hist(ecervi$Ecervi,
-     xlab="Number of L1 E. cervi",
+     xlab = "Number of L1 E. cervi",
      main = "")
 
 ```
@@ -65,21 +69,34 @@ hist(ecervi$Ecervi,
 The response variable is continuous, so we need to do some data manipulation in order to get presence/absence data. This is one way to handle highly skewed data like this. While we're doing that, we'll make sure sex is categorical and center the length variable to improve convergence, and make the intercept directly interpretable as the probability of presence for an average size deer. 
 
 ```{r transformData}
-library(tidyverse)
-ecervi <- ecervi %>%
+
+# Convert E cervi abundance to presence/absence (1 , 0), create a factor for
+# sex, and center the length variable by subtracting the mean.
+ecervi <- 
+  ecervi %>%
   mutate(Ecervi.pa = Ecervi > 0,
-         fSex = factor(Sex, labels=c("Male","Female")),
+         fSex = factor(Sex, labels = c("Male", "Female")),
          cLength = Length - mean(Length))
 
-ggplot(ecervi, aes(x=cLength, y=Ecervi)) + 
-  geom_point() + facet_wrap(~fSex)
+# Plot the potential relationship between cLength and E cervi abundance
+ggplot(ecervi, 
+       aes(x = cLength, 
+           y = Ecervi)) + 
+  geom_point() + 
+  facet_wrap( ~ fSex)
 
 ```
 
-One issue that can affect a binomial model is called "complete seperation". This arises when one predictor is a "perfect" predictor of presence or absence. There is a value above which there are only presences and below which there are only absences. The plot above suggests that won't be an issue with our fixed effects, but there could be farms that are perfectly affected or unaffected.
+One issue that can affect a binomial model is called "complete separation". This arises when one predictor is a "perfect" predictor of presence or absence. There is a value above which there are only presences and below which there are only absences. The plot above suggests that won't be an issue with our fixed effects, but there could be farms that are perfectly affected or unaffected.
 
 ```{r checkFarmSeperation}
-with(ecervi, table(Farm, Ecervi.pa))
+
+# Check if there is danger of "complete separation". If there are farms without
+# any E cervi, that could be a problem.
+with(ecervi, 
+     table(Farm, 
+           Ecervi.pa))
+
 ```
 
 There are 3 farms with either all positive or all negative observations. We won't worry about that for now, but we will want to look for problems with that later. 
@@ -87,15 +104,20 @@ There are 3 farms with either all positive or all negative observations. We won'
 As always, start with a global model to check residuals. The global model here has the interaction of sex and length. We clearly have a repeated measures design, so we will start with a mixed model using Farm as the random effect. It is also possible that the effects of sex and length could vary by farm.
 
 ```{r checkGlobal}
-M0 <- glmer(Ecervi.pa~fSex*cLength+(1 + fSex * cLength | Farm), 
-            data=ecervi,family=binomial)
+
+# Global model
+M0 <- glmer(Ecervi.pa ~ fSex * cLength + (1 + fSex * cLength | Farm), 
+            data = ecervi, 
+            family = binomial)
 summary(M0)
 ```
 
 That model fails to converge. Asking for the sex by length interaction to vary among farms is probably too much given there are some farms with relatively few observations. Looking at the summary, especially the random effects estimates, it is clear that the scaling between Sex and Length is very different. A 1 cm change in length is a much smaller change than a change from male to female. This kind of discrepancy can make it harder for a model to converge. If I rescale Length by dividing through with the standard deviation the coefficients for those two variables will be closer, and this can help with convergence. I will also change the contrasts on Sex to "sum to zero" contrasts, which has a similar beneficial effect to centering a continuous variable.   
 
 ```{r checkGlobal1}
-ecervi <- ecervi %>%
+
+ecervi <- 
+  ecervi %>%
   mutate(csLength = cLength / sd(Length))
 contrasts(ecervi$fSex) <- contr.sum(2)
 
@@ -128,15 +150,20 @@ summary(M0b)
 Both of those models converge. Check residuals for both. I will use the quantile residuals that I discussed in an earlier add on. 
 
 ```{r residualM0a}
-library(statmod)
-library(broom)
-residM0a <- augment(M0a)
-#residM0a$qr <- qresiduals(M0a) # error prevents knitting
+
+# Get residuals 
+residM0a <- broom.mixed::augment(M0a)
+# # Get quantile residuals
+# residM0a$qr <- qresiduals(M0a) # FYI: error prevents knitting, but kept here
+# for completeness.
+simulationOutput <- simulateResiduals(fittedModel = M0a, plot = T)
+
 ```
 
 Well that sucks. A bit of digging around in source code followed and I fixed the underlying qres.binom so it works with S4 instead of S3 objects.
 
 ```{r}
+
 qres.binom <- function (glmer.obj) 
 {
     p <- fitted(glmer.obj)
@@ -150,7 +177,9 @@ qres.binom <- function (glmer.obj)
     u <- runif(n = length(y), min = a, max = b)
     qnorm(u)
 }
+
 residM0a$qr <- qres.binom(M0a)
+
 ```
 
 ```{r residualPlotsA}
@@ -232,9 +261,13 @@ forms <- expand.grid(LHS="Ecervi.pa ~",fe=fe,re=re)
 models <- forms %>%
   mutate(RHS = paste(fe, re, sep = "+"),
          model = paste(LHS, RHS))
-fits <- by_row(models, ~glmer(as.formula(.x$model),
-                           data=ecervi, 
-                           family=binomial))
+fits <- lapply(models$model, 
+               function(X) { 
+                 glmer(X,
+                       data = ecervi,
+                       family = binomial)
+                 }
+               )
 ```
 
 A few of those models failed to converge. Figuring out which ones is a bit involved. Reading documentation for merMod objects there is a slot for information on the optimization, and a bit of experimenting determined that I could check for the object lme4 to have length > 0.
@@ -249,8 +282,7 @@ which(!fits$converged)
 Now we're ready to see which models are the best, keeping a wary eye out for models 6, 9, 18.
 
 ```{r AICtable}
-library(MuMIn)
-library(pander)
+
 pander(model.sel(fits$fit))
 ```
 
