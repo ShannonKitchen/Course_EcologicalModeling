@@ -39,7 +39,7 @@ shelf(tidyverse, cowplot, performance,
       MuMIn, # for model selection
       lme4, # For mixed modeling
       pander,
-      DHARMa, # For quantile residuals
+      DHARMa, # For mixed model diagnostics
       broom.mixed,
       lib = tempdir(),
       quiet = TRUE)
