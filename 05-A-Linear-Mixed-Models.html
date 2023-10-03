@@ -13,7 +13,7 @@
 
 <title>Linear Mixed Models</title>
 
-<script src="site_libs/header-attrs-2.23/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -29,7 +29,7 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
-<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
@@ -545,25 +545,36 @@ Frost at the University of Nebraska. The mice dataset contains
 morphological measurements of mice caught at various sites in the
 Niobrara Valley.</li>
 </ul>
+<p>Here’s a pretty picture from the Niobrara Valley Preserve (which you
+should 100% visit if you can) to inspire you:</p>
+<p>
+<img
+src="https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/niobrara.JPG"
+width="600" />
+<p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># List of packages necessary to run this script:</span></span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">require</span>(librarian, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">shelf</span>(tidyverse, cowplot, performance, </span>
 <span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>      AICcmodavg, <span class="co"># for model selection</span></span>
 <span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>      lme4, <span class="co"># For mixed modeling</span></span>
 <span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>      lmerTest,</span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>      pander,</span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>      broom.mixed,</span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>      <span class="at">lib =</span> <span class="fu">tempdir</span>(),</span>
-<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>      <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co"># Set the web address where R will look for files from this repository</span></span>
-<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co"># Do not change this address</span></span>
-<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>repo_url <span class="ot">&lt;-</span> <span class="st">&quot;https://raw.githubusercontent.com/LivingLandscapes/Course_EcologicalModeling/master/&quot;</span></span>
-<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a></span>
-<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co"># Load our two datasets</span></span>
-<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: &#39;sleepstudy&#39; data comes loaded in lme4</span></span>
-<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a>mice <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="fu">paste0</span>(repo_url, <span class="st">&quot;/data/mice.txt&quot;</span>), </span>
-<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a>                   <span class="at">header =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>      DHARMa, <span class="co"># For checking mixed model residuals, etc.</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>      pander,</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>      broom.mixed,</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>      <span class="at">lib =</span> <span class="fu">tempdir</span>(),</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>      <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co"># Set the web address where R will look for files from this repository</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co"># Do not change this address</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>repo_url <span class="ot">&lt;-</span> <span class="st">&quot;https://raw.githubusercontent.com/LivingLandscapes/Course_EcologicalModeling/master/&quot;</span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="co"># Load our two datasets</span></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: &#39;sleepstudy&#39; data comes loaded in lme4</span></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a>mice <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="fu">paste0</span>(repo_url, <span class="st">&quot;/data/mice.txt&quot;</span>), </span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a>                   <span class="at">header =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="co"># Set seed</span></span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span></code></pre></div>
 <div id="sleep-study" class="section level2">
 <h2>Sleep Study</h2>
 <div id="simple-linear-regression" class="section level3">
@@ -836,49 +847,53 @@ greater.</p>
 <p>In the following figure I’ve plotted the intercepts for each group
 from the mixed model against the intercepts from the list of models. If
 they were identical they would fall on the solid line.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>shrink <span class="ot">&lt;-</span>  </span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="fu">coef</span>(ss.mm)<span class="sc">$</span>Subject <span class="sc">%&gt;%</span></span>
-<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>               <span class="fu">rename</span>(<span class="at">Random_Intercept =</span> <span class="st">`</span><span class="at">(Intercept)</span><span class="st">`</span>,</span>
-<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>                      <span class="at">Random_Days =</span> Days), </span>
-<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>             cc <span class="sc">%&gt;%</span></span>
-<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>               <span class="fu">rename</span>(<span class="at">Fixed_Intercept =</span> <span class="st">`</span><span class="at">(Intercept)</span><span class="st">`</span>,</span>
-<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>                      <span class="at">Fixed_Days =</span> Days))</span>
-<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a></span>
-<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>t1 <span class="ot">&lt;-</span></span>
-<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>  shrink <span class="sc">%&gt;%</span></span>
-<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">names</span>(shrink), </span>
-<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>               <span class="at">values_to =</span> <span class="st">&quot;estimate&quot;</span>,</span>
-<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="st">&quot;coefficient&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a>  <span class="fu">separate_wider_delim</span>(<span class="at">cols =</span> <span class="st">&quot;coefficient&quot;</span>, </span>
-<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a>                       <span class="at">names =</span> <span class="fu">c</span>(<span class="st">&quot;model&quot;</span>, <span class="st">&quot;coefficient&quot;</span>),</span>
-<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a>                       <span class="at">delim =</span> <span class="st">&quot;_&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a>  <span class="fu">group_by</span>(model) <span class="sc">%&gt;%</span></span>
-<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">id =</span> <span class="fu">row_number</span>()) <span class="sc">%&gt;%</span></span>
-<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> <span class="st">&quot;model&quot;</span>, </span>
-<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a>              <span class="at">values_from =</span> <span class="st">&quot;estimate&quot;</span>)</span>
-<span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a></span>
-<span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a><span class="co"># phew! that was more work than I expected. </span></span>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Combine mixed model and linear regression coefficients</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>shrink <span class="ot">&lt;-</span>  </span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="fu">coef</span>(ss.mm)<span class="sc">$</span>Subject <span class="sc">%&gt;%</span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>               <span class="fu">rename</span>(<span class="at">Random_Intercept =</span> <span class="st">`</span><span class="at">(Intercept)</span><span class="st">`</span>,</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>                      <span class="at">Random_Days =</span> Days), </span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>             cc <span class="sc">%&gt;%</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>               <span class="fu">rename</span>(<span class="at">Fixed_Intercept =</span> <span class="st">`</span><span class="at">(Intercept)</span><span class="st">`</span>,</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>                      <span class="at">Fixed_Days =</span> Days))</span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="co"># Manipulate data for ggplotting</span></span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>t1 <span class="ot">&lt;-</span></span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>  shrink <span class="sc">%&gt;%</span></span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">names</span>(shrink), </span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a>               <span class="at">values_to =</span> <span class="st">&quot;estimate&quot;</span>,</span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="st">&quot;coefficient&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a>  <span class="fu">separate_wider_delim</span>(<span class="at">cols =</span> <span class="st">&quot;coefficient&quot;</span>, </span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a>                       <span class="at">names =</span> <span class="fu">c</span>(<span class="st">&quot;model&quot;</span>, <span class="st">&quot;coefficient&quot;</span>),</span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a>                       <span class="at">delim =</span> <span class="st">&quot;_&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a>  <span class="fu">group_by</span>(model) <span class="sc">%&gt;%</span></span>
+<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">id =</span> <span class="fu">row_number</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> <span class="st">&quot;model&quot;</span>, </span>
+<span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a>              <span class="at">values_from =</span> <span class="st">&quot;estimate&quot;</span>)</span>
 <span id="cb9-23"><a href="#cb9-23" tabindex="-1"></a></span>
-<span id="cb9-24"><a href="#cb9-24" tabindex="-1"></a><span class="co"># make a little dataframe for the average point</span></span>
-<span id="cb9-25"><a href="#cb9-25" tabindex="-1"></a>meanpoint <span class="ot">&lt;-</span> </span>
-<span id="cb9-26"><a href="#cb9-26" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">coefficient =</span> <span class="fu">c</span>(<span class="st">&quot;Intercept&quot;</span>,<span class="st">&quot;Days&quot;</span>),</span>
-<span id="cb9-27"><a href="#cb9-27" tabindex="-1"></a>                        <span class="at">Random=</span><span class="fu">fixef</span>(ss.mm),</span>
-<span id="cb9-28"><a href="#cb9-28" tabindex="-1"></a>                        <span class="at">Fixed=</span><span class="fu">coef</span>(ss.lm))</span>
-<span id="cb9-29"><a href="#cb9-29" tabindex="-1"></a></span>
-<span id="cb9-30"><a href="#cb9-30" tabindex="-1"></a><span class="co"># now make the plot ... easier b/c of data manipulation?</span></span>
-<span id="cb9-31"><a href="#cb9-31" tabindex="-1"></a><span class="fu">ggplot</span>(t1, </span>
-<span id="cb9-32"><a href="#cb9-32" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> Fixed,</span>
-<span id="cb9-33"><a href="#cb9-33" tabindex="-1"></a>               <span class="at">y =</span> Random)) <span class="sc">+</span></span>
-<span id="cb9-34"><a href="#cb9-34" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb9-35"><a href="#cb9-35" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> coefficient, </span>
-<span id="cb9-36"><a href="#cb9-36" tabindex="-1"></a>             <span class="at">scales =</span> <span class="st">&quot;free&quot;</span>) <span class="sc">+</span> </span>
-<span id="cb9-37"><a href="#cb9-37" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&quot;lm&quot;</span>) <span class="sc">+</span> </span>
-<span id="cb9-38"><a href="#cb9-38" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">slope =</span> <span class="dv">1</span>, </span>
-<span id="cb9-39"><a href="#cb9-39" tabindex="-1"></a>              <span class="at">intercept =</span> <span class="dv">0</span>, </span>
-<span id="cb9-40"><a href="#cb9-40" tabindex="-1"></a>              <span class="at">linetype =</span> <span class="dv">2</span>) <span class="sc">+</span> </span>
-<span id="cb9-41"><a href="#cb9-41" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> meanpoint, </span>
-<span id="cb9-42"><a href="#cb9-42" tabindex="-1"></a>             <span class="at">color =</span> <span class="st">&quot;violetred1&quot;</span>,</span>
-<span id="cb9-43"><a href="#cb9-43" tabindex="-1"></a>             <span class="at">size =</span> <span class="dv">2</span>)</span></code></pre></div>
+<span id="cb9-24"><a href="#cb9-24" tabindex="-1"></a><span class="co"># phew! that was more work than I expected. </span></span>
+<span id="cb9-25"><a href="#cb9-25" tabindex="-1"></a></span>
+<span id="cb9-26"><a href="#cb9-26" tabindex="-1"></a><span class="co"># make a little dataframe for the average point</span></span>
+<span id="cb9-27"><a href="#cb9-27" tabindex="-1"></a>meanpoint <span class="ot">&lt;-</span></span>
+<span id="cb9-28"><a href="#cb9-28" tabindex="-1"></a>  <span class="fu">data.frame</span>(</span>
+<span id="cb9-29"><a href="#cb9-29" tabindex="-1"></a>    <span class="at">coefficient =</span> <span class="fu">c</span>(<span class="st">&quot;Intercept&quot;</span>, <span class="st">&quot;Days&quot;</span>),</span>
+<span id="cb9-30"><a href="#cb9-30" tabindex="-1"></a>    <span class="at">Random =</span> <span class="fu">fixef</span>(ss.mm),</span>
+<span id="cb9-31"><a href="#cb9-31" tabindex="-1"></a>    <span class="at">Fixed =</span> <span class="fu">coef</span>(ss.lm)</span>
+<span id="cb9-32"><a href="#cb9-32" tabindex="-1"></a>  )</span>
+<span id="cb9-33"><a href="#cb9-33" tabindex="-1"></a></span>
+<span id="cb9-34"><a href="#cb9-34" tabindex="-1"></a><span class="co"># now make the plot ... easier b/c of data manipulation?</span></span>
+<span id="cb9-35"><a href="#cb9-35" tabindex="-1"></a><span class="fu">ggplot</span>(t1, </span>
+<span id="cb9-36"><a href="#cb9-36" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> Fixed,</span>
+<span id="cb9-37"><a href="#cb9-37" tabindex="-1"></a>               <span class="at">y =</span> Random)) <span class="sc">+</span></span>
+<span id="cb9-38"><a href="#cb9-38" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb9-39"><a href="#cb9-39" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> coefficient, </span>
+<span id="cb9-40"><a href="#cb9-40" tabindex="-1"></a>             <span class="at">scales =</span> <span class="st">&quot;free&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb9-41"><a href="#cb9-41" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&quot;lm&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb9-42"><a href="#cb9-42" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">slope =</span> <span class="dv">1</span>, </span>
+<span id="cb9-43"><a href="#cb9-43" tabindex="-1"></a>              <span class="at">intercept =</span> <span class="dv">0</span>, </span>
+<span id="cb9-44"><a href="#cb9-44" tabindex="-1"></a>              <span class="at">linetype =</span> <span class="dv">2</span>) <span class="sc">+</span> </span>
+<span id="cb9-45"><a href="#cb9-45" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> meanpoint, </span>
+<span id="cb9-46"><a href="#cb9-46" tabindex="-1"></a>             <span class="at">color =</span> <span class="st">&quot;violetred1&quot;</span>,</span>
+<span id="cb9-47"><a href="#cb9-47" tabindex="-1"></a>             <span class="at">size =</span> <span class="dv">2</span>)</span></code></pre></div>
 <p><img src="05-A-Linear-Mixed-Models_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <p>Random effects coefficients are slightly biased towards the mean
 value indicated by the red dot. Therefore the blue line (fit to the
@@ -891,7 +906,10 @@ population mean.</p>
 <div id="mouse-example" class="section level2">
 <h2>Mouse Example</h2>
 <p>Let’s look at the breakdown of the relationship between ear size and
-foot length by geographic site. Sex may also matter?</p>
+foot length by geographic site and sex. Do some quick data exploration
+of the ‘mice’ data to familiarize yourself with it. Also, please ignore
+that a normal distribution may or may not be the best for this data.
+Now, check out the faceted plot below:</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Remove rows with unknown sex.</span></span>
 <span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>mice <span class="ot">=</span> <span class="fu">filter</span>(mice, sex <span class="sc">!=</span> <span class="st">&quot;U&quot;</span>)</span>
 <span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a></span>
@@ -906,10 +924,10 @@ foot length by geographic site. Sex may also matter?</p>
 <span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&quot;lm&quot;</span>) <span class="sc">+</span></span>
 <span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a>  <span class="fu">facet_wrap</span>( <span class="sc">~</span> site)</span></code></pre></div>
 <div class="figure">
-<img src="05-A-Linear-Mixed-Models_files/figure-html/unnamed-chunk-11-1.png" alt="Ear length vs. foot length in mm at a number of sites in the Northwest of Nebraska for two species of deer mouse." width="672" />
+<img src="05-A-Linear-Mixed-Models_files/figure-html/unnamed-chunk-11-1.png" alt="Mouse Fig 1: Ear length vs. foot length in mm at a number of sites in the Northwest of Nebraska for two species of deer mouse." width="672" />
 <p class="caption">
-Ear length vs. foot length in mm at a number of sites in the Northwest
-of Nebraska for two species of deer mouse.
+Mouse Fig 1: Ear length vs. foot length in mm at a number of sites in
+the Northwest of Nebraska for two species of deer mouse.
 </p>
 </div>
 <p>A few things are obvious from this plot. First, there is a lot of
@@ -924,10 +942,10 @@ clearer.</p>
 <span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>               <span class="at">method =</span> <span class="st">&quot;lm&quot;</span>, </span>
 <span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>               <span class="at">se =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
 <div class="figure">
-<img src="05-A-Linear-Mixed-Models_files/figure-html/unnamed-chunk-12-1.png" alt="Ear length by foot length with a predicted line for each site. Shading indicates overlapping points." width="672" />
+<img src="05-A-Linear-Mixed-Models_files/figure-html/unnamed-chunk-12-1.png" alt="Mouse Fig 2: Ear length by foot length with a predicted line for each site. Shading indicates overlapping points." width="672" />
 <p class="caption">
-Ear length by foot length with a predicted line for each site. Shading
-indicates overlapping points.
+Mouse Fig 2: Ear length by foot length with a predicted line for each
+site. Shading indicates overlapping points.
 </p>
 </div>
 <p>So we want to check a model that lets the relationship between feet
@@ -936,79 +954,53 @@ possible places we could look for mice, so we’ll treat site as a random
 effect. We can also see that the slope of the effect varies alot between
 sites, so we’ll let the coefficient of foot vary between sites too, at
 least initially. Here’s the global model, and check the residuals:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># </span></span>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># Global mixed mouse model!</span></span>
 <span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>mice.global <span class="ot">&lt;-</span> </span>
 <span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>  <span class="fu">lmer</span>(ear <span class="sc">~</span> foot <span class="sc">*</span> species <span class="sc">*</span> sex <span class="sc">+</span> (foot <span class="sc">|</span> site),</span>
 <span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>       <span class="at">data =</span> mice)</span>
 <span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a></span>
-<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>rr <span class="ot">&lt;-</span> broom<span class="sc">::</span><span class="fu">augment</span>(mice.global)</span>
-<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a></span>
-<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="fu">ggplot</span>(rr, </span>
-<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> .fitted, </span>
-<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a>           <span class="at">y =</span> .resid)) <span class="sc">+</span></span>
-<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a>  <span class="fu">geom_smooth</span>() <span class="sc">+</span></span>
-<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, </span>
-<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a>             <span class="at">linetype =</span> <span class="dv">2</span>)</span></code></pre></div>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="co"># Check residuals with DHARMa</span></span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a><span class="fu">simulateResiduals</span>(mice.global, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <p><img src="05-A-Linear-Mixed-Models_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co"># get int and slope for qqline</span></span>
-<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>probs <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.25</span>,</span>
-<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>           <span class="fl">0.75</span>)</span>
-<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">quantile</span>(rr<span class="sc">$</span>.resid, probs, <span class="at">names =</span> <span class="cn">FALSE</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">qnorm</span>(probs)</span>
-<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a>slope <span class="ot">&lt;-</span> <span class="fu">diff</span>(y) <span class="sc">/</span> <span class="fu">diff</span>(x)</span>
-<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a>int <span class="ot">&lt;-</span> y[1L] <span class="sc">-</span> slope <span class="sc">*</span> x[1L]</span>
-<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a><span class="fu">ggplot</span>(rr, </span>
-<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">sample =</span> .resid)) <span class="sc">+</span></span>
-<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a>  <span class="fu">geom_qq</span>(<span class="at">size =</span> <span class="fu">rel</span>(<span class="dv">4</span>)) <span class="sc">+</span></span>
-<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a>  <span class="fu">geom_abline</span>(</span>
-<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a>    <span class="at">intercept =</span> int,</span>
-<span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a>    <span class="at">slope =</span> slope,</span>
-<span id="cb13-14"><a href="#cb13-14" tabindex="-1"></a>    <span class="at">linetype =</span> <span class="dv">2</span>,</span>
-<span id="cb13-15"><a href="#cb13-15" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">2</span></span>
-<span id="cb13-16"><a href="#cb13-16" tabindex="-1"></a>  )</span></code></pre></div>
-<p><img src="05-A-Linear-Mixed-Models_files/figure-html/unnamed-chunk-13-2.png" width="672" /></p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="fu">ggplot</span>(rr,</span>
-<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> .fitted,</span>
-<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>           <span class="at">y =</span> <span class="fu">sqrt</span>(<span class="fu">abs</span>(.resid)))) <span class="sc">+</span></span>
-<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>  <span class="fu">geom_smooth</span>() <span class="sc">+</span></span>
-<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept  =</span> <span class="dv">1</span>)</span></code></pre></div>
-<p><img src="05-A-Linear-Mixed-Models_files/figure-html/unnamed-chunk-13-3.png" width="672" /></p>
-<p>The residuals don’t look too bad, although there are some large
-positive residuals which we’ll ignore for now. So let’s fit a range of
-models with different random effects structures, and compare using AICc.
-The problem with comparing different random effects using Likelihood
-Ratio tests is that our null hypothesis is “on the boundary” of the
-parameter space, because you can’t have negative variances. Choosing a
-model that has the minimum AICc won’t be bothered by this consideration,
-but this would affect the calculation of the weights.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co"># uncorrelated random effects # </span><span class="al">NOTE</span><span class="co">: Does not converge!</span></span>
-<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>mice<span class="fl">.1</span> <span class="ot">&lt;-</span></span>
-<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>  <span class="fu">lmer</span>(ear <span class="sc">~</span> foot <span class="sc">*</span> species <span class="sc">*</span> sex <span class="sc">+</span> (foot <span class="sc">-</span> <span class="dv">1</span> <span class="sc">|</span> site) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> site),</span>
-<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>       <span class="at">data =</span> mice)</span>
-<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a></span>
-<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a><span class="co"># only random slope</span></span>
-<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a>mice<span class="fl">.2</span> <span class="ot">&lt;-</span> </span>
-<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a>  <span class="fu">lmer</span>(ear <span class="sc">~</span> foot <span class="sc">*</span> species <span class="sc">*</span> sex <span class="sc">+</span> (foot <span class="sc">-</span> <span class="dv">1</span> <span class="sc">|</span> site), </span>
-<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a>       <span class="at">data =</span> mice)</span>
-<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a></span>
-<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a><span class="co"># only random intercept</span></span>
-<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a>mice<span class="fl">.3</span> <span class="ot">&lt;-</span> </span>
-<span id="cb15-13"><a href="#cb15-13" tabindex="-1"></a>  <span class="fu">lmer</span>(ear <span class="sc">~</span> foot <span class="sc">*</span> species <span class="sc">*</span> sex <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> site), </span>
-<span id="cb15-14"><a href="#cb15-14" tabindex="-1"></a>       <span class="at">data =</span> mice)</span>
-<span id="cb15-15"><a href="#cb15-15" tabindex="-1"></a></span>
-<span id="cb15-16"><a href="#cb15-16" tabindex="-1"></a><span class="co"># Model selection for random effects.</span></span>
-<span id="cb15-17"><a href="#cb15-17" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: AICcmodavg and MuMIn functions won&#39;t work because these models are</span></span>
-<span id="cb15-18"><a href="#cb15-18" tabindex="-1"></a><span class="co"># different &quot;classes&quot;. Check it out if you&#39;re interested:</span></span>
-<span id="cb15-19"><a href="#cb15-19" tabindex="-1"></a><span class="co"># lapply(list(mice.global, mice.1, mice.2, mice.3), class)</span></span>
-<span id="cb15-20"><a href="#cb15-20" tabindex="-1"></a>aicc <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="fu">list</span>(mice.global, mice<span class="fl">.1</span>, mice<span class="fl">.2</span>, mice<span class="fl">.3</span>), AICc)</span>
-<span id="cb15-21"><a href="#cb15-21" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
-<span id="cb15-22"><a href="#cb15-22" tabindex="-1"></a>  <span class="fu">cbind</span>(</span>
-<span id="cb15-23"><a href="#cb15-23" tabindex="-1"></a>    <span class="at">Model =</span> <span class="fu">c</span>(<span class="st">&quot;Correlated&quot;</span>, <span class="st">&quot;Uncorrelated&quot;</span>, <span class="st">&quot;Slope&quot;</span>, <span class="st">&quot;Intercept&quot;</span>),</span>
-<span id="cb15-24"><a href="#cb15-24" tabindex="-1"></a>    <span class="at">AICc =</span> <span class="fu">format</span>(aicc, <span class="at">digits =</span> <span class="dv">5</span></span>
-<span id="cb15-25"><a href="#cb15-25" tabindex="-1"></a>    )</span>
-<span id="cb15-26"><a href="#cb15-26" tabindex="-1"></a>))</span></code></pre></div>
+<pre><code>## Object of Class DHARMa with simulated residuals based on 250 simulations with refit = FALSE . See ?DHARMa::simulateResiduals for help. 
+##  
+## Scaled residual values: 0.656 0.544 0.468 0.568 0.456 0.716 0.452 0.512 0.452 0.436 0.432 0.228 0.524 0.504 0.332 0.708 0.272 0.768 0.652 0.548 ...</code></pre>
+<p>The simulated residuals look fine per DHARMa. However, the
+significant KS test indicates we may not be using the best probability
+distribution (he says sheepishly).</p>
+<p>But regardless, let’s fit a range of models with different random
+effects structures, and compare using AICc. The problem with comparing
+different random effects using Likelihood Ratio tests is that our null
+hypothesis is “on the boundary” of the parameter space, because you
+can’t have negative variances. Choosing a model that has the minimum
+AICc won’t be bothered by this consideration, but this would affect the
+calculation of the weights.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># uncorrelated random effects # </span><span class="al">NOTE</span><span class="co">: Does not converge!</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>mice<span class="fl">.1</span> <span class="ot">&lt;-</span></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>  <span class="fu">lmer</span>(ear <span class="sc">~</span> foot <span class="sc">*</span> species <span class="sc">*</span> sex <span class="sc">+</span> (foot <span class="sc">-</span> <span class="dv">1</span> <span class="sc">|</span> site) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> site),</span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>       <span class="at">data =</span> mice)</span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a></span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a><span class="co"># only random slope</span></span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a>mice<span class="fl">.2</span> <span class="ot">&lt;-</span> </span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a>  <span class="fu">lmer</span>(ear <span class="sc">~</span> foot <span class="sc">*</span> species <span class="sc">*</span> sex <span class="sc">+</span> (foot <span class="sc">-</span> <span class="dv">1</span> <span class="sc">|</span> site), </span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a>       <span class="at">data =</span> mice)</span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a></span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a><span class="co"># only random intercept</span></span>
+<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a>mice<span class="fl">.3</span> <span class="ot">&lt;-</span> </span>
+<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a>  <span class="fu">lmer</span>(ear <span class="sc">~</span> foot <span class="sc">*</span> species <span class="sc">*</span> sex <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> site), </span>
+<span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a>       <span class="at">data =</span> mice)</span>
+<span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a></span>
+<span id="cb14-16"><a href="#cb14-16" tabindex="-1"></a><span class="co"># Model selection for random effects.</span></span>
+<span id="cb14-17"><a href="#cb14-17" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: AICcmodavg and MuMIn functions won&#39;t work because these models are</span></span>
+<span id="cb14-18"><a href="#cb14-18" tabindex="-1"></a><span class="co"># different &quot;classes&quot;. Check it out if you&#39;re interested:</span></span>
+<span id="cb14-19"><a href="#cb14-19" tabindex="-1"></a><span class="co"># lapply(list(mice.global, mice.1, mice.2, mice.3), class)</span></span>
+<span id="cb14-20"><a href="#cb14-20" tabindex="-1"></a>aicc <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="fu">list</span>(mice.global, mice<span class="fl">.1</span>, mice<span class="fl">.2</span>, mice<span class="fl">.3</span>), AICc)</span>
+<span id="cb14-21"><a href="#cb14-21" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb14-22"><a href="#cb14-22" tabindex="-1"></a>  <span class="fu">cbind</span>(</span>
+<span id="cb14-23"><a href="#cb14-23" tabindex="-1"></a>    <span class="at">Model =</span> <span class="fu">c</span>(<span class="st">&quot;Correlated&quot;</span>, <span class="st">&quot;Uncorrelated&quot;</span>, <span class="st">&quot;Slope&quot;</span>, <span class="st">&quot;Intercept&quot;</span>),</span>
+<span id="cb14-24"><a href="#cb14-24" tabindex="-1"></a>    <span class="at">AICc =</span> <span class="fu">format</span>(aicc, <span class="at">digits =</span> <span class="dv">5</span></span>
+<span id="cb14-25"><a href="#cb14-25" tabindex="-1"></a>    )</span>
+<span id="cb14-26"><a href="#cb14-26" tabindex="-1"></a>))</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -1041,55 +1033,83 @@ margin.</p>
 <p>However, we still need to select the best <em>fixed effect</em>
 structure too! To do that, we need to create some candidate models based
 off the global fixed effects while always using the random effect
-structure we identified. And critically, we need to <strong>use Maximum
-Likelihood to compare fixed effects</strong>.</p>
-<p>On your own,</p>
-<p>Our final model is simply <code>ear ~ foot + (1+foot|site)</code>.
-This means the relationship between ear and foot length is constant
-between sexes and species, but varies geographically. I find that quite
-fascinating. I’ll fit this final model, and make a plot or two.</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>mice.final <span class="ot">&lt;-</span> </span>
-<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>  <span class="fu">lmer</span>(ear <span class="sc">~</span> foot <span class="sc">+</span> (foot <span class="sc">|</span> site),</span>
-<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>       <span class="at">data =</span> mice,</span>
-<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>       <span class="at">REML =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a><span class="co"># summary(mice.final)</span></span></code></pre></div>
+structure we identified. And critically, we need to <em>use Maximum
+Likelihood to compare fixed effects</em>.</p>
+<p><strong>On your own, create a candidate model list to identify which
+fixed effect structure has the most support.</strong></p>
+<p>… Pausing while you do this…</p>
+<p>Okay, so you may have found that your final model is:
+<code>ear ~ foot + (1+foot|site)</code>. This means the relationship
+between ear and foot length is constant between sexes and species, but
+varies geographically. I find that quite fascinating. I’ll fit this
+final model, and make a plot or two.</p>
+<div id="predictions-with-mixed-models" class="section level3">
+<h3>Predictions with mixed models</h3>
 <p>You can make predictions from these models just as you would with
-other models. To use <code>broom::augment()</code> you have to specify
-both the fixed effects values <em>and</em> a value for the random
-effect.</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="co"># nd &lt;- data.frame(foot=seq(min(mice$foot),</span></span>
-<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="co">#                           max(mice$foot),length=50),</span></span>
-<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="co">#                  site=factor(&quot;42&quot;, levels=levels(mice$site)))</span></span>
-<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a><span class="co"># pred42 &lt;- </span></span>
-<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a><span class="co">#   broom.mixed::augment(mice.final, newdata=nd) %&gt;%</span></span>
-<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a><span class="co">#   rename(ear=.fitted)</span></span>
-<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a><span class="co"># ggplot(mice, aes(x=foot, y=ear)) +</span></span>
-<span id="cb17-10"><a href="#cb17-10" tabindex="-1"></a><span class="co">#   geom_point(alpha=0.2) +</span></span>
-<span id="cb17-11"><a href="#cb17-11" tabindex="-1"></a><span class="co">#   xlab(&#39;Foot Length [mm]&#39;) + ylab(&#39;Ear Length [mm]&#39;) +</span></span>
-<span id="cb17-12"><a href="#cb17-12" tabindex="-1"></a><span class="co">#   geom_point(data=filter(mice, site==&quot;42&quot;), alpha=1, color=&quot;red&quot;) +</span></span>
-<span id="cb17-13"><a href="#cb17-13" tabindex="-1"></a><span class="co">#   geom_line(data=pred42, size=2, color=&quot;red&quot;)</span></span></code></pre></div>
-<p>So you could get lines for every site, but that would be a bit messy.
-We say these predictions are “conditional” on the random effects,
-because they include the perturbations from the random effects. Another
-thing you might want are predictions “unconditional” on the random
-effects. We can get these too but not from
-<code>broom::augment()</code>. Package lme4 includes a
-<code>predict()</code> function for these fitted objects.</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="co"># # get predictions unconditional on random effect. Note the &#39;re.form&#39; argument.</span></span>
-<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a><span class="co"># preduc &lt;- cbind(nd, ear=predict(mice.final, newdata = nd, re.form = ~0))</span></span>
-<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a><span class="co"># # make the plot above, but fade out the red line and add unconditional prediction</span></span>
-<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a><span class="co"># ggplot(mice, aes(x=foot, y=ear)) +</span></span>
-<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a><span class="co">#   geom_point(alpha=0.2) +</span></span>
-<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a><span class="co">#   xlab(&#39;Foot Length [mm]&#39;) + ylab(&#39;Ear Length [mm]&#39;) +</span></span>
-<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a><span class="co">#   geom_line(data=pred42, size=2, color=&quot;red&quot;, alpha=0.4) +</span></span>
-<span id="cb18-9"><a href="#cb18-9" tabindex="-1"></a><span class="co">#   geom_line(data=preduc, size=2)</span></span></code></pre></div>
-<p>That line represents the relationship between ears and feet we expect
-to find at a randomly chosen new site.</p>
+other models. Below, we have a plot showing all predicted ear/foot
+relationships by site.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co"># Example of final model</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>mice.final <span class="ot">&lt;-</span> <span class="fu">lmer</span>(ear <span class="sc">~</span> foot <span class="sc">+</span> (<span class="dv">1</span><span class="sc">+</span>foot<span class="sc">|</span>site),</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>                   <span class="at">REML =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>                   <span class="at">data =</span> mice)</span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a><span class="co"># Create a new data.frame with all site/foot length combinations</span></span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a>nd <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">foot =</span> <span class="fu">seq</span>(<span class="fu">min</span>(mice<span class="sc">$</span>foot),</span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a>                          <span class="fu">max</span>(mice<span class="sc">$</span>foot),<span class="at">length=</span><span class="dv">50</span>),</span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a>                  <span class="at">site =</span> <span class="fu">unique</span>(mice<span class="sc">$</span>site))</span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a></span>
+<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a><span class="co"># Conditional prediction</span></span>
+<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a>pred_conditional <span class="ot">&lt;-</span> </span>
+<span id="cb15-13"><a href="#cb15-13" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">fit =</span> <span class="fu">predict</span>(mice.final, <span class="at">newdata =</span> nd, <span class="at">re.form =</span> <span class="cn">NULL</span>),</span>
+<span id="cb15-14"><a href="#cb15-14" tabindex="-1"></a>             nd)</span>
+<span id="cb15-15"><a href="#cb15-15" tabindex="-1"></a></span>
+<span id="cb15-16"><a href="#cb15-16" tabindex="-1"></a><span class="co"># Plot the predictions</span></span>
+<span id="cb15-17"><a href="#cb15-17" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb15-18"><a href="#cb15-18" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> mice, </span>
+<span id="cb15-19"><a href="#cb15-19" tabindex="-1"></a>             <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> foot, <span class="at">y =</span> ear), </span>
+<span id="cb15-20"><a href="#cb15-20" tabindex="-1"></a>             <span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb15-21"><a href="#cb15-21" tabindex="-1"></a>  <span class="fu">scale_color_viridis_d</span>() <span class="sc">+</span> </span>
+<span id="cb15-22"><a href="#cb15-22" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&#39;Foot Length [mm]&#39;</span>) <span class="sc">+</span> </span>
+<span id="cb15-23"><a href="#cb15-23" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&#39;Ear Length [mm]&#39;</span>) <span class="sc">+</span></span>
+<span id="cb15-24"><a href="#cb15-24" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred_conditional,</span>
+<span id="cb15-25"><a href="#cb15-25" tabindex="-1"></a>            <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> foot, </span>
+<span id="cb15-26"><a href="#cb15-26" tabindex="-1"></a>                          <span class="at">y =</span> fit, </span>
+<span id="cb15-27"><a href="#cb15-27" tabindex="-1"></a>                          <span class="at">group =</span> site, </span>
+<span id="cb15-28"><a href="#cb15-28" tabindex="-1"></a>                          <span class="at">color =</span> site)) <span class="sc">+</span></span>
+<span id="cb15-29"><a href="#cb15-29" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>) <span class="co"># Too busy with all sites, so kill legend</span></span></code></pre></div>
+<p><img src="05-A-Linear-Mixed-Models_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p>We say the predictions in the above plot are “conditional” on the
+random effects, because they include the perturbations from the random
+effects. Another thing you might want are predictions “unconditional” on
+the random effects. The line below represents the relationship between
+ears and feet we expect to find at a randomly chosen new site.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="co"># Create a new data.frame with just one site</span></span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>nd2 <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">foot =</span> <span class="fu">seq</span>(<span class="fu">min</span>(mice<span class="sc">$</span>foot),</span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>                          <span class="fu">max</span>(mice<span class="sc">$</span>foot),<span class="at">length=</span><span class="dv">50</span>),</span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>                  <span class="at">site =</span> <span class="fu">unique</span>(mice<span class="sc">$</span>site)[<span class="dv">1</span>]) <span class="co"># Choose one site</span></span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a></span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a><span class="co"># Conditional prediction</span></span>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a>pred_unconditional <span class="ot">&lt;-</span> </span>
+<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">fit =</span> <span class="fu">predict</span>(mice.final, <span class="at">newdata =</span> nd, <span class="at">re.form =</span> <span class="cn">NA</span>),</span>
+<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a>             nd2)</span>
+<span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a></span>
+<span id="cb16-11"><a href="#cb16-11" tabindex="-1"></a><span class="co"># Plot the predictions</span></span>
+<span id="cb16-12"><a href="#cb16-12" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb16-13"><a href="#cb16-13" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> mice, </span>
+<span id="cb16-14"><a href="#cb16-14" tabindex="-1"></a>             <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> foot, <span class="at">y =</span> ear), </span>
+<span id="cb16-15"><a href="#cb16-15" tabindex="-1"></a>             <span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb16-16"><a href="#cb16-16" tabindex="-1"></a>  <span class="fu">scale_color_viridis_d</span>() <span class="sc">+</span> </span>
+<span id="cb16-17"><a href="#cb16-17" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&#39;Foot Length [mm]&#39;</span>) <span class="sc">+</span> </span>
+<span id="cb16-18"><a href="#cb16-18" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&#39;Ear Length [mm]&#39;</span>) <span class="sc">+</span></span>
+<span id="cb16-19"><a href="#cb16-19" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred_unconditional,</span>
+<span id="cb16-20"><a href="#cb16-20" tabindex="-1"></a>            <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> foot, </span>
+<span id="cb16-21"><a href="#cb16-21" tabindex="-1"></a>                          <span class="at">y =</span> fit),</span>
+<span id="cb16-22"><a href="#cb16-22" tabindex="-1"></a>            <span class="at">color =</span> <span class="st">&quot;darkred&quot;</span>,</span>
+<span id="cb16-23"><a href="#cb16-23" tabindex="-1"></a>            <span class="at">linewidth =</span> <span class="dv">2</span>)</span></code></pre></div>
+<p><img src="05-A-Linear-Mixed-Models_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 <p>What about confidence intervals on our predictions? A very good
 question, young grasshopper, but one that will have to wait!</p>
+</div>
 </div>
 </div>
 

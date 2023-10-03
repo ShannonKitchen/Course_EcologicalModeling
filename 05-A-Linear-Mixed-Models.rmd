@@ -36,6 +36,12 @@ We will be covering linear mixed models in this lab using two different datasets
 -  First, we will use the 'sleepstudy' dataset that comes loaded with the lme4 package. From the help documentation: *The average reaction time per day for subjects in a sleep deprivation study. On day 0 the subjects had their normal amount of sleep. Starting that night they were restricted to 3 hours of sleep per night. The observations represent the average reaction time on a series of tests given each day to each subject.*
 -  Second, we will use a 'mice' dataset, which was collected by January Frost at the University of Nebraska. The mice dataset contains morphological measurements of mice caught at various sites in the Niobrara Valley.
 
+Here's a pretty picture from the Niobrara Valley Preserve (which you should 100% visit if you can) to inspire you:
+
+<p>
+![](https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/niobrara.JPG){width=600px}
+<p>
+
 ```{r, include = TRUE, eval = TRUE, message = FALSE, results = 'hide'}
 
 # List of packages necessary to run this script:
@@ -44,6 +50,7 @@ shelf(tidyverse, cowplot, performance,
       AICcmodavg, # for model selection
       lme4, # For mixed modeling
       lmerTest,
+      DHARMa, # For checking mixed model residuals, etc.
       pander,
       broom.mixed,
       lib = tempdir(),
@@ -57,6 +64,9 @@ repo_url <- "https://raw.githubusercontent.com/LivingLandscapes/Course_Ecologica
 # NOTE: 'sleepstudy' data comes loaded in lme4
 mice <- read.table(paste0(repo_url, "/data/mice.txt"), 
                    header = TRUE)
+
+# Set seed
+set.seed(123)
 
 ```
 
@@ -176,6 +186,7 @@ In the following figure I’ve plotted the intercepts for each group from the mi
 
 ```{r eval = TRUE, message = FALSE, include = TRUE}
 
+# Combine mixed model and linear regression coefficients
 shrink <-  
   data.frame(coef(ss.mm)$Subject %>%
                rename(Random_Intercept = `(Intercept)`,
@@ -184,6 +195,7 @@ shrink <-
                rename(Fixed_Intercept = `(Intercept)`,
                       Fixed_Days = Days))
 
+# Manipulate data for ggplotting
 t1 <-
   shrink %>%
   pivot_longer(names(shrink), 
@@ -200,10 +212,12 @@ t1 <-
 # phew! that was more work than I expected. 
 
 # make a little dataframe for the average point
-meanpoint <- 
-  data.frame(coefficient = c("Intercept","Days"),
-                        Random=fixef(ss.mm),
-                        Fixed=coef(ss.lm))
+meanpoint <-
+  data.frame(
+    coefficient = c("Intercept", "Days"),
+    Random = fixef(ss.mm),
+    Fixed = coef(ss.lm)
+  )
 
 # now make the plot ... easier b/c of data manipulation?
 ggplot(t1, 
@@ -227,9 +241,9 @@ is called “shrinkage”, because the estimates of the within group coefficient
 
 ## Mouse Example 
 
-Let's look at the breakdown of the relationship between ear size and foot length by geographic site. Sex may also matter?
+Let's look at the breakdown of the relationship between ear size and foot length by geographic site and sex. Do some quick data exploration of the 'mice' data to familiarize yourself with it. Also, please ignore that a normal distribution may or may not be the best for this data. Now, check out the faceted plot below:
 
-```{r eval = TRUE, message = FALSE, include = TRUE, fig.cap='Ear length vs. foot length in mm at a number of sites in the Northwest of Nebraska for two species of deer mouse.'}
+```{r eval = TRUE, message = FALSE, include = TRUE, fig.cap='Mouse Fig 1: Ear length vs. foot length in mm at a number of sites in the Northwest of Nebraska for two species of deer mouse.'}
 
 # Remove rows with unknown sex.
 mice = filter(mice, sex != "U")
@@ -249,7 +263,7 @@ basemouse +
 
 A few things are obvious from this plot. First, there is a lot of data at a few sites, and much less at others. Some of the sex size effects are clear in a few sites (two groups of points), but much less clear in others. But most interesting is the variation in slope. In many sites the bigger the feet the bigger the ears. But not everywhere! Put it all in one plot, adjusting the alpha level so overplotting is clearer.
 
-```{r eval = TRUE, message = FALSE, include = TRUE, fig.cap='Ear length by foot length with a predicted line for each site. Shading indicates overlapping points.'}
+```{r eval = TRUE, message = FALSE, include = TRUE, fig.cap='Mouse Fig 2: Ear length by foot length with a predicted line for each site. Shading indicates overlapping points.'}
 
  basemouse +
    geom_smooth(aes(group = site),
@@ -262,48 +276,19 @@ So we want to check a model that lets the relationship between feet and ears var
 
 ```{r, eval = TRUE, message = FALSE, include = TRUE}
 
-# 
+# Global mixed mouse model!
 mice.global <- 
   lmer(ear ~ foot * species * sex + (foot | site),
        data = mice)
 
-rr <- broom::augment(mice.global)
-
-ggplot(rr, 
-       aes(x = .fitted, 
-           y = .resid)) +
-  geom_point() +
-  geom_smooth() +
-  geom_hline(yintercept = 0, 
-             linetype = 2)
-
-# get int and slope for qqline
-probs <- c(0.25,
-           0.75)
-y <- quantile(rr$.resid, probs, names = FALSE, na.rm = TRUE)
-x <- qnorm(probs)
-slope <- diff(y) / diff(x)
-int <- y[1L] - slope * x[1L]
-ggplot(rr, 
-       aes(sample = .resid)) +
-  geom_qq(size = rel(4)) +
-  geom_abline(
-    intercept = int,
-    slope = slope,
-    linetype = 2,
-    size = 2
-  )
-
-ggplot(rr,
-       aes(x = .fitted,
-           y = sqrt(abs(.resid)))) +
-  geom_point() +
-  geom_smooth() +
-  geom_hline(yintercept  = 1)
+# Check residuals with DHARMa
+simulateResiduals(mice.global, plot = TRUE)
 
 ```
 
-The residuals don't look too bad, although there are some large positive residuals which we'll ignore for now. So let's fit a range of models with different random effects structures, and compare using AICc. The problem with comparing different random effects using Likelihood Ratio tests is that our null hypothesis is "on the boundary" of the parameter space, because you can't have negative variances. Choosing a model that has the minimum AICc won't be bothered by this consideration, but this would affect the calculation of the weights.
+The simulated residuals look fine per DHARMa. However, the significant KS test indicates we may not be using the best probability distribution (he says sheepishly). 
+
+But regardless, let's fit a range of models with different random effects structures, and compare using AICc. The problem with comparing different random effects using Likelihood Ratio tests is that our null hypothesis is "on the boundary" of the parameter space, because you can't have negative variances. Choosing a model that has the minimum AICc won't be bothered by this consideration, but this would affect the calculation of the weights.
 
 ```{r eval = TRUE, message = FALSE, include = TRUE}
 
@@ -338,52 +323,80 @@ knitr::kable(
 
 We're in luck, the model with both a random slope and intercept where the effects are correlated has the lowest AICc, and by a large margin. 
 
-However, we still need to select the best *fixed effect* structure too! To do that, we need to create some candidate models based off the global fixed effects while always using the random effect structure we identified. And critically, we need to **use Maximum Likelihood to compare fixed effects**.
+However, we still need to select the best *fixed effect* structure too! To do that, we need to create some candidate models based off the global fixed effects while always using the random effect structure we identified. And critically, we need to *use Maximum Likelihood to compare fixed effects*.
 
-On your own, 
+**On your own, create a candidate model list to identify which fixed effect structure has the most support.**
 
-Our final model is simply `ear ~ foot + (1+foot|site)`. This means the relationship between ear and foot length is constant between sexes and species, but varies geographically. I find that quite fascinating. I'll fit this final model, and make a plot or two.
+... Pausing while you do this...
 
-```{r eval = TRUE, message = FALSE, include = TRUE}
-mice.final <- 
-  lmer(ear ~ foot + (foot | site),
-       data = mice,
-       REML = FALSE)
-# summary(mice.final)
-```
+Okay, so you may have found that your final model is: `ear ~ foot + (1+foot|site)`. This means the relationship between ear and foot length is constant between sexes and species, but varies geographically. I find that quite fascinating. I'll fit this final model, and make a plot or two.
 
-You can make predictions from these models just as you would with other models. To use `broom::augment()` you have to specify both the fixed effects values *and* a value for the random effect.
+### Predictions with mixed models
 
-```{r eval = TRUE, message = FALSE, include = TRUE}
-# nd <- data.frame(foot=seq(min(mice$foot),
-#                           max(mice$foot),length=50),
-#                  site=factor("42", levels=levels(mice$site)))
-# 
-# pred42 <- 
-#   broom.mixed::augment(mice.final, newdata=nd) %>%
-#   rename(ear=.fitted)
-# 
-# ggplot(mice, aes(x=foot, y=ear)) +
-#   geom_point(alpha=0.2) +
-#   xlab('Foot Length [mm]') + ylab('Ear Length [mm]') +
-#   geom_point(data=filter(mice, site=="42"), alpha=1, color="red") +
-#   geom_line(data=pred42, size=2, color="red")
-```
-
-So you could get lines for every site, but that would be a bit messy. We say these predictions are "conditional" on the random effects, because they include the perturbations from the random effects. Another thing you might want are predictions "unconditional" on the random effects. We can get these too but not from `broom::augment()`. Package lme4 includes a `predict()` function for these fitted objects.
+You can make predictions from these models just as you would with other models. Below, we have a plot showing all predicted ear/foot relationships by site.
 
 ```{r eval = TRUE, message = FALSE, include = TRUE}
 
-# # get predictions unconditional on random effect. Note the 're.form' argument.
-# preduc <- cbind(nd, ear=predict(mice.final, newdata = nd, re.form = ~0))
-# 
-# # make the plot above, but fade out the red line and add unconditional prediction
-# ggplot(mice, aes(x=foot, y=ear)) +
-#   geom_point(alpha=0.2) +
-#   xlab('Foot Length [mm]') + ylab('Ear Length [mm]') +
-#   geom_line(data=pred42, size=2, color="red", alpha=0.4) +
-#   geom_line(data=preduc, size=2)
+# Example of final model
+mice.final <- lmer(ear ~ foot + (1+foot|site),
+                   REML = FALSE,
+                   data = mice)
+
+# Create a new data.frame with all site/foot length combinations
+nd <- expand.grid(foot = seq(min(mice$foot),
+                          max(mice$foot),length=50),
+                  site = unique(mice$site))
+
+# Conditional prediction
+pred_conditional <- 
+  data.frame(fit = predict(mice.final, newdata = nd, re.form = NULL),
+             nd)
+
+# Plot the predictions
+ggplot() +
+  geom_point(data = mice, 
+             mapping = aes(x = foot, y = ear), 
+             alpha = 0.2) +
+  scale_color_viridis_d() + 
+  xlab('Foot Length [mm]') + 
+  ylab('Ear Length [mm]') +
+  geom_line(data = pred_conditional,
+            mapping = aes(x = foot, 
+                          y = fit, 
+                          group = site, 
+                          color = site)) +
+  theme(legend.position = "none") # Too busy with all sites, so kill legend
+
 ```
-That line represents the relationship between ears and feet we expect to find at a randomly chosen new site.
+
+We say the predictions in the above plot are "conditional" on the random effects, because they include the perturbations from the random effects. Another thing you might want are predictions "unconditional" on the random effects. The line below represents the relationship between ears and feet we expect to find at a randomly chosen new site.
+
+```{r eval = TRUE, message = FALSE, include = TRUE}
+
+# Create a new data.frame with just one site
+nd2 <- expand.grid(foot = seq(min(mice$foot),
+                          max(mice$foot),length=50),
+                  site = unique(mice$site)[1]) # Choose one site
+
+# Conditional prediction
+pred_unconditional <- 
+  data.frame(fit = predict(mice.final, newdata = nd, re.form = NA),
+             nd2)
+
+# Plot the predictions
+ggplot() +
+  geom_point(data = mice, 
+             mapping = aes(x = foot, y = ear), 
+             alpha = 0.2) +
+  scale_color_viridis_d() + 
+  xlab('Foot Length [mm]') + 
+  ylab('Ear Length [mm]') +
+  geom_line(data = pred_unconditional,
+            mapping = aes(x = foot, 
+                          y = fit),
+            color = "darkred",
+            linewidth = 2)
+
+```
 
 What about confidence intervals on our predictions? A very good question, young grasshopper, but one that will have to wait!
