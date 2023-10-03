@@ -36,14 +36,14 @@ navbar:
       menu:
         - text: "Lab"
           href: 04-A-Autocorrelation.html
-    # - text: "W6"
-    #   menu:
-    #     - text: "Unconstrained ordination"
-    #       href: 06-A-unconstrained-ordination.html
-    #     - text: "Constrained ordination"
-    #       href: 06-B-constrained-ordination.html
-    #     - text: "Comparing multivariate data"
-    #       href: 06-C-matrix-comparison.html
+    - text: "Mixed Models"
+      menu:
+        - text: "Lab: Linear Mixed Models"
+          href: 05-A-Linear-Mixed-Models.html
+        # - text: "Constrained ordination"
+        #   href: 06-B-constrained-ordination.html
+        # - text: "Comparing multivariate data"
+        #   href: 06-C-matrix-comparison.html
     # - text: "W8"
     #   menu:
     #     - text: "Visualizing spatial data"

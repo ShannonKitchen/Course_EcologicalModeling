@@ -14,7 +14,7 @@
 
 <title>Lesson Title</title>
 
-<script src="site_libs/header-attrs-2.23/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -30,7 +30,7 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
-<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
@@ -500,6 +500,18 @@ div.tocify {
     </li>
   </ul>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Mixed Models
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="05-A-Linear-Mixed-Models.html">Lab: Linear Mixed Models</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -575,8 +587,7 @@ the anaylsis.</p>
 <span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="fu">filter</span>(Growth_form <span class="sc">==</span> <span class="st">&#39;foliose&#39;</span>)</span></code></pre></div>
 <p>Describe the steps of the example analysis, including code blocks as
 needed. Describe the functions and packages used.</p>
-<pre><code>## Warning: Removed 213 rows containing missing values
-## (`geom_point()`).</code></pre>
+<pre><code>## Warning: Removed 213 rows containing missing values (`geom_point()`).</code></pre>
 <p><img src="images/chl_fig-1.png" width="672" /></p>
 <p><strong>Figure 1. Total chlorophyll versus ratio of chlorophyll A to
 B.</strong> Looks like we have some data cleaning to do!</p>
