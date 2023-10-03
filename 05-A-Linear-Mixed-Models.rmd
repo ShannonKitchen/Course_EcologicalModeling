@@ -65,8 +65,8 @@ repo_url <- "https://raw.githubusercontent.com/LivingLandscapes/Course_Ecologica
 mice <- read.table(paste0(repo_url, "/data/mice.txt"), 
                    header = TRUE)
 
-# Set seed
-set.seed(123)
+# # Set seed
+# set.seed(123)
 
 ```
 
@@ -290,11 +290,11 @@ simulateResiduals(mice.global, plot = TRUE)
 
 ```
 
-The simulated residuals look fine per DHARMa. However, the significant KS test indicates we may not be using the best probability distribution (he says sheepishly). 
+How do the simulated residuals look for you? Given they're simulated, they could look a bit different each time you run them. However, the significant KS test indicates we may not be using the best probability distribution (he says sheepishly). Regardless, **on your own, dig into the [DHARMa vignette](https://cran.r-project.org/web/packages/DHARMa/vignettes/DHARMa.html#general-remarks-on-interperting-residual-patterns-and-tests) a bit and learn about what you're seeing.**
 
 ### Model selection
 
-But regardless, let's fit a range of models with different random effects structures, and compare using AICc. The problem with comparing different random effects using Likelihood Ratio tests is that our null hypothesis is "on the boundary" of the parameter space, because you can't have negative variances. Choosing a model that has the minimum AICc won't be bothered by this consideration, but this would affect the calculation of the weights.
+Let's fit a range of models with different random effects structures, and compare using AICc. The problem with comparing different random effects using Likelihood Ratio tests is that our null hypothesis is "on the boundary" of the parameter space, because you can't have negative variances. Choosing a model that has the minimum AICc won't be bothered by this consideration, but this would affect the calculation of the weights.
 
 ```{r eval = TRUE, message = FALSE, include = TRUE}
 

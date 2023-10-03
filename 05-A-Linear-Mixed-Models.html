@@ -585,8 +585,8 @@ width="600" />
 <span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a>mice <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="fu">paste0</span>(repo_url, <span class="st">&quot;/data/mice.txt&quot;</span>), </span>
 <span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a>                   <span class="at">header =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a></span>
-<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="co"># Set seed</span></span>
-<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span></code></pre></div>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="co"># # Set seed</span></span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a><span class="co"># set.seed(123)</span></span></code></pre></div>
 <div id="sleep-study" class="section level2">
 <h2>Sleep Study</h2>
 <div id="simple-linear-regression" class="section level3">
@@ -981,20 +981,24 @@ least initially. Here’s the global model, and check the residuals:</p>
 <p><img src="05-A-Linear-Mixed-Models_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 <pre><code>## Object of Class DHARMa with simulated residuals based on 250 simulations with refit = FALSE . See ?DHARMa::simulateResiduals for help. 
 ##  
-## Scaled residual values: 0.656 0.544 0.468 0.568 0.456 0.716 0.452 0.512 0.452 0.436 0.432 0.228 0.524 0.504 0.332 0.708 0.272 0.768 0.652 0.548 ...</code></pre>
-<p>The simulated residuals look fine per DHARMa. However, the
+## Scaled residual values: 0.628 0.588 0.476 0.472 0.452 0.74 0.408 0.476 0.512 0.464 0.388 0.192 0.472 0.444 0.324 0.704 0.26 0.808 0.672 0.624 ...</code></pre>
+<p>How do the simulated residuals look for you? Given they’re simulated,
+they could look a bit different each time you run them. However, the
 significant KS test indicates we may not be using the best probability
-distribution (he says sheepishly).</p>
+distribution (he says sheepishly). Regardless, <strong>on your own, dig
+into the <a
+href="https://cran.r-project.org/web/packages/DHARMa/vignettes/DHARMa.html#general-remarks-on-interperting-residual-patterns-and-tests">DHARMa
+vignette</a> a bit and learn about what you’re seeing.</strong></p>
 </div>
 <div id="model-selection" class="section level3">
 <h3>Model selection</h3>
-<p>But regardless, let’s fit a range of models with different random
-effects structures, and compare using AICc. The problem with comparing
-different random effects using Likelihood Ratio tests is that our null
-hypothesis is “on the boundary” of the parameter space, because you
-can’t have negative variances. Choosing a model that has the minimum
-AICc won’t be bothered by this consideration, but this would affect the
-calculation of the weights.</p>
+<p>Let’s fit a range of models with different random effects structures,
+and compare using AICc. The problem with comparing different random
+effects using Likelihood Ratio tests is that our null hypothesis is “on
+the boundary” of the parameter space, because you can’t have negative
+variances. Choosing a model that has the minimum AICc won’t be bothered
+by this consideration, but this would affect the calculation of the
+weights.</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># uncorrelated random effects # </span><span class="al">NOTE</span><span class="co">: Does not converge!</span></span>
 <span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>mice<span class="fl">.1</span> <span class="ot">&lt;-</span></span>
 <span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>  <span class="fu">lmer</span>(ear <span class="sc">~</span> foot <span class="sc">*</span> species <span class="sc">*</span> sex <span class="sc">+</span> (foot <span class="sc">-</span> <span class="dv">1</span> <span class="sc">|</span> site) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> site),</span>
