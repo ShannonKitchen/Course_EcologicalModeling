@@ -561,7 +561,7 @@ Niobrara Valley.</li>
 should 100% visit if you can) to inspire you:</p>
 <p>
 <img
-src="https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/niobrara.JPG"
+src="https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/niobrara.png"
 width="600" />
 <p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># List of packages necessary to run this script:</span></span>
@@ -856,6 +856,9 @@ greater.</p>
 </tr>
 </tbody>
 </table>
+</div>
+<div id="shrinkage" class="section level3">
+<h3>Shrinkage</h3>
 <p>In the following figure I’ve plotted the intercepts for each group
 from the mixed model against the intercepts from the list of models. If
 they were identical they would fall on the solid line.</p>
@@ -960,6 +963,8 @@ Mouse Fig 2: Ear length by foot length with a predicted line for each
 site. Shading indicates overlapping points.
 </p>
 </div>
+<div id="mixed-model-diagnostics" class="section level3">
+<h3>Mixed model diagnostics</h3>
 <p>So we want to check a model that lets the relationship between feet
 and ears vary by species and sex. The sites are a random sample of
 possible places we could look for mice, so we’ll treat site as a random
@@ -980,6 +985,9 @@ least initially. Here’s the global model, and check the residuals:</p>
 <p>The simulated residuals look fine per DHARMa. However, the
 significant KS test indicates we may not be using the best probability
 distribution (he says sheepishly).</p>
+</div>
+<div id="model-selection" class="section level3">
+<h3>Model selection</h3>
 <p>But regardless, let’s fit a range of models with different random
 effects structures, and compare using AICc. The problem with comparing
 different random effects using Likelihood Ratio tests is that our null
@@ -1055,6 +1063,7 @@ fixed effect structure has the most support.</strong></p>
 between ear and foot length is constant between sexes and species, but
 varies geographically. I find that quite fascinating. I’ll fit this
 final model, and make a plot or two.</p>
+</div>
 <div id="predictions-with-mixed-models" class="section level3">
 <h3>Predictions with mixed models</h3>
 <p>You can make predictions from these models just as you would with

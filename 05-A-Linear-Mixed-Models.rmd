@@ -39,7 +39,7 @@ We will be covering linear mixed models in this lab using two different datasets
 Here's a pretty picture from the Niobrara Valley Preserve (which you should 100% visit if you can) to inspire you:
 
 <p>
-![](https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/niobrara.JPG){width=600px}
+![](https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/niobrara.png){width=600px}
 <p>
 
 ```{r, include = TRUE, eval = TRUE, message = FALSE, results = 'hide'}
@@ -182,6 +182,8 @@ knitr::kable(cbind(ranef(ss.mm)$Subject, coef(ss.mm)$Subject))
 
 ```
 
+### Shrinkage
+
 In the following figure I’ve plotted the intercepts for each group from the mixed model against the intercepts from the list of models. If they were identical they would fall on the solid line. 
 
 ```{r eval = TRUE, message = FALSE, include = TRUE}
@@ -272,6 +274,8 @@ A few things are obvious from this plot. First, there is a lot of data at a few 
 
 ```
 
+### Mixed model diagnostics
+
 So we want to check a model that lets the relationship between feet and ears vary by species and sex. The sites are a random sample of possible places we could look for mice, so we'll treat site as a random effect. We can also see that the slope of the effect varies alot between sites, so we'll let the coefficient of foot vary between sites too, at least initially. Here's the global model, and check the residuals:
 
 ```{r, eval = TRUE, message = FALSE, include = TRUE}
@@ -287,6 +291,8 @@ simulateResiduals(mice.global, plot = TRUE)
 ```
 
 The simulated residuals look fine per DHARMa. However, the significant KS test indicates we may not be using the best probability distribution (he says sheepishly). 
+
+### Model selection
 
 But regardless, let's fit a range of models with different random effects structures, and compare using AICc. The problem with comparing different random effects using Likelihood Ratio tests is that our null hypothesis is "on the boundary" of the parameter space, because you can't have negative variances. Choosing a model that has the minimum AICc won't be bothered by this consideration, but this would affect the calculation of the weights.
 
