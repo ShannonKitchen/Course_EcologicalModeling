@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Linear Mixed Models</title>
+
+<script src="site_libs/header-attrs-2.23/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html"></a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="00-computer-setup.html">Computer Setup</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Hello, World!
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="00-A-R-intro.html">Intro to R</a>
+    </li>
+    <li>
+      <a href="00-B-Rmarkdown-intro.html">R markdown</a>
+    </li>
+    <li>
+      <a href="00-C-R-workshop.html">R workshop</a>
+    </li>
+    <li>
+      <a href="00-D-tidyr.html">ggplot2 and tidyr</a>
+    </li>
+    <li>
+      <a href="00-E-git-intro.html">Intro to git</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Data Exploration
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="01-A-data-exploration.html">Lab</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Linear Models
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="02-A-linear-models-and-probability-distributions.html">Lab</a>
+    </li>
+    <li>
+      <a href="02-B-Homework-01.html">Homework 1</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Model Selection
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="03-A-model-selection.html">Lab</a>
+    </li>
+    <li>
+      <a href="03-B-Homework-02.html">Homework 2</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Autocorrelation
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="04-A-Autocorrelation.html">Lab</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Linear Mixed Models</h1>
+
+</div>
+
+
+<p><strong>Assigned Reading:</strong></p>
+<ul>
+<li>Harrison XA, Donaldson L, Correa-Cano ME, Evans J, Fisher DN,
+Goodwin CED, Robinson BS, Hodgson DJ, Inger R. 2018. A brief
+introduction to mixed effects modelling and multi-model inference in
+ecology. PeerJ 6:e4794 <a href="https://doi.org/10.7717/peerj.4794"
+class="uri">https://doi.org/10.7717/peerj.4794</a>.</li>
+<li>Oberpriller, J., de Souza Leite, M., &amp; Pichler, M. (2022). Fixed
+or random? On the reliability of mixed‐effects models for a small number
+of levels in grouping variables. Ecology and Evolution, 12(7),
+e9062.</li>
+</ul>
+<div id="overview" class="section level1">
+<h1>Overview</h1>
+<p>We will be covering linear mixed models in this lab using two
+different datasets:</p>
+<ul>
+<li>First, we will use the ‘sleepstudy’ dataset that comes loaded with
+the lme4 package. From the help documentation: <em>The average reaction
+time per day for subjects in a sleep deprivation study. On day 0 the
+subjects had their normal amount of sleep. Starting that night they were
+restricted to 3 hours of sleep per night. The observations represent the
+average reaction time on a series of tests given each day to each
+subject.</em></li>
+<li>Second, we will use a ‘mice’ dataset, which was collected by January
+Frost at the University of Nebraska. The mice dataset contains
+morphological measurements of mice caught at various sites in the
+Niobrara Valley.</li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># List of packages necessary to run this script:</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">require</span>(librarian, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">shelf</span>(tidyverse, cowplot, performance, </span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>      AICcmodavg, <span class="co"># for model selection</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>      lme4, <span class="co"># For mixed modeling</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>      lmerTest,</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>      pander,</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>      broom.mixed,</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>      <span class="at">lib =</span> <span class="fu">tempdir</span>(),</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>      <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co"># Set the web address where R will look for files from this repository</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co"># Do not change this address</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>repo_url <span class="ot">&lt;-</span> <span class="st">&quot;https://raw.githubusercontent.com/LivingLandscapes/Course_EcologicalModeling/master/&quot;</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co"># Load our two datasets</span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: &#39;sleepstudy&#39; data comes loaded in lme4</span></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a>mice <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="fu">paste0</span>(repo_url, <span class="st">&quot;/data/mice.txt&quot;</span>), </span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a>                   <span class="at">header =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div id="sleep-study" class="section level2">
+<h2>Sleep Study</h2>
+<div id="simple-linear-regression" class="section level3">
+<h3>Simple linear regression</h3>
+<p>First, let’s simply model the response of reaction time to number of
+days without sleep. <strong>On your own:</strong></p>
+<ul>
+<li>Do some quick data exploration (e.g., familiarize yourself with the
+data columns, their ranges, etc.)</li>
+<li>Interpret the results of the linear regression below.</li>
+</ul>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Simple linear regression between reaction time and number of days without</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co"># sleep.</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>ss.lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(Reaction <span class="sc">~</span> Days, sleepstudy)</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co"># summary(ss.lm)</span></span></code></pre></div>
+<p>Hopefully, you will have determined that (unsurprisingly) reaction
+time tends to slow as days without sleep increased.</p>
+<p>However, you will also hopefully have noticed that there were several
+“subjects” of the experiment and that each subject’s response times were
+measured multiple times… Do we think there’s any variation between
+subject response times? Let’s check it out:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>ssBase <span class="ot">&lt;-</span> </span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">ggplot</span>(sleepstudy, </span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>         <span class="fu">aes</span>(<span class="at">x =</span> Days, </span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>             <span class="at">y =</span> Reaction)) <span class="sc">+</span> </span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color =</span> Subject)) <span class="sc">+</span> </span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="fu">scale_color_viridis_d</span>() <span class="sc">+</span> </span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Days with no sleep&quot;</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>       <span class="at">y=</span><span class="st">&quot;Reaction time [ms]&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&quot;lm&quot;</span>, <span class="at">formula =</span> y <span class="sc">~</span> x)</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>ssBase</span></code></pre></div>
+<p><img src="05-A-Linear-Mixed-Models_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>Yep, look like some variation to me! Let’s plot the relationship for
+each subject individually and see what happens:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># group by subject</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>ssBase <span class="sc">+</span> </span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="fu">facet_wrap</span>( <span class="sc">~</span> Subject) <span class="sc">+</span> </span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">color =</span> <span class="cn">FALSE</span>) <span class="co"># suppress legend because facet labels do the job</span></span></code></pre></div>
+<p><img src="05-A-Linear-Mixed-Models_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>If the relationship is plotted separately for each individual in the
+dataset, then the signal gets much stronger. Clearly, people differ in
+their responses to sleep deprivation. One subject got faster as they
+missed out on sleep!</p>
+<p>We could fit a separate model to each subject and combine them. This
+is effectively a Subject * Days interaction model.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Fit a separate linear regression to each subject</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>fm1 <span class="ot">&lt;-</span> lme4<span class="sc">::</span><span class="fu">lmList</span>(Reaction <span class="sc">~</span> Days <span class="sc">|</span> Subject, sleepstudy)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co"># Get the coefficients from the list of linear regressions:</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="fu">coef</span>(fm1)</span></code></pre></div>
+<pre><code>##     (Intercept)      Days
+## 308    244.1927 21.764702
+## 309    205.0549  2.261785
+## 310    203.4842  6.114899
+## 330    289.6851  3.008073
+## 331    285.7390  5.266019
+## 332    264.2516  9.566768
+## 333    275.0191  9.142045
+## 334    240.1629 12.253141
+## 335    263.0347 -2.881034
+## 337    290.1041 19.025974
+## 349    215.1118 13.493933
+## 350    225.8346 19.504017
+## 351    261.1470  6.433498
+## 352    276.3721 13.566549
+## 369    254.9681 11.348109
+## 370    210.4491 18.056151
+## 371    253.6360  9.188445
+## 372    267.0448 11.298073</code></pre>
+<p>The <code>lmList()</code> function fits a different linear model to
+each subset of a data.frame defined by the variable after the “|”, in
+this case “Subject”.</p>
+<p><strong>On your own:</strong></p>
+<ul>
+<li>Calculate the mean intercept and Days coefficients from the matrix
+created by <code>coef(fm1)</code>.</li>
+<li>Compare these with the estimates from the single regression
+model.</li>
+<li>Use <code>summary(fm1)</code> to see the residual variance and
+degrees of freedom for the pooled list. Compare these values with the
+residual variance and degrees of freedom from the single regression
+model.</li>
+</ul>
+<p>Ask Caleb to confirm your answers once you’ve completed this!</p>
+</div>
+<div id="mix-it-up" class="section level3">
+<h3>Mix it up!</h3>
+<p>We can use a mixed model approach to get the best of both worlds - an
+estimate of the population average intercept and slope, and an idea of
+how much variation there is among individuals. The function lmer() in
+package lme4 is the method of choice here. The fixed effects part of the
+formula is identical to the lm() formula, with a response variable on
+the left of the ˜ and a covariate on the right. The new part specifies
+the random effects, and these are given in (). <em>To the left of the |
+are the fixed effects that will vary among groups, and to the right of
+the | are the variable(s) that specify the groups.</em> In this case the
+variable Subject defines the groups. As with other formulas, the
+intercept is implicit, so (Days | Subject) indicates that both the
+intercept and the slope are allowed to vary among subjects. This is the
+same as fitting a separate line to each subject, as we did above.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># fit a linear mixed model</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>ss.mm <span class="ot">&lt;-</span> </span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="fu">lmer</span>(Reaction <span class="sc">~</span> Days <span class="sc">+</span> (Days <span class="sc">|</span> Subject),</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>       sleepstudy,</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>       <span class="at">REML =</span> <span class="cn">FALSE</span>) <span class="co"># </span><span class="al">NOTE</span><span class="co">: you have to specify REML vs ML in lmer</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co"># summary(ss.mm)</span></span></code></pre></div>
+<p>Looking at the summary of the mixed model, you should see a “fixed
+effects” section which is identical to that from a normal lm() fit, with
+one notable exception. There are no p-values reported for each
+coefficient. This isn’t a mistake, it is a deliberate choice by the
+software designer to avoid an argument over the correct number of
+degrees of freedom to use for the test!</p>
+<p><strong>On your own, compare the estimates and standard errors with
+those from the “lmList” and “lm” models above.</strong></p>
+<p>The new bit is the section labelled “Random effects”. We can see that
+the model has estimated not just one variance, but three, plus a
+correlation coefficient. One variance estimate is the residual variance,
+with the same interpretation as always. The other two variances indicate
+the variance of the “random effects” on the intercept and the slope.
+These random perturbations to the population are assumed to be
+correlated to some extent, so there is also a correlation parameter. In
+this case the random effects are relatively uncorrelated.</p>
+<p>We can also get the random perturbations for each group, and
+combining those with the population level coefficients gives us the
+coefficients for the line in each group, as shown in the following
+table. When the random effects (shown in the left 2 columns) are
+negative, the coefficients for the group are less than the population
+coefficients, and when they are positive, the group coefficients are
+greater.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">cbind</span>(<span class="fu">ranef</span>(ss.mm)<span class="sc">$</span>Subject, <span class="fu">coef</span>(ss.mm)<span class="sc">$</span>Subject))</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">(Intercept)</th>
+<th align="right">Days</th>
+<th align="right">(Intercept)</th>
+<th align="right">Days</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">308</td>
+<td align="right">2.815789</td>
+<td align="right">9.0755068</td>
+<td align="right">254.2209</td>
+<td align="right">19.5427927</td>
+</tr>
+<tr class="even">
+<td align="left">309</td>
+<td align="right">-40.047855</td>
+<td align="right">-8.6441517</td>
+<td align="right">211.3572</td>
+<td align="right">1.8231343</td>
+</tr>
+<tr class="odd">
+<td align="left">310</td>
+<td align="right">-38.432497</td>
+<td align="right">-5.5134706</td>
+<td align="right">212.9726</td>
+<td align="right">4.9538154</td>
+</tr>
+<tr class="even">
+<td align="left">330</td>
+<td align="right">22.831765</td>
+<td align="right">-4.6586649</td>
+<td align="right">274.2369</td>
+<td align="right">5.8086211</td>
+</tr>
+<tr class="odd">
+<td align="left">331</td>
+<td align="right">21.549515</td>
+<td align="right">-2.9444450</td>
+<td align="right">272.9546</td>
+<td align="right">7.5228409</td>
+</tr>
+<tr class="even">
+<td align="left">332</td>
+<td align="right">8.815409</td>
+<td align="right">-0.2351823</td>
+<td align="right">260.2205</td>
+<td align="right">10.2321037</td>
+</tr>
+<tr class="odd">
+<td align="left">333</td>
+<td align="right">16.441662</td>
+<td align="right">-0.1587747</td>
+<td align="right">267.8468</td>
+<td align="right">10.3085113</td>
+</tr>
+<tr class="even">
+<td align="left">334</td>
+<td align="right">-6.996565</td>
+<td align="right">1.0327116</td>
+<td align="right">244.4085</td>
+<td align="right">11.4999975</td>
+</tr>
+<tr class="odd">
+<td align="left">335</td>
+<td align="right">-1.037586</td>
+<td align="right">-10.5994054</td>
+<td align="right">250.3675</td>
+<td align="right">-0.1321194</td>
+</tr>
+<tr class="even">
+<td align="left">337</td>
+<td align="right">34.665787</td>
+<td align="right">8.6324457</td>
+<td align="right">286.0709</td>
+<td align="right">19.0997317</td>
+</tr>
+<tr class="odd">
+<td align="left">349</td>
+<td align="right">-24.557658</td>
+<td align="right">1.0643244</td>
+<td align="right">226.8474</td>
+<td align="right">11.5316104</td>
+</tr>
+<tr class="even">
+<td align="left">350</td>
+<td align="right">-12.334275</td>
+<td align="right">6.4716420</td>
+<td align="right">239.0708</td>
+<td align="right">16.9389280</td>
+</tr>
+<tr class="odd">
+<td align="left">351</td>
+<td align="right">4.273930</td>
+<td align="right">-2.9553195</td>
+<td align="right">255.6790</td>
+<td align="right">7.5119665</td>
+</tr>
+<tr class="even">
+<td align="left">352</td>
+<td align="right">20.621878</td>
+<td align="right">3.5617510</td>
+<td align="right">272.0270</td>
+<td align="right">14.0290370</td>
+</tr>
+<tr class="odd">
+<td align="left">369</td>
+<td align="right">3.258488</td>
+<td align="right">0.8717165</td>
+<td align="right">254.6636</td>
+<td align="right">11.3390024</td>
+</tr>
+<tr class="even">
+<td align="left">370</td>
+<td align="right">-24.709766</td>
+<td align="right">4.6596445</td>
+<td align="right">226.6953</td>
+<td align="right">15.1269305</td>
+</tr>
+<tr class="odd">
+<td align="left">371</td>
+<td align="right">0.723250</td>
+<td align="right">-0.9710500</td>
+<td align="right">252.1284</td>
+<td align="right">9.4962360</td>
+</tr>
+<tr class="even">
+<td align="left">372</td>
+<td align="right">12.118728</td>
+<td align="right">1.3107215</td>
+<td align="right">263.5238</td>
+<td align="right">11.7780074</td>
+</tr>
+</tbody>
+</table>
+<p>In the following figure I’ve plotted the intercepts for each group
+from the mixed model against the intercepts from the list of models. If
+they were identical they would fall on the solid line.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>shrink <span class="ot">&lt;-</span>  </span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="fu">coef</span>(ss.mm)<span class="sc">$</span>Subject <span class="sc">%&gt;%</span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>               <span class="fu">rename</span>(<span class="at">Random_Intercept =</span> <span class="st">`</span><span class="at">(Intercept)</span><span class="st">`</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>                      <span class="at">Random_Days =</span> Days), </span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>             cc <span class="sc">%&gt;%</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>               <span class="fu">rename</span>(<span class="at">Fixed_Intercept =</span> <span class="st">`</span><span class="at">(Intercept)</span><span class="st">`</span>,</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>                      <span class="at">Fixed_Days =</span> Days))</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>t1 <span class="ot">&lt;-</span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>  shrink <span class="sc">%&gt;%</span></span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">names</span>(shrink), </span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>               <span class="at">values_to =</span> <span class="st">&quot;estimate&quot;</span>,</span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="st">&quot;coefficient&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a>  <span class="fu">separate_wider_delim</span>(<span class="at">cols =</span> <span class="st">&quot;coefficient&quot;</span>, </span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a>                       <span class="at">names =</span> <span class="fu">c</span>(<span class="st">&quot;model&quot;</span>, <span class="st">&quot;coefficient&quot;</span>),</span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a>                       <span class="at">delim =</span> <span class="st">&quot;_&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a>  <span class="fu">group_by</span>(model) <span class="sc">%&gt;%</span></span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">id =</span> <span class="fu">row_number</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> <span class="st">&quot;model&quot;</span>, </span>
+<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a>              <span class="at">values_from =</span> <span class="st">&quot;estimate&quot;</span>)</span>
+<span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a></span>
+<span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a><span class="co"># phew! that was more work than I expected. </span></span>
+<span id="cb9-23"><a href="#cb9-23" tabindex="-1"></a></span>
+<span id="cb9-24"><a href="#cb9-24" tabindex="-1"></a><span class="co"># make a little dataframe for the average point</span></span>
+<span id="cb9-25"><a href="#cb9-25" tabindex="-1"></a>meanpoint <span class="ot">&lt;-</span> </span>
+<span id="cb9-26"><a href="#cb9-26" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">coefficient =</span> <span class="fu">c</span>(<span class="st">&quot;Intercept&quot;</span>,<span class="st">&quot;Days&quot;</span>),</span>
+<span id="cb9-27"><a href="#cb9-27" tabindex="-1"></a>                        <span class="at">Random=</span><span class="fu">fixef</span>(ss.mm),</span>
+<span id="cb9-28"><a href="#cb9-28" tabindex="-1"></a>                        <span class="at">Fixed=</span><span class="fu">coef</span>(ss.lm))</span>
+<span id="cb9-29"><a href="#cb9-29" tabindex="-1"></a></span>
+<span id="cb9-30"><a href="#cb9-30" tabindex="-1"></a><span class="co"># now make the plot ... easier b/c of data manipulation?</span></span>
+<span id="cb9-31"><a href="#cb9-31" tabindex="-1"></a><span class="fu">ggplot</span>(t1, </span>
+<span id="cb9-32"><a href="#cb9-32" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> Fixed,</span>
+<span id="cb9-33"><a href="#cb9-33" tabindex="-1"></a>               <span class="at">y =</span> Random)) <span class="sc">+</span></span>
+<span id="cb9-34"><a href="#cb9-34" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb9-35"><a href="#cb9-35" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> coefficient, </span>
+<span id="cb9-36"><a href="#cb9-36" tabindex="-1"></a>             <span class="at">scales =</span> <span class="st">&quot;free&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb9-37"><a href="#cb9-37" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&quot;lm&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb9-38"><a href="#cb9-38" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">slope =</span> <span class="dv">1</span>, </span>
+<span id="cb9-39"><a href="#cb9-39" tabindex="-1"></a>              <span class="at">intercept =</span> <span class="dv">0</span>, </span>
+<span id="cb9-40"><a href="#cb9-40" tabindex="-1"></a>              <span class="at">linetype =</span> <span class="dv">2</span>) <span class="sc">+</span> </span>
+<span id="cb9-41"><a href="#cb9-41" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> meanpoint, </span>
+<span id="cb9-42"><a href="#cb9-42" tabindex="-1"></a>             <span class="at">color =</span> <span class="st">&quot;violetred1&quot;</span>,</span>
+<span id="cb9-43"><a href="#cb9-43" tabindex="-1"></a>             <span class="at">size =</span> <span class="dv">2</span>)</span></code></pre></div>
+<p><img src="05-A-Linear-Mixed-Models_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p>Random effects coefficients are slightly biased towards the mean
+value indicated by the red dot. Therefore the blue line (fit to the
+points) has a slope less than 1. The dashed line has a slope of 1 and an
+intercept of 0. This phenomenon is called “shrinkage”, because the
+estimates of the within group coefficients “shrink” towards the
+population mean.</p>
+</div>
+</div>
+<div id="mouse-example" class="section level2">
+<h2>Mouse Example</h2>
+<p>Let’s look at the breakdown of the relationship between ear size and
+foot length by geographic site. Sex may also matter?</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Remove rows with unknown sex.</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>mice <span class="ot">=</span> <span class="fu">filter</span>(mice, sex <span class="sc">!=</span> <span class="st">&quot;U&quot;</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co"># Plot relationship</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>basemouse <span class="ot">&lt;-</span> </span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>  <span class="fu">ggplot</span>(mice,</span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>         <span class="fu">aes</span>(<span class="at">x =</span> foot, <span class="at">y =</span> ear)) <span class="sc">+</span></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&#39;Foot Length [mm]&#39;</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">&#39;Ear Length [mm]&#39;</span>)</span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a></span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a>basemouse <span class="sc">+</span></span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&quot;lm&quot;</span>) <span class="sc">+</span></span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a>  <span class="fu">facet_wrap</span>( <span class="sc">~</span> site)</span></code></pre></div>
+<div class="figure">
+<img src="05-A-Linear-Mixed-Models_files/figure-html/unnamed-chunk-11-1.png" alt="Ear length vs. foot length in mm at a number of sites in the Northwest of Nebraska for two species of deer mouse." width="672" />
+<p class="caption">
+Ear length vs. foot length in mm at a number of sites in the Northwest
+of Nebraska for two species of deer mouse.
+</p>
+</div>
+<p>A few things are obvious from this plot. First, there is a lot of
+data at a few sites, and much less at others. Some of the sex size
+effects are clear in a few sites (two groups of points), but much less
+clear in others. But most interesting is the variation in slope. In many
+sites the bigger the feet the bigger the ears. But not everywhere! Put
+it all in one plot, adjusting the alpha level so overplotting is
+clearer.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a> basemouse <span class="sc">+</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>   <span class="fu">geom_smooth</span>(<span class="fu">aes</span>(<span class="at">group =</span> site),</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>               <span class="at">method =</span> <span class="st">&quot;lm&quot;</span>, </span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>               <span class="at">se =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="figure">
+<img src="05-A-Linear-Mixed-Models_files/figure-html/unnamed-chunk-12-1.png" alt="Ear length by foot length with a predicted line for each site. Shading indicates overlapping points." width="672" />
+<p class="caption">
+Ear length by foot length with a predicted line for each site. Shading
+indicates overlapping points.
+</p>
+</div>
+<p>So we want to check a model that lets the relationship between feet
+and ears vary by species and sex. The sites are a random sample of
+possible places we could look for mice, so we’ll treat site as a random
+effect. We can also see that the slope of the effect varies alot between
+sites, so we’ll let the coefficient of foot vary between sites too, at
+least initially. Here’s the global model, and check the residuals:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>mice.global <span class="ot">&lt;-</span> </span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>  <span class="fu">lmer</span>(ear <span class="sc">~</span> foot <span class="sc">*</span> species <span class="sc">*</span> sex <span class="sc">+</span> (foot <span class="sc">|</span> site),</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>       <span class="at">data =</span> mice)</span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>rr <span class="ot">&lt;-</span> broom<span class="sc">::</span><span class="fu">augment</span>(mice.global)</span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="fu">ggplot</span>(rr, </span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> .fitted, </span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a>           <span class="at">y =</span> .resid)) <span class="sc">+</span></span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a>  <span class="fu">geom_smooth</span>() <span class="sc">+</span></span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, </span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a>             <span class="at">linetype =</span> <span class="dv">2</span>)</span></code></pre></div>
+<p><img src="05-A-Linear-Mixed-Models_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co"># get int and slope for qqline</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>probs <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.25</span>,</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>           <span class="fl">0.75</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">quantile</span>(rr<span class="sc">$</span>.resid, probs, <span class="at">names =</span> <span class="cn">FALSE</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">qnorm</span>(probs)</span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a>slope <span class="ot">&lt;-</span> <span class="fu">diff</span>(y) <span class="sc">/</span> <span class="fu">diff</span>(x)</span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a>int <span class="ot">&lt;-</span> y[1L] <span class="sc">-</span> slope <span class="sc">*</span> x[1L]</span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a><span class="fu">ggplot</span>(rr, </span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">sample =</span> .resid)) <span class="sc">+</span></span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a>  <span class="fu">geom_qq</span>(<span class="at">size =</span> <span class="fu">rel</span>(<span class="dv">4</span>)) <span class="sc">+</span></span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a>    <span class="at">intercept =</span> int,</span>
+<span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a>    <span class="at">slope =</span> slope,</span>
+<span id="cb13-14"><a href="#cb13-14" tabindex="-1"></a>    <span class="at">linetype =</span> <span class="dv">2</span>,</span>
+<span id="cb13-15"><a href="#cb13-15" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">2</span></span>
+<span id="cb13-16"><a href="#cb13-16" tabindex="-1"></a>  )</span></code></pre></div>
+<p><img src="05-A-Linear-Mixed-Models_files/figure-html/unnamed-chunk-13-2.png" width="672" /></p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="fu">ggplot</span>(rr,</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> .fitted,</span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>           <span class="at">y =</span> <span class="fu">sqrt</span>(<span class="fu">abs</span>(.resid)))) <span class="sc">+</span></span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>  <span class="fu">geom_smooth</span>() <span class="sc">+</span></span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept  =</span> <span class="dv">1</span>)</span></code></pre></div>
+<p><img src="05-A-Linear-Mixed-Models_files/figure-html/unnamed-chunk-13-3.png" width="672" /></p>
+<p>The residuals don’t look too bad, although there are some large
+positive residuals which we’ll ignore for now. So let’s fit a range of
+models with different random effects structures, and compare using AICc.
+The problem with comparing different random effects using Likelihood
+Ratio tests is that our null hypothesis is “on the boundary” of the
+parameter space, because you can’t have negative variances. Choosing a
+model that has the minimum AICc won’t be bothered by this consideration,
+but this would affect the calculation of the weights.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co"># uncorrelated random effects # </span><span class="al">NOTE</span><span class="co">: Does not converge!</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>mice<span class="fl">.1</span> <span class="ot">&lt;-</span></span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>  <span class="fu">lmer</span>(ear <span class="sc">~</span> foot <span class="sc">*</span> species <span class="sc">*</span> sex <span class="sc">+</span> (foot <span class="sc">-</span> <span class="dv">1</span> <span class="sc">|</span> site) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> site),</span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>       <span class="at">data =</span> mice)</span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a><span class="co"># only random slope</span></span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a>mice<span class="fl">.2</span> <span class="ot">&lt;-</span> </span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a>  <span class="fu">lmer</span>(ear <span class="sc">~</span> foot <span class="sc">*</span> species <span class="sc">*</span> sex <span class="sc">+</span> (foot <span class="sc">-</span> <span class="dv">1</span> <span class="sc">|</span> site), </span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a>       <span class="at">data =</span> mice)</span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a></span>
+<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a><span class="co"># only random intercept</span></span>
+<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a>mice<span class="fl">.3</span> <span class="ot">&lt;-</span> </span>
+<span id="cb15-13"><a href="#cb15-13" tabindex="-1"></a>  <span class="fu">lmer</span>(ear <span class="sc">~</span> foot <span class="sc">*</span> species <span class="sc">*</span> sex <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> site), </span>
+<span id="cb15-14"><a href="#cb15-14" tabindex="-1"></a>       <span class="at">data =</span> mice)</span>
+<span id="cb15-15"><a href="#cb15-15" tabindex="-1"></a></span>
+<span id="cb15-16"><a href="#cb15-16" tabindex="-1"></a><span class="co"># Model selection for random effects.</span></span>
+<span id="cb15-17"><a href="#cb15-17" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: AICcmodavg and MuMIn functions won&#39;t work because these models are</span></span>
+<span id="cb15-18"><a href="#cb15-18" tabindex="-1"></a><span class="co"># different &quot;classes&quot;. Check it out if you&#39;re interested:</span></span>
+<span id="cb15-19"><a href="#cb15-19" tabindex="-1"></a><span class="co"># lapply(list(mice.global, mice.1, mice.2, mice.3), class)</span></span>
+<span id="cb15-20"><a href="#cb15-20" tabindex="-1"></a>aicc <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="fu">list</span>(mice.global, mice<span class="fl">.1</span>, mice<span class="fl">.2</span>, mice<span class="fl">.3</span>), AICc)</span>
+<span id="cb15-21"><a href="#cb15-21" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb15-22"><a href="#cb15-22" tabindex="-1"></a>  <span class="fu">cbind</span>(</span>
+<span id="cb15-23"><a href="#cb15-23" tabindex="-1"></a>    <span class="at">Model =</span> <span class="fu">c</span>(<span class="st">&quot;Correlated&quot;</span>, <span class="st">&quot;Uncorrelated&quot;</span>, <span class="st">&quot;Slope&quot;</span>, <span class="st">&quot;Intercept&quot;</span>),</span>
+<span id="cb15-24"><a href="#cb15-24" tabindex="-1"></a>    <span class="at">AICc =</span> <span class="fu">format</span>(aicc, <span class="at">digits =</span> <span class="dv">5</span></span>
+<span id="cb15-25"><a href="#cb15-25" tabindex="-1"></a>    )</span>
+<span id="cb15-26"><a href="#cb15-26" tabindex="-1"></a>))</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Model</th>
+<th align="left">AICc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Correlated</td>
+<td align="left">3641.2</td>
+</tr>
+<tr class="even">
+<td align="left">Uncorrelated</td>
+<td align="left">3671.7</td>
+</tr>
+<tr class="odd">
+<td align="left">Slope</td>
+<td align="left">3671.1</td>
+</tr>
+<tr class="even">
+<td align="left">Intercept</td>
+<td align="left">3671.0</td>
+</tr>
+</tbody>
+</table>
+<p>We’re in luck, the model with both a random slope and intercept where
+the effects are correlated has the lowest AICc, and by a large
+margin.</p>
+<p>However, we still need to select the best <em>fixed effect</em>
+structure too! To do that, we need to create some candidate models based
+off the global fixed effects while always using the random effect
+structure we identified. And critically, we need to <strong>use Maximum
+Likelihood to compare fixed effects</strong>.</p>
+<p>On your own,</p>
+<p>Our final model is simply <code>ear ~ foot + (1+foot|site)</code>.
+This means the relationship between ear and foot length is constant
+between sexes and species, but varies geographically. I find that quite
+fascinating. I’ll fit this final model, and make a plot or two.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>mice.final <span class="ot">&lt;-</span> </span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>  <span class="fu">lmer</span>(ear <span class="sc">~</span> foot <span class="sc">+</span> (foot <span class="sc">|</span> site),</span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>       <span class="at">data =</span> mice,</span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>       <span class="at">REML =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a><span class="co"># summary(mice.final)</span></span></code></pre></div>
+<p>You can make predictions from these models just as you would with
+other models. To use <code>broom::augment()</code> you have to specify
+both the fixed effects values <em>and</em> a value for the random
+effect.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="co"># nd &lt;- data.frame(foot=seq(min(mice$foot),</span></span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="co">#                           max(mice$foot),length=50),</span></span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="co">#                  site=factor(&quot;42&quot;, levels=levels(mice$site)))</span></span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a><span class="co"># pred42 &lt;- </span></span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a><span class="co">#   broom.mixed::augment(mice.final, newdata=nd) %&gt;%</span></span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a><span class="co">#   rename(ear=.fitted)</span></span>
+<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a><span class="co"># ggplot(mice, aes(x=foot, y=ear)) +</span></span>
+<span id="cb17-10"><a href="#cb17-10" tabindex="-1"></a><span class="co">#   geom_point(alpha=0.2) +</span></span>
+<span id="cb17-11"><a href="#cb17-11" tabindex="-1"></a><span class="co">#   xlab(&#39;Foot Length [mm]&#39;) + ylab(&#39;Ear Length [mm]&#39;) +</span></span>
+<span id="cb17-12"><a href="#cb17-12" tabindex="-1"></a><span class="co">#   geom_point(data=filter(mice, site==&quot;42&quot;), alpha=1, color=&quot;red&quot;) +</span></span>
+<span id="cb17-13"><a href="#cb17-13" tabindex="-1"></a><span class="co">#   geom_line(data=pred42, size=2, color=&quot;red&quot;)</span></span></code></pre></div>
+<p>So you could get lines for every site, but that would be a bit messy.
+We say these predictions are “conditional” on the random effects,
+because they include the perturbations from the random effects. Another
+thing you might want are predictions “unconditional” on the random
+effects. We can get these too but not from
+<code>broom::augment()</code>. Package lme4 includes a
+<code>predict()</code> function for these fitted objects.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="co"># # get predictions unconditional on random effect. Note the &#39;re.form&#39; argument.</span></span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a><span class="co"># preduc &lt;- cbind(nd, ear=predict(mice.final, newdata = nd, re.form = ~0))</span></span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a><span class="co"># # make the plot above, but fade out the red line and add unconditional prediction</span></span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a><span class="co"># ggplot(mice, aes(x=foot, y=ear)) +</span></span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a><span class="co">#   geom_point(alpha=0.2) +</span></span>
+<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a><span class="co">#   xlab(&#39;Foot Length [mm]&#39;) + ylab(&#39;Ear Length [mm]&#39;) +</span></span>
+<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a><span class="co">#   geom_line(data=pred42, size=2, color=&quot;red&quot;, alpha=0.4) +</span></span>
+<span id="cb18-9"><a href="#cb18-9" tabindex="-1"></a><span class="co">#   geom_line(data=preduc, size=2)</span></span></code></pre></div>
+<p>That line represents the relationship between ears and feet we expect
+to find at a randomly chosen new site.</p>
+<p>What about confidence intervals on our predictions? A very good
+question, young grasshopper, but one that will have to wait!</p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
