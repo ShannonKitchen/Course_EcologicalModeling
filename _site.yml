@@ -40,10 +40,8 @@ navbar:
       menu:
         - text: "Lab: Linear Mixed Models"
           href: 05-A-Linear-Mixed-Models.html
-        # - text: "Constrained ordination"
-        #   href: 06-B-constrained-ordination.html
-        # - text: "Comparing multivariate data"
-        #   href: 06-C-matrix-comparison.html
+        - text: "Lab: Generalized Linear Mixed Models"
+          href: 05-B-Generalized-Linear-Mixed-Models.html
     # - text: "W8"
     #   menu:
     #     - text: "Visualizing spatial data"

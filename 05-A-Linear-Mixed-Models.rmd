@@ -49,7 +49,7 @@ require(librarian, quietly = TRUE)
 shelf(tidyverse, cowplot, performance, 
       AICcmodavg, # for model selection
       lme4, # For mixed modeling
-      lmerTest,
+      # lmerTest,
       DHARMa, # For checking mixed model residuals, etc.
       pander,
       broom.mixed,
@@ -142,7 +142,7 @@ The `lmList()` function fits a different linear model to each subset of a data.f
 
 Ask Caleb to confirm your answers once you've completed this!
 
-```{r eval=TRUE, message=FALSE, include=FALSE}
+```{r eval=TRUE, message=FALSE, include=TRUE}
 
 # Coefficients from linear regression list by subject
 cc <- coef(fm1)
@@ -164,11 +164,11 @@ ss.mm <-
   lmer(Reaction ~ Days + (Days | Subject),
        sleepstudy,
        REML = FALSE) # NOTE: you have to specify REML vs ML in lmer
-# summary(ss.mm)
+summary(ss.mm)
 
 ```
 
-Looking at the summary of the mixed model, you should see a “fixed effects” section which is identical to that from a normal lm() fit, with one notable exception. There are no p-values reported for each coefficient. This isn’t a mistake, it is a deliberate choice by the software designer to avoid an argument over the correct number of degrees of freedom to use for the test! 
+Looking at the summary of the mixed model, you should see a “fixed effects” section which is identical to that from a normal lm() fit, with one notable exception. There are no p-values reported for each coefficient--*unless you have the 'lmerTest' package loaded*. This isn’t a mistake, it is a deliberate choice by the software designer to avoid an argument over the correct number of degrees of freedom to use for the test! For more information, see this [StackOverflow post and answer](https://stackoverflow.com/questions/66081381/lme4-version-1-1-26-no-longer-printing-p-values-for-fixed-effects) by the mixed modeling wizard, Ben Bolker.
 
 **On your own, compare the estimates and standard errors with those from the "lmList" and "lm" models above.**
 
