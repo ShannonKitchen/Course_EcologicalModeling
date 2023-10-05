@@ -42,7 +42,7 @@ Our experiment tested the effects of distance to tall thistle patch on bull this
 - Subplot: Each 4m2 plot is divided into 4-1m2 plots 
 		
  
-```{r eval = TRUE, message = FALSE, include = TRUE}
+```{r eval = FALSE, message = FALSE, include = TRUE}
 
 # List of packages necessary to run this script:
 require(librarian, quietly = TRUE)
@@ -67,7 +67,7 @@ thistles <- read.csv(paste0(repo_url,
 
 The top row is the insecticide (“i”) plots, bottom row is control plots (“c”). There are four points at each distance for the four subplots. You also need to setup the factors for region, site, plot and subplot thus:
 
-```{r eval = TRUE, message = FALSE, include = TRUE}
+```{r eval = FALSE, message = FALSE, include = TRUE}
 
 thistles$region = factor(thistles$region)
 thistles$site = factor(thistles$site)
