@@ -25,10 +25,10 @@ output: html_document
 |      | Thu | Sep. 28  |   Mixed models: LMM                                                            |------------|------------|
 | 7    | Tue | Oct. 3   |   Mixed models: GLMM                                                           |------------|------------|
 |      | Thu | Oct. 5   |   Mixed models: confidence and diagnostics                                     |------------|------------|
-| 8    | Tue | Oct. 10  |   Generalized additive models                                                  | Ben        |------------|
+| 8    | Tue | Oct. 10  |   Generalized additive models                                                  |------------|------------|
 |      | Thu | Oct. 12  |   No class                                                                     |------------|------------|
 | 9    | Tue | Oct. 17  |   No class: Fall Break                                                         |------------|------------|
-|      | Thu | Oct. 19  |   Generalized additive models                                                  |------------|------------|
+|      | Thu | Oct. 19  |   Generalized additive models                                                  | Ben        |------------|
 | 10   | Tue | Oct. 24  |   Hierarchical generalized additive models                                     | Ken        |------------|
 |      | Thu | Oct. 26  |   Hierarchical generalized additive models                                     |------------|------------|
 | 11   | Tue | Oct. 31  |   Guest lecture: Dr. Brandon Edwards (Intro to Bayesian statistics)            |------------|------------|
