@@ -45,7 +45,8 @@ shelf(tidyverse,
       performance, # For checking model convergence
       MuMIn, # for model selection
       lme4, # For mixed modeling
-      pander,
+      # pander,
+      lattice,
       broom.mixed,
       DHARMa, # For mixed model diagnostics
       lib = tempdir(),
@@ -140,7 +141,7 @@ contrasts(ecervi$fSex) <- contr.sum(2)
 M0 <- glmer(Ecervi.pa ~ fSex * csLength + (1 + fSex * csLength | Farm), 
             data = ecervi,
             family = binomial)
-summary(M0)
+# summary(M0)
 ```
 
 Still fails to converge. OK, let's try the next simplest model, leaving out the interaction in the random effect.
@@ -151,7 +152,7 @@ Still fails to converge. OK, let's try the next simplest model, leaving out the 
 M0 <- glmer(Ecervi.pa ~ fSex * csLength + (1 + fSex + csLength | Farm), 
             data = ecervi,
             family = binomial)
-summary(M0)
+# summary(M0)
 
 ```
 
@@ -190,9 +191,10 @@ plotResiduals(simulationOutput_LF, form = ecervi$Farm)
 
 The QQ plot, tests, and residuals vs. predicted plots look fine, but there appear to be issues with heteroscedasticity across farms. **On your own, check the residuals for the "SF" model, including the 'Farm' group. Are there any differences? Which one looks like a better model?**
 
-```{r answer1, echo=FALSE, results="asis"}
+```{r echo=FALSE, results="asis"}
 cat(">  The residuals for the fSex random effect model look OK, but not quite as good as the csLength random effect. This is particularly noticeable in the plots of the residuals vs. fitted and residuals vs. csLength plots.")
 ```
+
 ### Model selection
 
 So we have identified the global models and checked that they are adequate. Next we need to make up a set of models and identify the best ones using $AIC_c$. We can build the set with all possible random effects, and all possible fixed effects models. The number of variables is small, so this will be a reasonable thing to do--at least for the purposes of this lab... 
@@ -328,38 +330,43 @@ Profile intervals are also good, slow, but not as bad as bootstrap.
 
 ```{r eval = TRUE, message = FALSE, include = TRUE}
 
-topmod.profCI <- as.data.frame(confint(topmod, method="profile", oldNames=FALSE)) # profile limits
-topmod.WaldCI <- as.data.frame(confint(topmod, method="Wald", oldNames=FALSE))
+# profile limits
+topmod.profCI <-
+  as.data.frame(confint(topmod, method = "profile", oldNames = FALSE)) 
+# Wald limits
+topmod.WaldCI <-
+  as.data.frame(confint(topmod, method = "Wald", oldNames = FALSE))
 
 # get rid of rownames
-rownames(topmod.profCI)<-NULL
-rownames(topmod.WaldCI)<-NULL
+rownames(topmod.profCI) <- NULL
+rownames(topmod.WaldCI) <- NULL
 
 # and change names to include type of CI
-names(topmod.profCI)<-c("Profile_CI2.5","Profile_CI97.5")
-names(topmod.WaldCI)<-c("Wald_CI2.5","Wald_CI97.5")
+names(topmod.profCI) <- c("Profile_CI2.5", "Profile_CI97.5")
+names(topmod.WaldCI) <- c("Wald_CI2.5", "Wald_CI97.5")
 
-# # NOTE: These are some superseded functions from tidyverse, but too lazy to modify now!
-topmod.CI <- tidy(topmod)
-# add the profile intervals -- confint() uses a different order from tidy()
-topmod.CI <- cbind(topmod.CI,
-                   topmod.profCI[c(4:7,1,3,2),],
-                   topmod.WaldCI[c(4:7,1,3,2),])
-topmod.CI <- gather(topmod.CI, type_level, limit, contains(".5"))
+# Get the coefficients from the top model, add the Wald and profile intervals,
+# do some data manipulation to prepare for ggplot.
+topmod.CI <- 
+  broom.mixed::tidy(topmod) %>% # add the profile intervals -- confint() uses a different order from tidy() 
+  cbind(topmod.profCI[c(4:7,1,3,2),],
+        topmod.WaldCI[c(4:7,1,3,2),]) %>%
+  dplyr::select(c(term, estimate, Profile_CI2.5, 
+                  Profile_CI97.5, Wald_CI2.5, Wald_CI97.5)) %>%
+  pivot_longer(Profile_CI2.5:Wald_CI97.5) %>%
+  separate_wider_delim(cols = "name",
+                       delim = "_",
+                       names = c("type", "level")) %>%
+  rename(Estimate = estimate, Type = type, Term = term) %>%
+  pivot_wider(id_cols = c(Term, Estimate, Type),
+              names_from = level, 
+              values_from = value)
 
-# now split type_level up
-topmod.CI <- separate(topmod.CI,type_level,
-         into=c("type","level"),
-         sep="_")
-
-# Need the 2.5 and 97.5 values in separate columns!
-topmod.CI <- spread(topmod.CI, level, limit)
-# that messed up the order of the rows, but looks like it all worked.
-
+# Plot the profile and Wald confidence intervals on coefficients.
 ggplot(topmod.CI, 
-       aes(x = term, 
-           y = estimate, 
-           color = type)) +
+       aes(x = Term, 
+           y = Estimate, 
+           color = Type)) +
   scale_color_viridis_d(option = "plasma") +
   geom_point(position = position_dodge(width = 0.5),
              size = 3) +
@@ -369,7 +376,9 @@ ggplot(topmod.CI,
                 width = 0.2) + 
   geom_hline(data = data.frame(yIntercept = 0),
              mapping = aes(yintercept = yIntercept),
-             linetype = 2) +
+             color = "darkred") +
+  theme(panel.background = element_rect(fill = "grey60"),
+        panel.grid.minor = element_blank()) + 
   xlab("Term") +
   ylab("Coefficient Estimate")
 
@@ -385,10 +394,11 @@ The reason it is hard to get confidence intervals on predictions is because of t
 The basic idea is best illustrated with a figure showing how the log-likelihood of a model changes as one of the parameter values is changed.
 
 ```{r eval = TRUE, message = FALSE, include = TRUE}
+
 # get a profile for the fixed effect csLength
 lengthProf <- profile(topmod, which="csLength")
-library(lattice)
 xyplot(lengthProf, absVal=TRUE)
+
 ```
 
 The x-axis on that figure are values of the coefficient csLength. The y-axis is a measure of the change in deviance as the coefficient is moved away from the maximum likelihood estimate (the peak at the bottom). The vertical and horizontal lines indicate 50%, 80%, 90%, 95%, and 99% confidence intervals. As the parameter value moves away from the MLE, the model's log-likehood gets worse. Particular points along that profile correspond to different critical points on chisquare distribution with one degree of freedom. 
