@@ -75,3 +75,7 @@ thistles$plot = factor(paste(thistles$spray, thistles$distance, sep = "."))
 thistles$subplot = factor(thistles$subplot)
 
 ```
+
+## Your assignment:
+
+Using these data, apply your knowledge of (generalized?) linear mixed models to determine if there is support for the enemy release hypothesis. Write up an .Rmd file with 1) analytical methods, 2) results (including figures, tables, and **text interpreting the figures and tables and model(s)**!, and 3) a brief conclusion (1 - 2 paragraphs) based on the results. Arrange and format similar to a scientific article. No need to create an introduction, reiterate the survey methods, or produce a literature cited section!
