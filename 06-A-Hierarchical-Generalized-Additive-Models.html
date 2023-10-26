@@ -548,17 +548,38 @@ insect populations. Ecography, 2022(2).</li>
 <div id="overview" class="section level2">
 <h2>Overview</h2>
 <p>To learn about hierarchical generalized additive models (HGAMs), we
-are going to use weather station data from various rangeland ecoregions
-in the western United States. The data are from</p>
+are going to use weather station data from grassland ecoregions in the
+Great Plains, USA. We will be asking if two factors that affect fire
+intensity, <em>minimum relative humidity</em> and <em>maximum wind
+speed</em>, are changing between 2010 and 2019.</p>
 <p>
-<img src="" width="600" />
+<div class="float">
+<img
+src="https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/RS.jpg"
+width="300" alt="Photo credit: Christine Chitwood" />
+<div class="figcaption">Photo credit: Christine Chitwood</div>
+</div>
 <p>
+<p>A brief description of the data:</p>
+<ul>
+<li>Year = years from 2010 - 2019</li>
+<li>Month = numeric code for months May - Sept</li>
+<li>Day = Julian day of year</li>
+<li>Veg_Type = rangeland ecoregion</li>
+<li>Lat = latitude</li>
+<li>Long = longitude</li>
+<li>Station_ID = weather station unique identifier code</li>
+<li>RH_per_min = minimum percent relative humidity between 0600 - 1800
+per day</li>
+<li>Wind_mph_max = maximum wind speed (mph) between 0600 - 1800 per
+day</li>
+</ul>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># List of packages necessary to run this script:</span></span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">require</span>(librarian, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">shelf</span>(tidyverse, </span>
 <span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>      mgcv, <span class="co"># For checking model convergence</span></span>
 <span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>      MuMIn, <span class="co"># for model selection</span></span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>      <span class="co"># gratia, # for ggplot functionality with mgcv</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>      gratia, <span class="co"># for ggplot functionality with mgcv</span></span>
 <span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>      <span class="co"># DHARMa, # for model diagnostics</span></span>
 <span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>      vroom, <span class="co"># for loading data FAST</span></span>
 <span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>      <span class="at">lib =</span> <span class="fu">tempdir</span>(),</span>
@@ -566,31 +587,117 @@ in the western United States. The data are from</p>
 <span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a></span>
 <span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co"># Set the web address where R will look for files from this repository</span></span>
 <span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co"># Do not change this address</span></span>
-<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co"># repo_url &lt;- &quot;https://raw.githubusercontent.com/LivingLandscapes/Course_EcologicalModeling/master/&quot;</span></span>
-<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>repo_url <span class="ot">&lt;-</span> <span class="st">&quot;C:/Users/cr065/Documents/GitHub/Course_EcologicalModeling&quot;</span></span>
-<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a></span>
-<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="co"># Load data</span></span>
-<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a>weather <span class="ot">&lt;-</span> </span>
-<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a>  <span class="fu">vroom</span>(<span class="fu">paste0</span>(repo_url, <span class="st">&quot;/data/RxFireWeather.csv&quot;</span>))</span></code></pre></div>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>repo_url <span class="ot">&lt;-</span> <span class="st">&quot;https://raw.githubusercontent.com/LivingLandscapes/Course_EcologicalModeling/master/&quot;</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co"># Load data</span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>weather <span class="ot">&lt;-</span> </span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a>  <span class="fu">vroom</span>(<span class="fu">paste0</span>(repo_url, <span class="st">&quot;/data/FireWeather.csv&quot;</span>))</span></code></pre></div>
 <div id="data-exploration" class="section level3">
 <h3>Data Exploration</h3>
-<p><strong>On your own, familiarize yourself with the data.</strong> A
-brief description of the data:</p>
-<ul>
-<li></li>
-</ul>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">hist</span>(weather<span class="sc">$</span>Day)</span></code></pre></div>
-<p><img src="06-A-Hierarchical-Generalized-Additive-Models_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
-<p>…</p>
-<p>…</p>
+<p><strong>On your own, familiarize yourself with the data.</strong>
+Below, you can see that we’re deadling with &gt;100k rows and
+<em>many</em> potential grouping variables.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Number of columns and rows?</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">dim</span>(weather) <span class="co"># &gt;100k rows!</span></span></code></pre></div>
+<pre><code>## [1] 104712      9</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># How many unique values in each column?</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>weather <span class="sc">%&gt;%</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span> <span class="fu">length</span>(<span class="fu">unique</span>(.x))))</span></code></pre></div>
+<pre><code>## # A tibble: 1 × 9
+##    Year Veg_Type Station_ID   Lat  Long Month   Day Wind_mph_max RH_per_min
+##   &lt;int&gt;    &lt;int&gt;      &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;        &lt;int&gt;      &lt;int&gt;
+## 1    10        7         71    71    70     5   153          146       7156</code></pre>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Some preparations for mgcv</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>weather <span class="ot">&lt;-</span> </span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  weather <span class="sc">%&gt;%</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(Veg_Type, Station_ID), </span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>                as.factor)) <span class="sc">%&gt;%</span> <span class="co"># mgcv wants factors for random effect </span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">RH_per_min =</span> RH_per_min <span class="sc">+</span> <span class="fl">0.001</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>         <span class="at">Wind_mph_max =</span> Wind_mph_max <span class="sc">+</span> <span class="fl">0.001</span>) <span class="sc">%&gt;%</span> <span class="co"># for log link</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(Year, Day, Lat, Long),</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>                <span class="sc">~</span> (.x <span class="sc">-</span> <span class="fu">mean</span>(.x)) <span class="sc">/</span> <span class="fu">sd</span>(.x),</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>                <span class="at">.names =</span> <span class="st">&quot;{.col}_scaled&quot;</span>)) <span class="co"># scale covariates</span></span></code></pre></div>
 </div>
-<div id="choose-your-own-adventure" class="section level3">
-<h3>Choose your own adventure</h3>
-<p>As always, start with a global model to check residuals. The global
-model here has the interaction of sex and length. We clearly have a
-repeated measures design, so we will start with a mixed model using Farm
-as the random effect. It is also possible that the effects of sex and
-length could vary by farm.</p>
+<div id="random-intercept-model-g" class="section level3">
+<h3>“Random Intercept”: Model G</h3>
+<p>Let’s first try the simplest HGAM: estimate a single global function
+for our covariate of interest (Year) plus a individual-level random
+effect intercept for ecoregion. <strong>On your own, investigate each
+model diagnostic call (commented out in the chunk below) and
+interpret.</strong> Look at the R help for more information, and ask
+Caleb if you have more questions.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Create model G using bam()</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>rh_modG <span class="ot">&lt;-</span> </span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="fu">bam</span>(RH_per_min <span class="sc">~</span> <span class="fu">s</span>(Year) <span class="sc">+</span> </span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>        <span class="fu">s</span>(Day, <span class="at">bs =</span> <span class="st">&quot;cc&quot;</span>) <span class="sc">+</span> <span class="co"># Note cubic regression spline</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>        <span class="fu">te</span>(Long, Lat) <span class="sc">+</span> <span class="co"># tensor smooth lets latitude/longitude &#39;interact&#39;</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>        <span class="fu">s</span>(Veg_Type, <span class="at">bs =</span> <span class="st">&quot;re&quot;</span>), <span class="co"># Random effect for ecoregion</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>      <span class="at">family =</span> <span class="fu">gaussian</span>(<span class="st">&quot;log&quot;</span>), <span class="co"># Why this link?!</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>      <span class="at">data =</span> weather,</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>      <span class="at">method =</span> <span class="st">&quot;fREML&quot;</span>) <span class="co"># need to use fREML for fast fitting.</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co"># # Some basic model diagnostics</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co"># summary(rh_modG)</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co"># gam.check(rh_modG)</span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="co"># gratia::appraise(rh_modG)</span></span></code></pre></div>
+<p>Okay, so the model isn’t the greatest for a few reasons (can you list
+some?). However, it’s also not a complete disaster, so for fun–and so we
+can see how “random intercepts” work with HGAMs–let’s plot some
+predictions.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># setup prediction data. This is a little tricky because for ggplot, we only</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="co"># want one latitude/longitude for each ecoregion AND we want to make sure the</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co"># correct latitude/longitudes get paired with their respective ecoregions. Doing</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co"># this with a left_join()</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>rh_modG_pred <span class="ot">&lt;-</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>  <span class="fu">with</span>(weather,</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>       <span class="fu">left_join</span>(</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>         <span class="fu">expand.grid</span>(</span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>           <span class="at">Year =</span> <span class="dv">2010</span><span class="sc">:</span><span class="dv">2019</span>,</span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>           <span class="at">Day =</span> <span class="fu">median</span>(Day), <span class="co"># Only using the middle day here!</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>           <span class="at">Veg_Type =</span> <span class="fu">unique</span>(Veg_Type)</span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>         ),</span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>         <span class="fu">data.frame</span>( <span class="co"># Getting only the mean lat/long by ecoregion</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>           <span class="at">Lat =</span> <span class="fu">summarize</span>(weather <span class="sc">%&gt;%</span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a>                             <span class="fu">group_by</span>(Veg_Type),</span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a>                           <span class="at">Lat =</span> <span class="fu">mean</span>(Lat))<span class="sc">$</span>Lat,</span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a>           <span class="at">Long =</span> <span class="fu">summarize</span>(weather <span class="sc">%&gt;%</span></span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a>                              <span class="fu">group_by</span>(Veg_Type),</span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a>                            <span class="at">Long =</span> <span class="fu">mean</span>(Long))<span class="sc">$</span>Long,</span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a>           <span class="at">Veg_Type =</span> <span class="fu">sort</span>(<span class="fu">unique</span>(Veg_Type)) <span class="co"># Make sure ecoregions are in correct order!</span></span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a>         )</span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a>       ))</span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a></span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a><span class="co"># make the prediction, add this and a column of standard errors to the prediction</span></span>
+<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a><span class="co"># data.frame. Predictions are on the log scale.</span></span>
+<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a>rh_modG_pred <span class="ot">&lt;-</span> <span class="fu">cbind</span>(rh_modG_pred,</span>
+<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a>                       <span class="fu">predict</span>(rh_modG, </span>
+<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a>                               rh_modG_pred, </span>
+<span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a>                               <span class="at">se.fit =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a>                               <span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
+<span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a></span>
+<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a><span class="co"># make the plot.</span></span>
+<span id="cb8-33"><a href="#cb8-33" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> rh_modG_pred) <span class="sc">+</span></span>
+<span id="cb8-34"><a href="#cb8-34" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> Veg_Type) <span class="sc">+</span></span>
+<span id="cb8-35"><a href="#cb8-35" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> fit <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> se.fit, </span>
+<span id="cb8-36"><a href="#cb8-36" tabindex="-1"></a>                  <span class="at">ymax =</span> fit <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> se.fit, </span>
+<span id="cb8-37"><a href="#cb8-37" tabindex="-1"></a>                  <span class="at">x =</span> Year, </span>
+<span id="cb8-38"><a href="#cb8-38" tabindex="-1"></a>                  <span class="at">group =</span> Veg_Type),</span>
+<span id="cb8-39"><a href="#cb8-39" tabindex="-1"></a>              <span class="at">fill =</span> <span class="st">&quot;grey80&quot;</span>) <span class="sc">+</span></span>
+<span id="cb8-40"><a href="#cb8-40" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> Year, </span>
+<span id="cb8-41"><a href="#cb8-41" tabindex="-1"></a>                <span class="at">y =</span> fit, </span>
+<span id="cb8-42"><a href="#cb8-42" tabindex="-1"></a>                <span class="at">group =</span> Veg_Type),</span>
+<span id="cb8-43"><a href="#cb8-43" tabindex="-1"></a>            <span class="at">color =</span> <span class="st">&quot;darkred&quot;</span>) <span class="sc">+</span></span>
+<span id="cb8-44"><a href="#cb8-44" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">2010</span>, <span class="dv">2013</span>, <span class="dv">2016</span>, <span class="dv">2019</span>)) <span class="sc">+</span> </span>
+<span id="cb8-45"><a href="#cb8-45" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Year&quot;</span>,</span>
+<span id="cb8-46"><a href="#cb8-46" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Minimum Relative Humidity (%)&quot;</span>)</span></code></pre></div>
+<p><img src="06-A-Hierarchical-Generalized-Additive-Models_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><strong>On your own, interpret these prediction plots.</strong>
+Remember the values we fed the predict() function when you’re
+interpreting. For instance, what does it mean that we only used the
+median Julian day in these predictions?</p>
+</div>
+<div id="random-slope-model-gs" class="section level3">
+<h3>“Random Slope”: Model GS</h3>
 </div>
 </div>
 

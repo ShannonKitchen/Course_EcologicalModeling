@@ -34,7 +34,7 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 To learn about hierarchical generalized additive models (HGAMs), we are going to use weather station data from grassland ecoregions in the Great Plains, USA. We will be asking if two factors that affect fire intensity, *minimum relative humidity* and *maximum wind speed*, are changing between 2010 and 2019. 
 
 <p>
-![](https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/RS.jpg){width=600px}
+![Photo credit: Christine Chitwood](https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/RS.jpg){width=300px}
 <p>
 
 A brief description of the data:
@@ -64,8 +64,7 @@ shelf(tidyverse,
 
 # Set the web address where R will look for files from this repository
 # Do not change this address
-# repo_url <- "https://raw.githubusercontent.com/LivingLandscapes/Course_EcologicalModeling/master/"
-repo_url <- "C:/Users/cr065/Documents/GitHub/Course_EcologicalModeling"
+repo_url <- "https://raw.githubusercontent.com/LivingLandscapes/Course_EcologicalModeling/master/"
 
 # Load data
 weather <- 
@@ -99,44 +98,55 @@ weather <-
 
 ```
 
-### Simplest HGAM: Model G
+### "Random Intercept": Model G
+
+Let's first try the simplest HGAM: estimate a single global function for our covariate of interest (Year) plus a individual-level random effect intercept for ecoregion. **On your own, investigate each model diagnostic call (commented out in the chunk below) and interpret.** Look at the R help for more information, and ask Caleb if you have more questions.
 
 ```{r eval = TRUE, message = FALSE, include = TRUE}
 
-
-
-# 
+# Create model G using bam()
 rh_modG <- 
   bam(RH_per_min ~ s(Year) + 
-        s(Day, bs = "cc") + te(Long, Lat) + 
-        s(Veg_Type, bs = "re"),
-      family = gaussian("log"),
+        s(Day, bs = "cc") + # Note cubic regression spline
+        te(Long, Lat) + # tensor smooth lets latitude/longitude 'interact'
+        s(Veg_Type, bs = "re"), # Random effect for ecoregion
+      family = gaussian("log"), # Why this link?!
       data = weather,
-      method = "fREML")
+      method = "fREML") # need to use fREML for fast fitting.
+
+# # Some basic model diagnostics
+# summary(rh_modG)
+# gam.check(rh_modG)
+# gratia::appraise(rh_modG)
 
 ```
 
-...
+Okay, so the model isn't the greatest for a few reasons (can you list some?). However, it's also not a complete disaster. So for fun--and so we can see how "random intercepts" work with HGAMs--let's plot some predictions.
 
 ```{r eval = TRUE, message = FALSE, include = TRUE}
 
-# setup prediction data. This is a little tricky because for ggplot, we only want one latitude/longitude for each ecoregion AND we want to make sure the correct latitude/longitudes get paired with their respective ecoregions. Doing this with a left_join()
-rh_modG_pred <- 
-  with(
-    weather,
-    left_join(expand.grid(
-      Year = 2010:2019,
-      Day = median(Day), # Only using the middle day here!
-      Veg_Type = sort(unique(Veg_Type))
-    ),
-    data.frame(Lat = summarize(weather %>%
-                      group_by(Veg_Type),
-                    Lat = mean(Lat))$Lat,
-    Long = summarize(weather %>%
-                       group_by(Veg_Type),
-                     Long = mean(Long))$Long,
-    Veg_Type = sort(unique(Veg_Type)))
-  ))
+# setup prediction data. This is a little tricky because for ggplot, we only
+# want one latitude/longitude for each ecoregion AND we want to make sure the
+# correct latitude/longitudes get paired with their respective ecoregions. Doing
+# this with a left_join()
+rh_modG_pred <-
+  with(weather,
+       left_join(
+         expand.grid(
+           Year = 2010:2019,
+           Day = median(Day), # Only using the middle day here!
+           Veg_Type = unique(Veg_Type)
+         ),
+         data.frame( # Getting only the mean lat/long by ecoregion
+           Lat = summarize(weather %>%
+                             group_by(Veg_Type),
+                           Lat = mean(Lat))$Lat,
+           Long = summarize(weather %>%
+                              group_by(Veg_Type),
+                            Long = mean(Long))$Long,
+           Veg_Type = sort(unique(Veg_Type)) # Make sure ecoregions are in correct order!
+         )
+       ))
 
 # make the prediction, add this and a column of standard errors to the prediction
 # data.frame. Predictions are on the log scale.
@@ -158,11 +168,12 @@ ggplot(data = rh_modG_pred) +
                 y = fit, 
                 group = Veg_Type),
             color = "darkred") +
+  scale_x_continuous(breaks = c(2010, 2013, 2016, 2019)) + 
   labs(x = "Year",
        y = "Minimum Relative Humidity (%)")
 
 ```
 
+**On your own, interpret these prediction plots.** Remember the values we fed the predict() function when you're interpreting. For instance, what does it mean that we only used the median Julian day in these predictions?
 
-
-### 
+### "Random Slope": Model GS
