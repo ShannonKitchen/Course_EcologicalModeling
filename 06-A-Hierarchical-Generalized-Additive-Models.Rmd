@@ -119,8 +119,8 @@ rh_modG <-
 # gam.check(rh_modG)
 # gratia::appraise(rh_modG)
 
-# Use gratia::draw to show effects
-gratia::draw(rh_modG)
+# # Use gratia::draw to show effects
+# gratia::draw(rh_modG)
 
 ```
 

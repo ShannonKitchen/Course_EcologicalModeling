@@ -653,9 +653,8 @@ Caleb if you have more questions.</p>
 <span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co"># gam.check(rh_modG)</span></span>
 <span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="co"># gratia::appraise(rh_modG)</span></span>
 <span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a></span>
-<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="co"># Use gratia::draw to show effects</span></span>
-<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>gratia<span class="sc">::</span><span class="fu">draw</span>(rh_modG)</span></code></pre></div>
-<p><img src="06-A-Hierarchical-Generalized-Additive-Models_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="co"># # Use gratia::draw to show effects</span></span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a><span class="co"># gratia::draw(rh_modG)</span></span></code></pre></div>
 <p>Okay, so the model isn’t the greatest for a few reasons (can you list
 some?). However, for fun–and so we can see how “random intercepts” work
 with HGAMs–let’s plot some predictions. We’ll also do a quick comparison
@@ -866,8 +865,8 @@ HGAMs:</p>
 <span id="cb15-35"><a href="#cb15-35" tabindex="-1"></a>           <span class="at">MAE =</span> <span class="fu">c</span>(<span class="fu">mae</span>(rh_modG_train, test_df), </span>
 <span id="cb15-36"><a href="#cb15-36" tabindex="-1"></a>                    <span class="fu">mae</span>(rh_modGS_train, test_df)))</span></code></pre></div>
 <pre><code>##   Model     RMSE      MAE
-## 1     G 44.02154 40.65895
-## 2    GS 44.02296 40.66644</code></pre>
+## 1     G 44.04650 40.69396
+## 2    GS 44.04055 40.69077</code></pre>
 <p>Oof! Looks like both our (quick and dirty) cross-validation tests
 show the models have negligible differences in predictive ability. Just
 goes to show that we need to assess models from multiple angles.</p>
