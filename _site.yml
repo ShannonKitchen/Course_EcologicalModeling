@@ -44,14 +44,10 @@ navbar:
           href: 05-B-Generalized-Linear-Mixed-Models.html
         - text: "Homework 3"
           href: 05-C-Homework-03.html
-    # - text: "W8"
-    #   menu:
-    #     - text: "Visualizing spatial data"
-    #       href: 08-A-mapping.html
-    #     - text: "Spatial regression"
-    #       href: 08-B-spatial-regression.html
-    #     - text: "Ordination approach to spatial analysis"
-    #       href: 08-C-spatial-ordination.html
+    - text: "HGAMs"
+      menu:
+        - text: "Lab: HGAMs"
+          href: 06-A-Hierarchical-Generalized-Additive-Models.html
     # - text: "W9"
     #   menu:
     #     - text: "Time series"

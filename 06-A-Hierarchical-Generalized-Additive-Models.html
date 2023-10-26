@@ -517,6 +517,18 @@ div.tocify {
     </li>
   </ul>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    HGAMs
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="06-Hierarchical-Generalized-Additive-Models.html">Lab: HGAMs</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -580,7 +592,7 @@ day</li>
 <span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>      mgcv, <span class="co"># For checking model convergence</span></span>
 <span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>      MuMIn, <span class="co"># for model selection</span></span>
 <span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>      gratia, <span class="co"># for ggplot functionality with mgcv</span></span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>      <span class="co"># DHARMa, # for model diagnostics</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>      modelr, <span class="co"># for cross-validation</span></span>
 <span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>      vroom, <span class="co"># for loading data FAST</span></span>
 <span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>      <span class="at">lib =</span> <span class="fu">tempdir</span>(),</span>
 <span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>      <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span>
@@ -639,65 +651,232 @@ Caleb if you have more questions.</p>
 <span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co"># # Some basic model diagnostics</span></span>
 <span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co"># summary(rh_modG)</span></span>
 <span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co"># gam.check(rh_modG)</span></span>
-<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="co"># gratia::appraise(rh_modG)</span></span></code></pre></div>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="co"># gratia::appraise(rh_modG)</span></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="co"># Use gratia::draw to show effects</span></span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>gratia<span class="sc">::</span><span class="fu">draw</span>(rh_modG)</span></code></pre></div>
+<p><img src="06-A-Hierarchical-Generalized-Additive-Models_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <p>Okay, so the model isn’t the greatest for a few reasons (can you list
-some?). However, it’s also not a complete disaster, so for fun–and so we
-can see how “random intercepts” work with HGAMs–let’s plot some
-predictions.</p>
+some?). However, for fun–and so we can see how “random intercepts” work
+with HGAMs–let’s plot some predictions. We’ll also do a quick comparison
+of fitted vs. observed to gauge how well the models are performing.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># setup prediction data. This is a little tricky because for ggplot, we only</span></span>
 <span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="co"># want one latitude/longitude for each ecoregion AND we want to make sure the</span></span>
 <span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co"># correct latitude/longitudes get paired with their respective ecoregions. Doing</span></span>
 <span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co"># this with a left_join()</span></span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>rh_modG_pred <span class="ot">&lt;-</span></span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>  <span class="fu">with</span>(weather,</span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>       <span class="fu">left_join</span>(</span>
-<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>         <span class="fu">expand.grid</span>(</span>
-<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>           <span class="at">Year =</span> <span class="dv">2010</span><span class="sc">:</span><span class="dv">2019</span>,</span>
-<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>           <span class="at">Day =</span> <span class="fu">median</span>(Day), <span class="co"># Only using the middle day here!</span></span>
-<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>           <span class="at">Veg_Type =</span> <span class="fu">unique</span>(Veg_Type)</span>
-<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>         ),</span>
-<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>         <span class="fu">data.frame</span>( <span class="co"># Getting only the mean lat/long by ecoregion</span></span>
-<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>           <span class="at">Lat =</span> <span class="fu">summarize</span>(weather <span class="sc">%&gt;%</span></span>
-<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a>                             <span class="fu">group_by</span>(Veg_Type),</span>
-<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a>                           <span class="at">Lat =</span> <span class="fu">mean</span>(Lat))<span class="sc">$</span>Lat,</span>
-<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a>           <span class="at">Long =</span> <span class="fu">summarize</span>(weather <span class="sc">%&gt;%</span></span>
-<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a>                              <span class="fu">group_by</span>(Veg_Type),</span>
-<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a>                            <span class="at">Long =</span> <span class="fu">mean</span>(Long))<span class="sc">$</span>Long,</span>
-<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a>           <span class="at">Veg_Type =</span> <span class="fu">sort</span>(<span class="fu">unique</span>(Veg_Type)) <span class="co"># Make sure ecoregions are in correct order!</span></span>
-<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a>         )</span>
-<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a>       ))</span>
-<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a></span>
-<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a><span class="co"># make the prediction, add this and a column of standard errors to the prediction</span></span>
-<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a><span class="co"># data.frame. Predictions are on the log scale.</span></span>
-<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a>rh_modG_pred <span class="ot">&lt;-</span> <span class="fu">cbind</span>(rh_modG_pred,</span>
-<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a>                       <span class="fu">predict</span>(rh_modG, </span>
-<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a>                               rh_modG_pred, </span>
-<span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a>                               <span class="at">se.fit =</span> <span class="cn">TRUE</span>, </span>
-<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a>                               <span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
-<span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a></span>
-<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a><span class="co"># make the plot.</span></span>
-<span id="cb8-33"><a href="#cb8-33" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> rh_modG_pred) <span class="sc">+</span></span>
-<span id="cb8-34"><a href="#cb8-34" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> Veg_Type) <span class="sc">+</span></span>
-<span id="cb8-35"><a href="#cb8-35" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> fit <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> se.fit, </span>
-<span id="cb8-36"><a href="#cb8-36" tabindex="-1"></a>                  <span class="at">ymax =</span> fit <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> se.fit, </span>
-<span id="cb8-37"><a href="#cb8-37" tabindex="-1"></a>                  <span class="at">x =</span> Year, </span>
-<span id="cb8-38"><a href="#cb8-38" tabindex="-1"></a>                  <span class="at">group =</span> Veg_Type),</span>
-<span id="cb8-39"><a href="#cb8-39" tabindex="-1"></a>              <span class="at">fill =</span> <span class="st">&quot;grey80&quot;</span>) <span class="sc">+</span></span>
-<span id="cb8-40"><a href="#cb8-40" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> Year, </span>
-<span id="cb8-41"><a href="#cb8-41" tabindex="-1"></a>                <span class="at">y =</span> fit, </span>
-<span id="cb8-42"><a href="#cb8-42" tabindex="-1"></a>                <span class="at">group =</span> Veg_Type),</span>
-<span id="cb8-43"><a href="#cb8-43" tabindex="-1"></a>            <span class="at">color =</span> <span class="st">&quot;darkred&quot;</span>) <span class="sc">+</span></span>
-<span id="cb8-44"><a href="#cb8-44" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">2010</span>, <span class="dv">2013</span>, <span class="dv">2016</span>, <span class="dv">2019</span>)) <span class="sc">+</span> </span>
-<span id="cb8-45"><a href="#cb8-45" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Year&quot;</span>,</span>
-<span id="cb8-46"><a href="#cb8-46" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Minimum Relative Humidity (%)&quot;</span>)</span></code></pre></div>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>rh_pred_df <span class="ot">&lt;-</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>  <span class="fu">with</span>(</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>    weather,</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>    <span class="fu">left_join</span>(</span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>      <span class="fu">expand.grid</span>(</span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>        <span class="at">Year =</span> <span class="dv">2010</span><span class="sc">:</span><span class="dv">2019</span>,</span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>        <span class="at">Day =</span> <span class="fu">median</span>(Day),  <span class="co"># Only using the median day here!</span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>        <span class="at">Veg_Type =</span> <span class="fu">unique</span>(Veg_Type)</span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>      ),</span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>      weather <span class="sc">%&gt;%</span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a>        <span class="fu">filter</span>(Day <span class="sc">==</span> <span class="fu">median</span>(Day)) <span class="sc">%&gt;%</span></span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a>        <span class="fu">group_by</span>(Veg_Type) <span class="sc">%&gt;%</span></span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a>        <span class="fu">filter</span>(Station_ID <span class="sc">%in%</span> <span class="fu">sample</span>(Station_ID, <span class="dv">1</span>, <span class="at">replace =</span> <span class="cn">FALSE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a>        <span class="fu">select</span>(<span class="fu">c</span>(Veg_Type, Lat, Long, Year, RH_per_min)),</span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a>     <span class="at">keep =</span> <span class="cn">FALSE</span></span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a>    )</span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a>  )</span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a></span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a><span class="co"># make the prediction, add this and a column of standard errors to the prediction</span></span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a><span class="co"># data.frame. Predictions are on the log scale.</span></span>
+<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a>rh_modG_pred <span class="ot">&lt;-</span> <span class="fu">cbind</span>(rh_pred_df,</span>
+<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a>                       <span class="fu">predict</span>(rh_modG, </span>
+<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a>                               rh_pred_df, </span>
+<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a>                               <span class="at">se.fit =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a>                               <span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
+<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a></span>
+<span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a><span class="co"># make the prediction plots</span></span>
+<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> rh_modG_pred) <span class="sc">+</span></span>
+<span id="cb8-33"><a href="#cb8-33" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> Veg_Type) <span class="sc">+</span></span>
+<span id="cb8-34"><a href="#cb8-34" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> fit <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> se.fit, </span>
+<span id="cb8-35"><a href="#cb8-35" tabindex="-1"></a>                  <span class="at">ymax =</span> fit <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> se.fit, </span>
+<span id="cb8-36"><a href="#cb8-36" tabindex="-1"></a>                  <span class="at">x =</span> Year, </span>
+<span id="cb8-37"><a href="#cb8-37" tabindex="-1"></a>                  <span class="at">group =</span> Veg_Type),</span>
+<span id="cb8-38"><a href="#cb8-38" tabindex="-1"></a>              <span class="at">fill =</span> <span class="st">&quot;grey80&quot;</span>) <span class="sc">+</span></span>
+<span id="cb8-39"><a href="#cb8-39" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> Year, </span>
+<span id="cb8-40"><a href="#cb8-40" tabindex="-1"></a>                <span class="at">y =</span> fit, </span>
+<span id="cb8-41"><a href="#cb8-41" tabindex="-1"></a>                <span class="at">group =</span> Veg_Type),</span>
+<span id="cb8-42"><a href="#cb8-42" tabindex="-1"></a>            <span class="at">color =</span> <span class="st">&quot;darkred&quot;</span>) <span class="sc">+</span></span>
+<span id="cb8-43"><a href="#cb8-43" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">2010</span>, <span class="dv">2013</span>, <span class="dv">2016</span>, <span class="dv">2019</span>)) <span class="sc">+</span> </span>
+<span id="cb8-44"><a href="#cb8-44" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Year&quot;</span>,</span>
+<span id="cb8-45"><a href="#cb8-45" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Minimum Relative Humidity (%)&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb8-46"><a href="#cb8-46" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Model G&quot;</span>)</span></code></pre></div>
 <p><img src="06-A-Hierarchical-Generalized-Additive-Models_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Now, let&#39;s create a data.frame comparing observed vs. fitted values</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>rh_modG_predVSobs <span class="ot">&lt;-</span> </span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="fu">transform</span>(rh_modG_pred, </span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>            <span class="at">modG =</span> <span class="fu">predict</span>(rh_modG, </span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>                           rh_modG_pred,</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>                           <span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co"># Plot observed vs. fitted values. This is a &quot;quick&quot; way to see how well</span></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="co"># the model predicted the data.</span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="fu">ggplot</span>(rh_modG_predVSobs,</span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> modG, </span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>           <span class="at">y =</span> RH_per_min)) <span class="sc">+</span></span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> Veg_Type) <span class="sc">+</span></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">color =</span> <span class="st">&quot;gold&quot;</span>,</span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a>              <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Predicted RH&quot;</span>, <span class="at">y=</span><span class="st">&quot;Observed RH&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Model G&quot;</span>)</span></code></pre></div>
+<p><img src="06-A-Hierarchical-Generalized-Additive-Models_files/figure-html/unnamed-chunk-5-2.png" width="672" /></p>
 <p><strong>On your own, interpret these prediction plots.</strong>
 Remember the values we fed the predict() function when you’re
 interpreting. For instance, what does it mean that we only used the
-median Julian day in these predictions?</p>
+median Julian day in these predictions? Does it matter that we only used
+one randomly-selected weather station?</p>
 </div>
 <div id="random-slope-model-gs" class="section level3">
 <h3>“Random Slope”: Model GS</h3>
+<p>Let’s try for a</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Create model GS using bam()</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>rh_modGS <span class="ot">&lt;-</span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  <span class="fu">bam</span>(</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>    RH_per_min <span class="sc">~</span> <span class="fu">s</span>(Year) <span class="sc">+</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>      <span class="fu">s</span>(Year, Veg_Type, <span class="at">bs =</span> <span class="st">&quot;fs&quot;</span>, <span class="at">m =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>      <span class="fu">s</span>(Day, <span class="at">bs =</span> <span class="st">&quot;cc&quot;</span>) <span class="sc">+</span></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>      <span class="fu">te</span>(Long, Lat),</span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>    <span class="at">family =</span> <span class="fu">gaussian</span>(<span class="st">&quot;log&quot;</span>),</span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>    <span class="at">data =</span> weather,</span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a>    <span class="at">method =</span> <span class="st">&quot;fREML&quot;</span></span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a>  )</span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a></span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a><span class="co"># # Some basic model diagnostics</span></span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a><span class="co"># summary(rh_modGS)</span></span>
+<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a><span class="co"># gam.check(rh_modGS)</span></span>
+<span id="cb10-16"><a href="#cb10-16" tabindex="-1"></a><span class="co"># gratia::appraise(rh_modGS)</span></span>
+<span id="cb10-17"><a href="#cb10-17" tabindex="-1"></a></span>
+<span id="cb10-18"><a href="#cb10-18" tabindex="-1"></a><span class="co"># # Use gratia::draw to show effects. This is slow, so commenting out</span></span>
+<span id="cb10-19"><a href="#cb10-19" tabindex="-1"></a><span class="co"># gratia::draw(rh_modGS)</span></span></code></pre></div>
+<p><strong>On your own, run the model diagnostics and compare to
+diagnostics from Model G.</strong> Are there improvements, and if so,
+where do you see them? Should we consider increasing “k” for any of the
+smoothers?</p>
+<p>To be thorough, let’s also plot predictions and compare fitted to
+observed:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># make the prediction, add this and a column of standard errors to the prediction</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="co"># data.frame. Predictions are on the log scale.</span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>rh_modGS_pred <span class="ot">&lt;-</span> <span class="fu">cbind</span>(rh_pred_df,</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>                       <span class="fu">predict</span>(rh_modGS, </span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>                               rh_pred_df, </span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>                               <span class="at">se.fit =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>                               <span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a><span class="co"># make the prediction plots</span></span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> rh_modGS_pred) <span class="sc">+</span></span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> Veg_Type) <span class="sc">+</span></span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> fit <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> se.fit, </span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a>                  <span class="at">ymax =</span> fit <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> se.fit, </span>
+<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a>                  <span class="at">x =</span> Year, </span>
+<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a>                  <span class="at">group =</span> Veg_Type),</span>
+<span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a>              <span class="at">fill =</span> <span class="st">&quot;grey80&quot;</span>) <span class="sc">+</span></span>
+<span id="cb11-17"><a href="#cb11-17" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> Year, </span>
+<span id="cb11-18"><a href="#cb11-18" tabindex="-1"></a>                <span class="at">y =</span> fit, </span>
+<span id="cb11-19"><a href="#cb11-19" tabindex="-1"></a>                <span class="at">group =</span> Veg_Type),</span>
+<span id="cb11-20"><a href="#cb11-20" tabindex="-1"></a>            <span class="at">color =</span> <span class="st">&quot;darkred&quot;</span>) <span class="sc">+</span></span>
+<span id="cb11-21"><a href="#cb11-21" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">2010</span>, <span class="dv">2013</span>, <span class="dv">2016</span>, <span class="dv">2019</span>)) <span class="sc">+</span> </span>
+<span id="cb11-22"><a href="#cb11-22" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Year&quot;</span>,</span>
+<span id="cb11-23"><a href="#cb11-23" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Minimum Relative Humidity (%)&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb11-24"><a href="#cb11-24" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Model GS&quot;</span>)</span></code></pre></div>
+<p><img src="06-A-Hierarchical-Generalized-Additive-Models_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># Now, let&#39;s create a data.frame comparing observed vs. fitted values</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>rh_modGS_predVSobs <span class="ot">&lt;-</span> </span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>  <span class="fu">transform</span>(rh_modGS_pred, </span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>            <span class="at">modGS =</span> <span class="fu">predict</span>(rh_modGS, </span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>                           rh_modGS_pred,</span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>                           <span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="co"># Plot observed vs. fitted values. This is a &quot;quick&quot; way to see how well</span></span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a><span class="co"># the model predicted the data.</span></span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a><span class="fu">ggplot</span>(rh_modGS_predVSobs,</span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> modGS, </span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a>           <span class="at">y =</span> RH_per_min)) <span class="sc">+</span></span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> Veg_Type) <span class="sc">+</span></span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">color =</span> <span class="st">&quot;gold&quot;</span>,</span>
+<span id="cb12-16"><a href="#cb12-16" tabindex="-1"></a>              <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb12-17"><a href="#cb12-17" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Predicted RH&quot;</span>, <span class="at">y=</span><span class="st">&quot;Observed RH&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb12-18"><a href="#cb12-18" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Model GS&quot;</span>)</span></code></pre></div>
+<p><img src="06-A-Hierarchical-Generalized-Additive-Models_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
+<p>Hmmm. The predictions are fairly different now. Also, it looks like
+some predictions are tightening up (e.g., compare Flint Hills fitted
+vs. observed between Models G and GS) while others got worse (can you
+spot any?).</p>
+</div>
+<div id="comparing-hgams" class="section level3">
+<h3>Comparing HGAMs</h3>
+<p>We learned from the Pedersen et al. (2019) paper that we can use AIC
+to compare HGAMs, which is awesome! But–model selection via AIC should
+not be our stopping point. In this section, we’re going to dip our toes
+into cross validation to compare the <em>predictive power</em> of
+HGAMs.</p>
+<p>But first, let’s just see what AIC(c) has to say about our two
+HGAMs:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="fu">model.sel</span>(<span class="fu">list</span>(<span class="at">GS =</span> rh_modGS, <span class="at">G =</span> rh_modG))</span></code></pre></div>
+<pre><code>## Model selection table 
+##    (Int) s(Day,&quot;cc&quot;) s(Yer) s(Yer,Veg_Typ,&quot;fs&quot;,2) te(Lng,Lat) s(Veg_Typ,&quot;re&quot;)
+## GS 3.753           +      +                     +           +                
+## G  3.759           +      +                                 +               +
+##     df    logLik     AICc   delta weight
+## GS 101 -430700.9 861605.0    0.00      1
+## G   48 -431945.3 863988.2 2383.22      0
+## Models ranked by AICc(x)</code></pre>
+<p>We have a <em>very</em> clear winner per AICc rankings: model GS.</p>
+<p>Let’s check on the cross validation.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co"># Create training and testing data.frames</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>train_df <span class="ot">&lt;-</span> </span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>  <span class="fu">sample_n</span>(weather <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">id =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">n</span>()), </span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>           <span class="fu">ceiling</span>(<span class="fu">nrow</span>(weather)<span class="sc">/</span><span class="dv">10</span>))</span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a>test_df <span class="ot">&lt;-</span> </span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a>  <span class="fu">anti_join</span>(weather <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">id =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">n</span>()), </span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a>            train_df, <span class="at">by =</span> <span class="st">&quot;id&quot;</span>)</span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a></span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a><span class="co"># train models</span></span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a>rh_modG_train <span class="ot">&lt;-</span> </span>
+<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a>  <span class="fu">bam</span>(</span>
+<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a>    RH_per_min <span class="sc">~</span> <span class="fu">s</span>(Year) <span class="sc">+</span></span>
+<span id="cb15-13"><a href="#cb15-13" tabindex="-1"></a>      <span class="fu">s</span>(Day, <span class="at">bs =</span> <span class="st">&quot;cc&quot;</span>) <span class="sc">+</span></span>
+<span id="cb15-14"><a href="#cb15-14" tabindex="-1"></a>      <span class="fu">te</span>(Long, Lat) <span class="sc">+</span></span>
+<span id="cb15-15"><a href="#cb15-15" tabindex="-1"></a>      <span class="fu">s</span>(Veg_Type, <span class="at">bs =</span> <span class="st">&quot;re&quot;</span>),</span>
+<span id="cb15-16"><a href="#cb15-16" tabindex="-1"></a>    <span class="at">family =</span> <span class="fu">gaussian</span>(<span class="st">&quot;log&quot;</span>),</span>
+<span id="cb15-17"><a href="#cb15-17" tabindex="-1"></a>    <span class="at">data =</span> train_df,</span>
+<span id="cb15-18"><a href="#cb15-18" tabindex="-1"></a>    <span class="at">method =</span> <span class="st">&quot;fREML&quot;</span></span>
+<span id="cb15-19"><a href="#cb15-19" tabindex="-1"></a>  )</span>
+<span id="cb15-20"><a href="#cb15-20" tabindex="-1"></a>rh_modGS_train <span class="ot">&lt;-</span></span>
+<span id="cb15-21"><a href="#cb15-21" tabindex="-1"></a>  <span class="fu">bam</span>(</span>
+<span id="cb15-22"><a href="#cb15-22" tabindex="-1"></a>    RH_per_min <span class="sc">~</span> <span class="fu">s</span>(Year) <span class="sc">+</span></span>
+<span id="cb15-23"><a href="#cb15-23" tabindex="-1"></a>      <span class="fu">s</span>(Year, Veg_Type, <span class="at">bs =</span> <span class="st">&quot;fs&quot;</span>, <span class="at">m =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb15-24"><a href="#cb15-24" tabindex="-1"></a>      <span class="fu">s</span>(Day, <span class="at">bs =</span> <span class="st">&quot;cc&quot;</span>) <span class="sc">+</span></span>
+<span id="cb15-25"><a href="#cb15-25" tabindex="-1"></a>      <span class="fu">te</span>(Long, Lat),</span>
+<span id="cb15-26"><a href="#cb15-26" tabindex="-1"></a>    <span class="at">family =</span> <span class="fu">gaussian</span>(<span class="st">&quot;log&quot;</span>),</span>
+<span id="cb15-27"><a href="#cb15-27" tabindex="-1"></a>    <span class="at">data =</span> weather,</span>
+<span id="cb15-28"><a href="#cb15-28" tabindex="-1"></a>    <span class="at">method =</span> <span class="st">&quot;fREML&quot;</span></span>
+<span id="cb15-29"><a href="#cb15-29" tabindex="-1"></a>  )  </span>
+<span id="cb15-30"><a href="#cb15-30" tabindex="-1"></a></span>
+<span id="cb15-31"><a href="#cb15-31" tabindex="-1"></a><span class="co"># Root mean square error and mean absolute error</span></span>
+<span id="cb15-32"><a href="#cb15-32" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">Model =</span> <span class="fu">c</span>(<span class="st">&quot;G&quot;</span>, <span class="st">&quot;GS&quot;</span>),</span>
+<span id="cb15-33"><a href="#cb15-33" tabindex="-1"></a>           <span class="at">RMSE =</span> <span class="fu">c</span>(<span class="fu">rmse</span>(rh_modG_train, test_df), </span>
+<span id="cb15-34"><a href="#cb15-34" tabindex="-1"></a>                    <span class="fu">rmse</span>(rh_modGS_train, test_df)),</span>
+<span id="cb15-35"><a href="#cb15-35" tabindex="-1"></a>           <span class="at">MAE =</span> <span class="fu">c</span>(<span class="fu">mae</span>(rh_modG_train, test_df), </span>
+<span id="cb15-36"><a href="#cb15-36" tabindex="-1"></a>                    <span class="fu">mae</span>(rh_modGS_train, test_df)))</span></code></pre></div>
+<pre><code>##   Model     RMSE      MAE
+## 1     G 43.99397 40.63156
+## 2    GS 43.99715 40.64119</code></pre>
+<p>Oof! Looks like both our (quick and dirty) cross-validation tests
+show the models have negligible differences in predictive ability. Just
+goes to show that we need to assess models from multiple angles.</p>
+</div>
+<div id="try-other-models" class="section level3">
+<h3>Try other models!</h3>
+<p><strong>On your own, try some different model formulations (e.g.,
+model I, model GI, etc.) from Pedersen et al. (2019).</strong> Do you
+see any clear patterns?</p>
 </div>
 </div>
 
