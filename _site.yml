@@ -48,6 +48,8 @@ navbar:
       menu:
         - text: "Lab: HGAMs"
           href: 06-A-Hierarchical-Generalized-Additive-Models.html
+        - text: "Homework 4"
+          href: 06-B-Homework-04.html
     # - text: "W9"
     #   menu:
     #     - text: "Time series"
