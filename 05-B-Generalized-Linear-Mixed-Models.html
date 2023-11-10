@@ -527,6 +527,9 @@ div.tocify {
     <li>
       <a href="06-A-Hierarchical-Generalized-Additive-Models.html">Lab: HGAMs</a>
     </li>
+    <li>
+      <a href="06-B-Homework-04.html">Homework 4</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -691,32 +694,32 @@ length could vary by farm.</p>
 ## 
 ## Scaled residuals: 
 ##     Min      1Q  Median      3Q     Max 
-## -5.7819 -0.5973  0.2498  0.4945  3.1090 
+## -5.7920 -0.5973  0.2499  0.4944  3.1072 
 ## 
 ## Random effects:
 ##  Groups Name               Variance Std.Dev. Corr             
-##  Farm   (Intercept)        2.164295 1.47115                   
-##         fSexFemale         0.229412 0.47897  -0.06            
-##         cLength            0.001639 0.04049   0.58  0.09      
-##         fSexFemale:cLength 0.001300 0.03605  -0.47  0.66 -0.69
+##  Farm   (Intercept)        2.163520 1.47089                   
+##         fSexFemale         0.228873 0.47841  -0.05            
+##         cLength            0.001641 0.04051   0.58  0.09      
+##         fSexFemale:cLength 0.001296 0.03600  -0.47  0.66 -0.69
 ## Number of obs: 826, groups:  Farm, 24
 ## 
 ## Fixed effects:
 ##                    Estimate Std. Error z value Pr(&gt;|z|)   
-## (Intercept)         1.08670    0.35722   3.042  0.00235 **
-## fSexFemale          0.65036    0.33604   1.935  0.05294 . 
-## cLength             0.04367    0.01328   3.288  0.00101 **
-## fSexFemale:cLength  0.03524    0.01783   1.977  0.04808 * 
+## (Intercept)         1.08708    0.35721   3.043  0.00234 **
+## fSexFemale          0.65104    0.33614   1.937  0.05277 . 
+## cLength             0.04372    0.01329   3.289  0.00100 **
+## fSexFemale:cLength  0.03521    0.01783   1.975  0.04827 * 
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## Correlation of Fixed Effects:
 ##             (Intr) fSxFml cLngth
-## fSexFemale  -0.246              
-## cLength      0.325  0.034       
-## fSxFml:cLng -0.191  0.527 -0.578
+## fSexFemale  -0.245              
+## cLength      0.325  0.035       
+## fSxFml:cLng -0.190  0.526 -0.578
 ## optimizer (Nelder_Mead) convergence code: 0 (OK)
-## Model failed to converge with max|grad| = 0.0361115 (tol = 0.002, component 1)</code></pre>
+## boundary (singular) fit: see help(&#39;isSingular&#39;)</code></pre>
 <p>That model fails to converge. Asking for the sex by length
 interaction to vary among farms is probably too much given there are
 some farms with relatively few observations. Looking at the summary,
