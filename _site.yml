@@ -2,20 +2,6 @@ navbar:
   left:
     - text: "Home"
       href: index.html
-    - text: "Computer Setup"
-      href: 00-computer-setup.html
-    - text: "Hello, World!"
-      menu:
-        - text: "Intro to R"
-          href: 00-A-R-intro.html
-        - text: "R markdown"
-          href: 00-B-Rmarkdown-intro.html
-        - text: "R workshop"
-          href: 00-C-R-workshop.html
-        - text: "ggplot2 and tidyr"
-          href: 00-D-tidyr.html
-        - text: "Intro to git"
-          href: 00-E-git-intro.html
     - text: "Data Exploration"
       menu:
         - text: "Lab"
