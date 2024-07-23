@@ -13,7 +13,7 @@
 
 <title>Hierarchical Generalized Additive Models</title>
 
-<script src="site_libs/header-attrs-2.23/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.27/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -55,7 +55,7 @@
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -418,33 +418,6 @@ div.tocify {
         <li>
   <a href="index.html">Home</a>
 </li>
-<li>
-  <a href="00-computer-setup.html">Computer Setup</a>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Hello, World!
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="00-A-R-intro.html">Intro to R</a>
-    </li>
-    <li>
-      <a href="00-B-Rmarkdown-intro.html">R markdown</a>
-    </li>
-    <li>
-      <a href="00-C-R-workshop.html">R workshop</a>
-    </li>
-    <li>
-      <a href="00-D-tidyr.html">ggplot2 and tidyr</a>
-    </li>
-    <li>
-      <a href="00-E-git-intro.html">Intro to git</a>
-    </li>
-  </ul>
-</li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Data Exploration
@@ -602,6 +575,7 @@ day</li>
 <pre><code>## package &#39;BH&#39; successfully unpacked and MD5 sums checked
 ## package &#39;patchwork&#39; successfully unpacked and MD5 sums checked
 ## package &#39;mvnfast&#39; successfully unpacked and MD5 sums checked
+## package &#39;ggokabeito&#39; successfully unpacked and MD5 sums checked
 ## package &#39;gratia&#39; successfully unpacked and MD5 sums checked</code></pre>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Set the web address where R will look for files from this repository</span></span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co"># Do not change this address</span></span>
@@ -871,8 +845,8 @@ HGAMs:</p>
 <span id="cb17-35"><a href="#cb17-35" tabindex="-1"></a>           <span class="at">MAE =</span> <span class="fu">c</span>(<span class="fu">mae</span>(rh_modG_train, test_df), </span>
 <span id="cb17-36"><a href="#cb17-36" tabindex="-1"></a>                    <span class="fu">mae</span>(rh_modGS_train, test_df)))</span></code></pre></div>
 <pre><code>##   Model     RMSE      MAE
-## 1     G 44.03208 40.67934
-## 2    GS 44.02836 40.67961</code></pre>
+## 1     G 44.04895 40.69285
+## 2    GS 44.04365 40.69241</code></pre>
 <p>Oof! Looks like both our (quick and dirty) cross-validation tests
 show the models have negligible differences in predictive ability. Just
 goes to show that we need to assess models from multiple angles.</p>
