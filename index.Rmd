@@ -11,36 +11,36 @@ output: html_document
 
 | Week | Day | Date     |   Topic                                                                        | Discussion | Discussion |
 |------|-----|----------|--------------------------------------------------------------------------------|------------|------------|
-| 1    | Tue | Aug. 22  |   What is "modeling?"                                                          |------------|------------|
-|      | Thu | Aug. 24  |   *Why* are you modeling?                                                      | Lauren     |------------|
-| 2    | Tue | Aug. 29  |   Data exploration                                                             |------------|------------|
-|      | Thu | Aug. 31  |   Data exploration                                                             |------------|------------|
-| 3    | Tue | Sep. 5   |   Review of linear models, probability distributions                           | Ethan      |------------|
-|      | Thu | Sep. 7   |   Review of linear models, probability distributions                           |------------|------------|
-| 4    | Tue | Sep. 12  |   Model selection                                                              | Dylan      |------------|
-|      | Thu | Sep. 14  |   Model selection                                                              |------------|------------|
-| 5    | Tue | Sep. 19  |   Autocorrelation                                                              | Shantanou  |------------|
-|      | Thu | Sep. 21  |   Autocorrelation                                                              |------------|------------|
-| 6    | Tue | Sep. 26  |   Mixed models: what, why, how?                                                | Reilly     |------------|
-|      | Thu | Sep. 28  |   Mixed models: LMM                                                            |------------|------------|
-| 7    | Tue | Oct. 3   |   Mixed models: GLMM                                                           |------------|------------|
-|      | Thu | Oct. 5   |   Mixed models: confidence and diagnostics                                     |------------|------------|
-| 8    | Tue | Oct. 10  |   Generalized additive models                                                  |------------|------------|
-|      | Thu | Oct. 12  |   No class                                                                     |------------|------------|
-| 9    | Tue | Oct. 17  |   No class: Fall Break                                                         |------------|------------|
-|      | Thu | Oct. 19  |   Generalized additive models                                                  | Ben        |------------|
-| 10   | Tue | Oct. 24  |   Hierarchical generalized additive models                                     | Ken        |------------|
-|      | Thu | Oct. 26  |   Hierarchical generalized additive models                                     |------------|------------|
-| 11   | Tue | Oct. 31  |   Guest lecture: Dr. Brandon Edwards (Intro to Bayesian statistics)            |------------|------------|
-|      | Thu | Nov. 2   |   Hello, Bayes: setting things up                                              | Morgan     | Maddie     |
-| 12   | Tue | Nov. 7   |   Hello, Bayes: running models                                                 | Rachel     | Casey      |
-|      | Thu | Nov. 9   |   Hello, Bayes: running models                                                 |------------|------------|
-| 13   | Tue | Nov. 14  |   Hello, Bayes: model diagnostics                                              |------------|------------|
-|      | Thu | Nov. 16  |   No class                                                                     |------------|------------|
-| 14   | Tue | Nov. 21  |   No class                                                                     |------------|------------|
-|      | Thu | Nov. 23  |   No class: Thanksgiving                                                       |------------|------------|
-| 15   | Tue | Nov. 28  |   Writing methods and results                                                  | Jess       |------------|
-|      | Thu | Nov. 30  |   Writing methods and results                                                  |------------|------------|
+| 1    | Tue | Aug. 20  |   What is "modeling?"                                                          |------------|------------|
+|      | Thu | Aug. 22  |   *Why* are you modeling?                                                      |            |------------|
+| 2    | Tue | Aug. 27  |   Data exploration                                                             |            |------------|
+|      | Thu | Aug. 29  |   Data exploration                                                             |------------|------------|
+| 3    | Tue | Sep. 3   |   Review of linear models, probability distributions                           |            |            |
+|      | Thu | Sep. 5   |   Review of linear models, probability distributions                           |------------|------------|
+| 4    | Tue | Sep. 10  |   No class                                                                     |------------|------------|
+|      | Thu | Sep. 12  |   No class                                                                     |------------|------------|
+| 5    | Tue | Sep. 17  |   Model selection                                                              |            |------------|
+|      | Thu | Sep. 19  |   Model selection                                                              |------------|------------|
+| 6    | Tue | Sep. 24  |   Autocorrelation                                                              |            |------------|
+|      | Thu | Sep. 26  |   Mixed models: what, why, how?                                                |            |------------|
+| 7    | Tue | Oct. 1   |   Mixed models: LMM lab                                                        |------------|------------|
+|      | Thu | Oct. 3   |   Mixed models: GLMM                                                           |            |------------|
+| 8    | Tue | Oct. 8   |   Mixed models: GLMM lab                                                       |------------|------------|
+|      | Thu | Oct. 10  |   Generalized additive models                                                  |            |            |
+| 9    | Tue | Oct. 15  |   No class: Fall Break                                                         |------------|------------|
+|      | Thu | Oct. 17  |   Generalized additive models                                                  |------------|------------|
+| 10   | Tue | Oct. 22  |   No class                                                                     |------------|------------|
+|      | Thu | Oct. 24  |   Hierarchical generalized additive models                                     |            |------------|
+| 11   | Tue | Oct. 29  |   Hierarchical generalized additive models                                     |------------|------------|
+|      | Thu | Oct. 31  |   Guest lecture: TBD                                                           |------------|------------|
+| 12   | Tue | Nov. 5   |   Hello, Bayes!                                                                |            |            |
+|      | Thu | Nov. 7   |   Bayesian models: Linear models lab                                           |------------|------------|
+| 13   | Tue | Nov. 12  |   Bayesian models: Stan language lab                                           |------------|------------|
+|      | Thu | Nov. 14  |   Bayesian models: Mixed models lab                                            |------------|------------|
+| 14   | Tue | Nov. 19  |   Loose ends day                                                               |------------|------------|
+|      | Thu | Nov. 21  |   Writing methods and results                                                  |            |------------|
+| 15   | Tue | Nov. 26  |   Writing methods and results                                                  |------------|------------|
+|      | Thu | Nov. 28  |   No class: Thanksgiving                                                       |------------|------------|
 
 
 <!-- **Course Goals:** -->

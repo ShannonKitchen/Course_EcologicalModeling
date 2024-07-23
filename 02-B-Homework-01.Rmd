@@ -34,8 +34,8 @@ For our first homework assignment, *we will be modeling the relationship between
 
 Do not use the analysis presented in the paper, although you can refer to the paper for the ecological background. Please provide a reproducible .Rmd script that answers all questions below and produces all of your analysis and plots. Some reminders:
 
-- **Reproducible:** This means when I run your .Rmd file, it will run all analyses and create all plots without errors, without me having to reset my working directory, and without forcing me to install anything on my machine (i.e., use the require(librarian); shelf(your packages, lib = tempdir()) approach as in the code block below).
-- **Format:** Please write/format your .Rmd file similar to a scientific report or manuscript. For this assignment, we will just need a 'Results' and 'Discussion' section.
+- **Reproducible:** This means when I run your .Rmd file, it will run all analyses and create all plots without errors, without me having to reset my working directory, and without forcing me to install anything on my machine (i.e., use the require(librarian); shelf(your packages, lib = tempdir()) approach as in the code block below). This also means there should be *NO ERRORS* when I run it!
+- **Format:** Answer each question with text and code, plus figures/tables where appropriate.
 
 ```{r include = TRUE, eval = FALSE}
 
@@ -69,10 +69,10 @@ bleach <-
     a. Linear regression: revisit the Linear models and probability distributions lab for information on how to do this.
     b. Generalized linear model: depending on your family/link choices, model diagnostics that assume normality may be useless. Instead, check out the mgcv::qq.gam function documentation and examples. Also, check out [Ben Bolker's logistic regression walkthrough](https://bbolker.github.io/stat4c03/notes/logistic.pdf), especially page 5.
 3. Summarize results from both models, as well as your model diagnostics. Be careful to differentiate the linear regression results from the generalized linear model results.
-4. The authors log transformed the bleaching variable “… to generate linear relationships with temperature.” In R, back transform LOGBLEACH to the original percentage scale, and plot against SST. Does a log-transformation make ecological sense, given the type of process and the data?
-5. At what range of values does the linear regression model predict 50% bleaching will occur? Provide an estimate of uncertainty for this prediction (Hint: use the predict.lm() function with options newdata and interval=”prediction”. See help(predict.lm) ). 
+4. The authors log transformed the bleaching variable “… to generate linear relationships with temperature.” In R, back transform LOGBLEACH to the original percentage scale, and plot against SST (No need to re-run the model). Does a log-transformation make ecological sense, given the type of process and the data?
+5. At what range of values does the linear regression model (still using the LOGBLEACH response variable) predict 50% bleaching will occur? Provide an estimate of uncertainty for this prediction (Hint: use the predict.lm() function with options newdata and interval=”prediction”. See help(predict.lm) ). 
 6. Given the generalized linear model results, at what value of SST is there a >50% chance of a mass bleaching event occurring? Provide an estimate of uncertainty for this prediction. (Hint: check out the differences between ?predict.lm() and ?predict.glm(). I suggest setting 'type = link', 'se.fit = TRUE', and transforming the resultant predictions into probabilities using the plogis() function).
-7. Choose your favorite model and create a figure showing the relationship between the response and predictor. Include confidence intervals.
+7. Choose your favorite model and create a figure showing the relationship (marginal effect plot) between the response and predictor. Include confidence intervals. There are multiple ways to create marginal effects plots (e.g., ggeffects R package, use the base R package 'predict' function). **But** be careful that the confidence intervals are correct (see hint in question #6)!
 
 
 

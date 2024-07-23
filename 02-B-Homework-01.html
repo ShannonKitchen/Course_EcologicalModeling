@@ -13,7 +13,7 @@
 
 <title>Homework 1</title>
 
-<script src="site_libs/header-attrs-2.27/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.26/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -541,10 +541,10 @@ all of your analysis and plots. Some reminders:</p>
 it will run all analyses and create all plots without errors, without me
 having to reset my working directory, and without forcing me to install
 anything on my machine (i.e., use the require(librarian); shelf(your
-packages, lib = tempdir()) approach as in the code block below).</li>
-<li><strong>Format:</strong> Please write/format your .Rmd file similar
-to a scientific report or manuscript. For this assignment, we will just
-need a ‘Results’ and ‘Discussion’ section.</li>
+packages, lib = tempdir()) approach as in the code block below). This
+also means there should be <em>NO ERRORS</em> when I run it!</li>
+<li><strong>Format:</strong> Answer each question with text and code,
+plus figures/tables where appropriate.</li>
 </ul>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># List of packages necessary to run this script:</span></span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">require</span>(librarian, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
@@ -603,13 +603,14 @@ diagnostics. Be careful to differentiate the linear regression results
 from the generalized linear model results.</li>
 <li>The authors log transformed the bleaching variable “… to generate
 linear relationships with temperature.” In R, back transform LOGBLEACH
-to the original percentage scale, and plot against SST. Does a
-log-transformation make ecological sense, given the type of process and
-the data?</li>
-<li>At what range of values does the linear regression model predict 50%
-bleaching will occur? Provide an estimate of uncertainty for this
-prediction (Hint: use the predict.lm() function with options newdata and
-interval=”prediction”. See help(predict.lm) ).</li>
+to the original percentage scale, and plot against SST (No need to
+re-run the model). Does a log-transformation make ecological sense,
+given the type of process and the data?</li>
+<li>At what range of values does the linear regression model (still
+using the LOGBLEACH response variable) predict 50% bleaching will occur?
+Provide an estimate of uncertainty for this prediction (Hint: use the
+predict.lm() function with options newdata and interval=”prediction”.
+See help(predict.lm) ).</li>
 <li>Given the generalized linear model results, at what value of SST is
 there a &gt;50% chance of a mass bleaching event occurring? Provide an
 estimate of uncertainty for this prediction. (Hint: check out the
@@ -617,8 +618,11 @@ differences between ?predict.lm() and ?predict.glm(). I suggest setting
 ‘type = link’, ‘se.fit = TRUE’, and transforming the resultant
 predictions into probabilities using the plogis() function).</li>
 <li>Choose your favorite model and create a figure showing the
-relationship between the response and predictor. Include confidence
-intervals.</li>
+relationship (marginal effect plot) between the response and predictor.
+Include confidence intervals. There are multiple ways to create marginal
+effects plots (e.g., ggeffects R package, use the base R package
+‘predict’ function). <strong>But</strong> be careful that the confidence
+intervals are correct (see hint in question #6)!</li>
 </ol>
 </div>
 

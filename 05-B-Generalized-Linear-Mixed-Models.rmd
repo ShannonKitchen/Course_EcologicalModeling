@@ -171,8 +171,8 @@ M0_SF <-
         family = binomial)
 
 # # NOTE: So we don't clutter things up, check the summaries on your own.
-# summary(M0a)
-# summary(M0b)
+# summary(M0_LF)
+# summary(M0_SF)
 
 ```
 
@@ -199,7 +199,7 @@ cat(">  The residuals for the fSex random effect model look OK, but not quite as
 
 So we have identified the global models and checked that they are adequate. Next we need to make up a set of models and identify the best ones using $AIC_c$. We can build the set with all possible random effects, and all possible fixed effects models. The number of variables is small, so this will be a reasonable thing to do--at least for the purposes of this lab... 
 
-```{r eval = TRUE, message = FALSE, include = TRUE, echo = FALSE}
+```{r eval = TRUE, message = FALSE, include = TRUE, echo = TRUE}
 
 # All fixed effect combinations
 fe <- c("1","fSex",
@@ -242,7 +242,7 @@ names(fits) <- models$model
 
 Some models may not have failed to converge. Use the handy "check_convergence" function in the "performance" package to check the list:
 
-```{r eval = TRUE, message = FALSE, include = TRUE, echo = FALSE}
+```{r eval = TRUE, message = FALSE, include = TRUE, echo = TRUE}
 
 # # Check for convergence
 # lapply(fits, check_convergence)
@@ -251,7 +251,7 @@ Some models may not have failed to converge. Use the handy "check_convergence" f
 
 Now we're ready to see which models are the best, keeping a wary eye out for the model(s) that did not converge...
 
-```{r eval = TRUE, message = FALSE, include = TRUE, echo = FALSE}
+```{r eval = TRUE, message = FALSE, include = TRUE, echo = TRUE}
 
 # Using MuMIn for model selection
 modSelection <- model.sel(fits)
