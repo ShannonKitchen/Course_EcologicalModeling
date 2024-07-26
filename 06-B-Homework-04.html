@@ -524,54 +524,127 @@ div.tocify {
 
 <div id="overview" class="section level2">
 <h2>Overview</h2>
-<p>In this homework assignment, you will analyze a dataset on Forest
-Bird densities from 56 patches in south eastern Victoria, in Australia.
-The aim of the study was to relate bird density to 6 habitat covariates:
-patch area (AREA), distance to nearest patch (DIST), distance to nearest
-larger patch (LDIST), altitude (ALT), the year the patch was isolated by
-vegetation clearing (YEAR.ISOL), and a categorical index of stock
-grazing intensity (GRAZE; 1 = light, 5 = heavy). The data are in the
-file ‘Loyn.txt’. Conduct a full analysis of these data, including data
-exploration. Be sure to identify non-linear relationships as
-appropriate, and think carefully about what the appropriate error
-distribution is for these data. Submit a .Rmd <em>and</em> .html file
-containing a methods section describing your analytical process, and a
-results section describing the results.</p>
-<p>Recall from island biogeography theory that species richness should
-increase with AREA and decrease with isolation (DIST, LDIST, and
-YR.ISOL). Grazing is expected to have a negative effect on forest bird
-abundance because of the effects on understory vegetation. All species
-are lumped together in this response.</p>
-<p><strong>NOTE</strong>: You don’t need to use an HGAM here, but you
-can if you feel inclined.</p>
+<p>Please provide a reproducible .Rmd script to address the scenario
+below and produces all of your analysis and plots. Some reminders:</p>
+<ul>
+<li><strong>Reproducible:</strong> This means when I run your .Rmd file,
+it will run all analyses and create all plots without errors, without me
+having to reset my working directory, and without forcing me to install
+anything on my machine (i.e., use the require(librarian); shelf(your
+packages, lib = tempdir()) approach as in the code block below). This
+also means there should be <em>NO ERRORS</em> when I run it!</li>
+<li><strong>Format:</strong> In the .Rmd file, arrange and format
+similar to a scientific article. Specifically, I want to see 1) an
+analytical methods section, 2) a results section that includes figures,
+tables, and <em>text interpreting the figures and tables and
+model(s)</em>!, and 3) a brief conclusion (1 - 2 paragraphs) based on
+the results. <strong>NOTE:</strong> You do not need to create an
+introduction, reiterate the data collection methods, or produce a
+literature cited section!</li>
+</ul>
+<div id="background" class="section level3">
+<h3>Background</h3>
+<p>In the face of woody plant encroachment, prescribed fire is an
+essential management tool for maintaining grassland ecosystems in the
+North American Great Plains. To safely and efficiently conduct
+prescribed fires, land managers often try to burn only under narrow
+weather conditions. For example, it can be unsafe to burn when the
+relative humidity (RH) is too low, and fires can be less effective in
+controlling woody plants if the humidity is too high. Likewise, fires
+can move too quickly and get out of control if wind speeds are too fast,
+but the fire may not move across the landscape if there is no wind at
+all.</p>
+</div>
+<div id="your-assignment" class="section level3">
+<h3>Your assignment</h3>
+<p>For this homework, you will be using <em>hierarchical generalized
+additive models</em> to characterize daily minimum RH and daily maximum
+wind speeds using weather station data collected across a latitudinal
+gradient in the US Great Plains. The weather station data was collected
+from 2010 - 2019, and between days 121 - 273 in each year (roughly May -
+September). Specifically, you will be answering this question:</p>
+<p><em>How do the two weather metrics of interest (minimum RH and
+maximum wind speed) change over time and across space?</em></p>
+<p>You will need to decide what statistical distributions to use, how to
+structure the “hierarchical” part of the models, etc. Use the Pederson
+et al. (2019) manuscript to help make modeling and figure creation
+decisions!</p>
+</div>
+<div id="data-description" class="section level3">
+<h3>Data description</h3>
+<ul>
+<li>Year: years 2010 - 2019</li>
+<li>Veg_Type: vegetation type/ecoregion in which the weather station
+falls</li>
+<li>Station_ID: unique identifier for each weather station</li>
+<li>Lat: latitude</li>
+<li>Long: longitude</li>
+<li>Month: numeric month of year</li>
+<li>Day: numeric day of year</li>
+<li>Wind_mph_max: maximum daily wind speed in miles per hour</li>
+<li>RH_per_min: minimum daily relative humidity as a percent</li>
+</ul>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># List of packages necessary to run this script:</span></span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">require</span>(librarian, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">shelf</span>(tidyverse, </span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>      mgcv, <span class="co"># For checking model convergence</span></span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>      MuMIn, <span class="co"># for model selection</span></span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>      gratia, <span class="co"># for ggplot functionality with mgcv</span></span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>      <span class="at">lib =</span> <span class="fu">tempdir</span>(),</span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>      <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co"># Set the web address where R will look for files from this repository</span></span>
-<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co"># Do not change this address</span></span>
-<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>repo_url <span class="ot">&lt;-</span> <span class="st">&quot;https://raw.githubusercontent.com/LivingLandscapes/Course_EcologicalModeling/master/&quot;</span></span>
-<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a></span>
-<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co"># Load data</span></span>
-<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>loyn <span class="ot">&lt;-</span> </span>
-<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>  <span class="fu">read.table</span>(<span class="fu">paste0</span>(repo_url, <span class="st">&quot;/data/Loyn.txt&quot;</span>), <span class="at">header =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a></span>
-<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="co"># Brief looks at the data:</span></span>
-<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="fu">head</span>(loyn)</span></code></pre></div>
-<pre><code>##   Site ABUND AREA DIST LDIST YR.ISOL GRAZE ALT
-## 1    1   5.3  0.1   39    39    1968     2 160
-## 2    2   2.0  0.5  234   234    1920     5  60
-## 3    3   1.5  0.5  104   311    1900     5 140
-## 4    4  17.1  1.0   66    66    1966     3 160
-## 5    5  13.8  1.0  246   246    1918     5 140
-## 6    6  14.1  1.0  234   285    1965     3 130</code></pre>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">pairs</span>(loyn)</span></code></pre></div>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">shelf</span>(tidyverse,</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>      maps, <span class="co"># For US state map</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>      mgcv, <span class="co"># For checking model convergence</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>      MuMIn, <span class="co"># for model selection</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>      gratia, <span class="co"># for ggplot functionality with mgcv</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>      sf,</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>      <span class="at">lib =</span> <span class="fu">tempdir</span>(),</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>      <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co"># Set the web address where R will look for files from this repository</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co"># Do not change this address</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>repo_url <span class="ot">&lt;-</span> <span class="st">&quot;https://raw.githubusercontent.com/LivingLandscapes/Course_EcologicalModeling/master/&quot;</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co"># Load data</span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>weather <span class="ot">&lt;-</span> </span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a>  <span class="fu">read_csv</span>(<span class="fu">paste0</span>(repo_url, <span class="st">&quot;data/FireWeather.csv&quot;</span>))</span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="co"># Brief looks at the data:</span></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="fu">head</span>(weather)</span></code></pre></div>
+<pre><code>## # A tibble: 6 × 9
+##    Year Veg_Type      Station_ID   Lat  Long Month   Day Wind_mph_max RH_per_min
+##   &lt;dbl&gt; &lt;chr&gt;         &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;        &lt;dbl&gt;      &lt;dbl&gt;
+## 1  2010 Edwards Plat… KGRK        31.1 -97.8     5   121         17.3       40.9
+## 2  2010 Edwards Plat… KGRK        31.1 -97.8     5   122         16.1       26.3
+## 3  2010 Edwards Plat… KGRK        31.1 -97.8     5   123         11.5       24.8
+## 4  2010 Edwards Plat… KGRK        31.1 -97.8     5   124         11.5       20.9
+## 5  2010 Edwards Plat… KGRK        31.1 -97.8     5   125         13.8       31.8
+## 6  2010 Edwards Plat… KGRK        31.1 -97.8     5   126         19.6       38.0</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Convert to an sf object for mapping</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>weather_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(weather,</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>                       <span class="at">crs =</span> <span class="fu">st_crs</span>(<span class="dv">4326</span>),</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>                       <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&quot;Long&quot;</span>, <span class="st">&quot;Lat&quot;</span>))</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co"># Get a US states map</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>states <span class="ot">&lt;-</span> <span class="fu">map_data</span>(<span class="st">&quot;state&quot;</span>) <span class="co"># Map of US states</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>  </span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co"># Make a map to show where the weather stations are:</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>  <span class="fu">geom_polygon</span>(<span class="at">data =</span> states <span class="sc">%&gt;%</span> <span class="fu">filter</span>(region <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;north dakota&quot;</span>,</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>                                                    <span class="st">&quot;south dakota&quot;</span>,</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>                                                    <span class="st">&quot;nebraska&quot;</span>,</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>                                                    <span class="st">&quot;kansas&quot;</span>,</span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>                                                    <span class="st">&quot;oklahoma&quot;</span>,</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>                                                    <span class="st">&quot;texas&quot;</span>)), </span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>               <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> long, <span class="at">y =</span> lat, <span class="at">group =</span> group),</span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>               <span class="at">fill =</span> <span class="st">&quot;white&quot;</span>,</span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>               <span class="at">color =</span> <span class="st">&quot;black&quot;</span>) <span class="sc">+</span></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> weather_sf,</span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a>          <span class="at">shape =</span> <span class="dv">15</span>,</span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a>          <span class="at">color =</span> <span class="st">&quot;darkred&quot;</span>) <span class="sc">+</span></span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a>        <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">330</span>),</span>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a>        <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">6</span>,</span>
+<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a>                                 <span class="at">hjust =</span> <span class="fl">0.1</span>)) <span class="sc">+</span></span>
+<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Longitude&quot;</span>) <span class="sc">+</span></span>
+<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Latitude&quot;</span>)</span></code></pre></div>
 <p><img src="06-B-Homework-04_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+</div>
 </div>
 
 

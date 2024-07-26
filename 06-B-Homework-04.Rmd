@@ -26,14 +26,41 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 ## Overview
 
+Please provide a reproducible .Rmd script to address the scenario below and produces all of your analysis and plots. Some reminders:
 
+- **Reproducible:** This means when I run your .Rmd file, it will run all analyses and create all plots without errors, without me having to reset my working directory, and without forcing me to install anything on my machine (i.e., use the require(librarian); shelf(your packages, lib = tempdir()) approach as in the code block below). This also means there should be *NO ERRORS* when I run it!
+- **Format:** In the .Rmd file, arrange and format similar to a scientific article. Specifically, I want to see 1) an analytical methods section, 2) a results section that includes figures, tables, and *text interpreting the figures and tables and model(s)*!, and 3) a brief conclusion (1 - 2 paragraphs) based on the results. **NOTE:** You do not need to create an introduction, reiterate the data collection methods, or produce a literature cited section!
 
+### Background 
+
+In the face of woody plant encroachment, prescribed fire is an essential management tool for maintaining grassland ecosystems in the North American Great Plains. To safely and efficiently conduct prescribed fires, land managers often try to burn only under narrow weather conditions. For example, it can be unsafe to burn when the relative humidity (RH) is too low, and fires can be less effective in controlling woody plants if the humidity is too high. Likewise, fires can move too quickly and get out of control if wind speeds are too fast, but the fire may not move across the landscape if there is no wind at all.
+
+### Your assignment
+
+For this homework, you will be using *hierarchical generalized additive models* to characterize daily minimum RH and daily maximum wind speeds using weather station data collected across a latitudinal gradient in the US Great Plains. The weather station data was collected from 2010 - 2019 and between days 121 - 273 in each year (roughly May - September). Specifically, you will be answering this question:
+
+**How do the two weather metrics of interest (minimum RH and maximum wind speed) change over time and across space?**
+
+You will need to decide what statistical distributions to use, how to structure the "hierarchical" part of the models, etc. Use the Pederson et al. (2019) manuscript to help make modeling and figure creation decisions!
+
+### Data description
+
+- Year: years 2010 - 2019
+- Veg_Type: vegetation type/ecoregion in which the weather station falls
+- Station_ID: unique identifier for each weather station
+- Lat: latitude
+- Long: longitude
+- Month: numeric month of year
+- Day: numeric day of year
+- Wind_mph_max: maximum daily wind speed in miles per hour
+- RH_per_min: minimum daily relative humidity as a percent
 
 ```{r, include = TRUE, eval = TRUE, message = FALSE}
 
 # List of packages necessary to run this script:
 require(librarian, quietly = TRUE)
-shelf(tidyverse, 
+shelf(tidyverse,
+      maps, # For US state map
       mgcv, # For checking model convergence
       MuMIn, # for model selection
       gratia, # for ggplot functionality with mgcv
@@ -52,16 +79,34 @@ weather <-
 # Brief looks at the data:
 head(weather)
 
-# Make a map of the weather stations:
+# Convert to an sf object for mapping
 weather_sf <- st_as_sf(weather,
                        crs = st_crs(4326),
                        coords = c("Long", "Lat"))
-states_sf <- st_read(paste0(repo_url, 
-                            "data/US_States/cb_2018_us_state_5m"))
+
+# Get a US states map
+states <- map_data("state") # Map of US states
+  
+# Make a map to show where the weather stations are:
 ggplot() +
-  geom_sf(data = states_sf, fill = "white") +
-  geom_sf(mapping = aes(color = as.numeric(as.factor(Station_ID))), 
-          data = weather_sf,
-          shape = 2)
+  geom_polygon(data = states %>% filter(region %in% c("north dakota",
+                                                    "south dakota",
+                                                    "nebraska",
+                                                    "kansas",
+                                                    "oklahoma",
+                                                    "texas")), 
+               mapping = aes(x = long, y = lat, group = group),
+               fill = "white",
+               color = "black") +
+  geom_sf(data = weather_sf,
+          shape = 15,
+          color = "darkred") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 330),
+        axis.text = element_text(size = 6,
+                                 hjust = 0.1)) +
+  xlab("Longitude") +
+  ylab("Latitude")
 
 ```
