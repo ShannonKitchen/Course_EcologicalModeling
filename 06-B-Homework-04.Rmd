@@ -47,7 +47,7 @@ repo_url <- "https://raw.githubusercontent.com/LivingLandscapes/Course_Ecologica
 
 # Load data
 weather <- 
-  read_csv(paste0(repo_url, "/data/FireWeather.csv"))
+  read_csv(paste0(repo_url, "data/FireWeather.csv"))
 
 # Brief looks at the data:
 head(weather)
@@ -57,7 +57,7 @@ weather_sf <- st_as_sf(weather,
                        crs = st_crs(4326),
                        coords = c("Long", "Lat"))
 states_sf <- st_read(paste0(repo_url, 
-                            "US_States/cb_2018_us_state_5m"))
+                            "data/US_States/cb_2018_us_state_5m"))
 ggplot() +
   geom_sf(data = states_sf, fill = "white") +
   geom_sf(mapping = aes(color = as.numeric(as.factor(Station_ID))), 
