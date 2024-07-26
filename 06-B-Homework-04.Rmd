@@ -26,12 +26,7 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 ## Overview
 
-In this homework assignment, you will analyze a dataset on Forest Bird densities from 56 patches in south eastern Victoria, in Australia. The aim of the study was to relate bird density to 6 habitat covariates: patch area (AREA), distance to nearest patch (DIST), distance to nearest larger patch (LDIST), altitude (ALT), the year the patch was isolated by vegetation clearing (YEAR.ISOL), and a categorical index of stock grazing intensity (GRAZE; 1 = light, 5 = heavy). The data are in the file 'Loyn.txt'. Conduct a full analysis of these data, including data exploration. Be sure to identify non-linear relationships as appropriate, and think carefully about what the appropriate error distribution is for these data. Submit a .Rmd *and* .html file containing a methods section describing your analytical process, and a results section describing the results.
 
-Recall from island biogeography theory that species richness should increase
-with AREA and decrease with isolation (DIST, LDIST, and YR.ISOL). Grazing is expected to have a negative effect on forest bird abundance because of the effects on understory vegetation. All species are lumped together in this response.
-
-**NOTE**: You don't need to use an HGAM here, but you can if you feel inclined.
 
 
 ```{r, include = TRUE, eval = TRUE, message = FALSE}
@@ -42,6 +37,7 @@ shelf(tidyverse,
       mgcv, # For checking model convergence
       MuMIn, # for model selection
       gratia, # for ggplot functionality with mgcv
+      sf,
       lib = tempdir(),
       quiet = TRUE)
 
@@ -50,11 +46,22 @@ shelf(tidyverse,
 repo_url <- "https://raw.githubusercontent.com/LivingLandscapes/Course_EcologicalModeling/master/"
 
 # Load data
-loyn <- 
-  read.table(paste0(repo_url, "/data/Loyn.txt"), header = TRUE)
+weather <- 
+  read_csv(paste0(repo_url, "/data/FireWeather.csv"))
 
 # Brief looks at the data:
-head(loyn)
-pairs(loyn)
+head(weather)
+
+# Make a map of the weather stations:
+weather_sf <- st_as_sf(weather,
+                       crs = st_crs(4326),
+                       coords = c("Long", "Lat"))
+states_sf <- st_read(paste0(repo_url, 
+                            "US_States/cb_2018_us_state_5m"))
+ggplot() +
+  geom_sf(data = states_sf, fill = "white") +
+  geom_sf(mapping = aes(color = as.numeric(as.factor(Station_ID))), 
+          data = weather_sf,
+          shape = 2)
 
 ```

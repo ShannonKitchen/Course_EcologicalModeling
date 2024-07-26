@@ -572,10 +572,10 @@ all of your analysis and plots. Some reminders:</p>
 it will run all analyses and create all plots without errors, without me
 having to reset my working directory, and without forcing me to install
 anything on my machine (i.e., use the require(librarian); shelf(your
-packages, lib = tempdir()) approach as in the code block below).</li>
-<li><strong>Format:</strong> Please write/format your .Rmd file similar
-to a scientific report or manuscript. For this assignment, we will just
-need a ‘Results’ and ‘Discussion’ section.</li>
+packages, lib = tempdir()) approach as in the code block below). This
+also means there should be <em>NO ERRORS</em> when I run it!</li>
+<li><strong>Format:</strong> Answer each question with text and code,
+plus figures/tables where appropriate.</li>
 </ul>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># List of packages necessary to run this script:</span></span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">require</span>(librarian, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
@@ -650,21 +650,24 @@ linear models (GLMs) for at least two bird species. I recommend using
 grcu (Grey Currawong), silv (Silvereye), or yfhe (Yellow faced
 Honeyeater) – at first glance they appear to have something interesting
 to say with this limited dataset.</li>
-<li>Use AIC – based model selection (or your preferred alternative!) to
-compare your approximating models with each other, and draw conclusions
-about the relative importance of patch vs. landscape effects for the
-species you considered. Be sure to justify the model selection criterion
-(e.g. AIC, AICc, QAIC, QAICc or whatever) you use.</li>
+<li>Use AICc – based model selection to compare your approximating
+models with each other, and draw conclusions about the relative
+importance of patch vs. landscape effects for the species you
+considered.</li>
 <li>Calculate a model averaged estimate for one or more of the
 biologically important parameters in your models. For example, the
 effect of patch area (PA) is directly relevant to estimating the effects
 of proposed land use changes (e.g. vegetation clearance) on bird
 species.</li>
-<li>Create model ranking tables (e.g., AICc tables) and create “marginal
+<li>Create model ranking tables (AICc tables) and create “marginal
 effects” plots for the model-averaged parameters from question #4.
 Marginal effects tells us how the response variable changes when a
 specific predictor variable changes. Other covariates held constant
-(e.g., at zero, at their means, etc.).</li>
+(e.g., at zero, at their means, etc.). There are multiple ways to
+generate marginal effects plots (e.g., ggeffects R package, use the base
+R package ‘predict’ function), but make sure the confidence interval
+calculations are correct (Hint: you may want to revisit Question #6 from
+Homework #1 for this).</li>
 <li>Interpret the results of your model selection and model
 averaging.</li>
 </ol>

@@ -26,13 +26,30 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 ```
 
-## (G)LMMs to the rescue!
+## Overview
 
-One current hypothesis for why some plants are able to invade novel ecosystems is that they “escape” the effect of herbivory by moving to the new environment. Bull Thistle, *Cirsium vulgare*, is a exotic plant introduced to North America from Eurasia. In many parts of the United States it is considered a highly invasive noxious plant.  In Nebraska however, it appears to be present but not reaching high abundances, even after many decades of establishment. There is a native thistle, the Tall Thistle, which in Nebraska flowers simultaneously with Bull Thistle. Many of the native herbivores found on Tall Thistles also attack Bull Thistle, and can consume up to 90% of all viable seeds. Could these native herbivores be suppressing Bull Thistle populations in Nebraska?
+Please provide a reproducible .Rmd script to address the scenario below and produces all of your analysis and plots. Some reminders:
 
-Our experiment tested the effects of distance to tall thistle patch on bull thistle seedling establishment density.  We established 4m2 plots of bull thistle seedlings at five distances (0, 7.5, 15, 30 and 60 meters) from a tall thistle patch.  We did not attempt to control the presence or abundance of other patches of tall thistle at the site. At each distance we had both an insecticide (insect herbivory reduced) and control (insect herbivory present) plot.  We sowed a fixed weight of Bull thistle seeds into the plots in April 2005 (538 seeds/ 4m^2) and censused seedling density per 1m2 subplots in September 2005 across all distances for insecticide and control plots.  This experimental design was repeated in 10 sites in Lancaster and southern Saunders Counties.  Additionally, sites are clumped into regions (4 regions) which add a second layer of spatial complexity, assume all sites within a region are closer to each other than in other regions.  Region 1 is 3 sites all at Pioneers park nature center, region 2 is one site at Wilderness Park, region 3 includes 3 sites at Pawnee State Recreational Area and region 4 includes 3 sites at the UNL- ARDC.  A two way ANOVA tells us there is no effect of distance – this is devastating to the enemy release hypothesis and will undo 20 years of my supervisor’s reputation. We did not talk to a statistician before designing the experiment – can you help me?     
+- **Reproducible:** This means when I run your .Rmd file, it will run all analyses and create all plots without errors, without me having to reset my working directory, and without forcing me to install anything on my machine (i.e., use the require(librarian); shelf(your packages, lib = tempdir()) approach as in the code block below). This also means there should be *NO ERRORS* when I run it!
+- **Format:** In the .Rmd file, arrange and format similar to a scientific article. Specifically, I want to see 1) an analytical methods section, 2) a results section that includes figures, tables, and *text interpreting the figures and tables and model(s)*!, and 3) a brief conclusion (1 - 2 paragraphs) based on the results. **NOTE:** You do not need to create an introduction, reiterate the data collection methods, or produce a literature cited section!
 
-## Data description
+### Background
+
+One hypothesis for why some plants are able to invade novel ecosystems is that they “escape” the effect of herbivory by moving to the new environment. Bull Thistle (*Cirsium vulgare*) is a exotic plant introduced to North America from Eurasia. In many parts of the United States it is considered a highly invasive noxious plant.  In Nebraska however, it appears to be present but not reaching high abundances, even after many decades of establishment. There is a native thistle, the Tall Thistle (*Cirsium altissimum*), which flowers simultaneously with Bull Thistle. Many of the native herbivores found on Tall Thistles also attack Bull Thistle, and can consume up to 90% of all viable seeds. Could these native herbivores be suppressing invasive Bull Thistle populations, and could that suppression be related to distance from native Tall Thistle patches?
+
+<p>
+![](https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/nCirsiumVulgare_HarryRose.JPG){width=600px}
+<p>
+
+### Your mission
+
+Hi! I'm a graduate student, and I set up an experiment testing the effects of distance to tall thistle patch on bull thistle seedling establishment density. I didn't  talk to a statistician before designing the experiment, which I know is a big no-no... So I know this is a big ask, but I **really** need your expert statistical advice! Here's the info on my experiment:
+
+I established $4m^2$ plots of bull thistle seedlings at five distances (0, 7.5, 15, 30 and 60 meters) from a tall thistle patch.  I did not attempt to control the presence or abundance of other patches of tall thistle at the site. At each distance, I established an insecticide (insect herbivory reduced) and control (insect herbivory present) plot.  I sowed a fixed weight of Bull thistle seeds into the plots in April (538 seeds/ $4m^2$) and censused seedling density per $1m2$ subplots the following September across all distances for insecticide and control plots.  I repeated this experimental design in 10 sites in Washington and southern Benton counties.  Additionally, I clumped sites into regions (4 regions), adding a second layer of spatial complexity. All sites within a region are closer to each other than in other regions.  Region 1 is comprised of 3 sites at Healing Springs Natural Area, region 2 is a single site at Woolsey Wet Prairie, region 3 includes 3 sites Wilson Springs Preserve, and region 4 includes 3 sites at the Milo J. Shult Agricultural Research Center (the UA "farm").  
+
+I tried a two way ANOVA for an initial analysis. But according to the ANOVA, there didn't appear to be an effect of distance! This is devastating to the enemy release hypothesis, and I'm afraid I'm going to have to completely rewrite my thesis!  I heard you just learned about mixed modeling. Could you *please* run a generalized or linear mixed model on my data and see if it picks up a different signal?!?     
+
+### Data description
 
 - Region: the larger spatial grouping of sites.  All sites within the same region are within 1 km of each other.  
 - Site: a full set of the experimental treatments
@@ -78,4 +95,4 @@ thistles$subplot = factor(thistles$subplot)
 
 ## Your assignment:
 
-Using these data, apply your knowledge of (generalized?) linear mixed models to determine if there is support for the enemy release hypothesis. Write up an .Rmd file with 1) analytical methods, 2) results (including figures, tables, and **text interpreting the figures and tables and model(s)**!, and 3) a brief conclusion (1 - 2 paragraphs) based on the results. Arrange and format similar to a scientific article. No need to create an introduction, reiterate the survey methods, or produce a literature cited section!
+Using these data, apply your knowledge of (generalized?) linear mixed models to determine if there is support for the enemy release hypothesis.  *Remember:* not only are you analyzing the data, but you are also doing a post-mortem on the experiment/data collection/study design. Make sure to do model diagnostics and include any glaring issues you identify in the Results. See the *Format* instructions in the Overview section for required format and elements.
