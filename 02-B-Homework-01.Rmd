@@ -28,14 +28,28 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 ## Overview
 
+Please provide a reproducible .Rmd script that answers all questions below and produces all of your analysis and plots. Some reminders:
+
+- **Reproducible:** This means when I run your .Rmd file, it will run all analyses and create all plots without errors, without me having to reset my working directory, and without forcing me to install anything on my machine (i.e., use the require(librarian); shelf(your packages, lib = tempdir()) approach as in the code block below). This also means there should be *NO ERRORS* when I run it!
+- **Format:** Answer each question with text and code, plus figures/tables where appropriate.
+
+### Background
+
+<p>
+!["Coral Bleaching" by NOAA's National Ocean Service is marked with Public domain mark 1.0.](https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/CoralBleaching_NOAA.jpg){width=400px}
+<p>
+
 For our first homework assignment, *we will be modeling the relationship between sea surface temperature anomalies and coral bleaching events*. This data is derived from a paper on the regional severity of coral bleaching events triggered by high ocean temperatures:
 
 *McWilliams, J et al (2005) Accelerating impacts of temperature-induced coral bleaching in the Caribbean. Ecology 86(5):2055-2060.*
 
-Do not use the analysis presented in the paper, although you can refer to the paper for the ecological background. Please provide a reproducible .Rmd script that answers all questions below and produces all of your analysis and plots. Some reminders:
+Do not use the analysis presented in the paper, although you can refer to the paper for the ecological background.
 
-- **Reproducible:** This means when I run your .Rmd file, it will run all analyses and create all plots without errors, without me having to reset my working directory, and without forcing me to install anything on my machine (i.e., use the require(librarian); shelf(your packages, lib = tempdir()) approach as in the code block below). This also means there should be *NO ERRORS* when I run it!
-- **Format:** Answer each question with text and code, plus figures/tables where appropriate.
+### Data column descriptions: 
+
++ SST: sea surface temperature "anomalies." That is, the difference between the average sea surface temperature for the Caribbean between Aug and October, and the long run average from 1961 to 1990. Positive values represent years in which the water was warmer than average; negative values represent cool years.
++ LOGBLEACH: the log10 transformed percentage of 1 degree latitude/longitude cells reporting at least one coral bleaching event in a given year.
++ MASS: an indicator marking those years which were considered “Mass Bleaching Events”. 1 = mass bleaching event; 0 = not a mass bleaching event.
 
 ```{r include = TRUE, eval = FALSE}
 
@@ -51,13 +65,6 @@ bleach <-
   read.csv("https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/data/bleach.csv")
 
 ```
-
-### Data column descriptions: 
-
-+ SST: sea surface temperature "anomalies." That is, the difference between the average sea surface temperature for the Caribbean between Aug and October, and the long run average from 1961 to 1990. Positive values represent years in which the water was warmer than average; negative values represent cool years.
-+ LOGBLEACH: the log10 transformed percentage of 1 degree latitude/longitude cells reporting at least one coral bleaching event in a given year.
-+ MASS: an indicator marking those years which were considered “Mass Bleaching Events”. 1 = mass bleaching event; 0 = not a mass bleaching event.
-
 
 ## Homework questions
 

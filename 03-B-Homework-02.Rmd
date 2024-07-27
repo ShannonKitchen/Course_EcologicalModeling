@@ -27,6 +27,17 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 ## Overview
 
+Please provide a reproducible .Rmd script that answers all questions below and produces all of your analysis and plots. Some reminders:
+
+- **Reproducible:** This means when I run your .Rmd file, it will run all analyses and create all plots without errors, without me having to reset my working directory, and without forcing me to install anything on my machine (i.e., use the require(librarian); shelf(your packages, lib = tempdir()) approach as in the code block below). This also means there should be *NO ERRORS* when I run it!
+- **Format:** Answer each question with text and code, plus figures/tables where appropriate.
+
+### Background
+
+<p>
+!["Mount Lofty in the Adelaide Hills" by Ruben Schade is licensed under CC BY-NC 2.0](https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/MtLofty_RubenSchade.jpg){width=300px}
+<p>
+
 The discipline of landscape ecology frequently postulates that the spatial pattern of habitat is important, in addition to local characteristics such as patch area, vegetation type, and climate. Westphal et al (2003) analyzed data from the South Australian Bird Atlas using a series of landscape pattern metrics estimated at 3 spatial scales. They concluded that landscape structure had a positive effect on many bird species. However, this dataset was never designed to be analyzed using logistic regression, and consequently their conclusions were somewhat weak, and badly compromised by model selection uncertainty. They used AIC rather than AICc, because the number of datapoints was relatively large (n=499) compared to the number of parameters in the most complex model (K = 5) so n/K ~ 100 and AIC is probably adequate. However the number of models considered (R = 45) is quite large. In addition, because of the way the Atlas data were archived, it was not possible to directly compare the effect of local patch variables to landscape pattern covariates.
 
 At the same time, Dr. Scott Field and colleagues of the University of Adelaide collected an independent data set at 34 woodland sites in the Mt. Lofty Ranges using a standard 2 ha, 20 min timed count procedure in each of 2 years. Field et al. (2002) describe some of the issues related to designing this survey; we have data for 34 of the 38 sites in that study. The bird data has sites and years in rows, and bird species in columns; for a given site in a particular year, a 1 indicates that the species was observed at least once out of three visits to the site, and a zero indicates that the species was not observed in three visits. This provides some correction for the problem of false negatives. *FYI: if you're thinking "duh--these folks should have just used an occupancy model," check out the date of the OG occupancy modeling papers (e.g., MacKenzie et al. 2002 in Ecology).*
@@ -36,30 +47,7 @@ Here are citations for the papers mentioned above:
 + *Westphal, M. I., Field, S. A., Tyre, A. J., Paton, D., & Possingham, H. P. (2003). Effects of landscape pattern on bird species distribution in the Mt. Lofty Ranges, South Australia. Landscape Ecology, 18, 413-426.*
 + *Field, S. A., Tyre, A. J., & Possingham, H. P. (2002). Estimating bird species richness: how should repeat surveys be organized in time?. Austral Ecology, 27(6), 624-629.*
 
-Do not use the analysis presented in these papers, although you can refer to the paper for the ecological background. Please provide a reproducible .Rmd script that answers all questions below and produces all of your analysis and plots. Some reminders:
-
-- **Reproducible:** This means when I run your .Rmd file, it will run all analyses and create all plots without errors, without me having to reset my working directory, and without forcing me to install anything on my machine (i.e., use the require(librarian); shelf(your packages, lib = tempdir()) approach as in the code block below). This also means there should be *NO ERRORS* when I run it!
-- **Format:** Answer each question with text and code, plus figures/tables where appropriate.
-
-```{r include = TRUE, eval = FALSE}
-
-# List of packages necessary to run this script:
-require(librarian, quietly = TRUE)
-shelf(tidyverse, cowplot,
-      AICcmodavg, # for aic.tab, model averaging, etc.
-      mgcv, # for qq.gam
-      quiet = TRUE,
-      lib = tempdir())
-
-# Load data:
-mlrbird <- 
-  read.csv("https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/data/mlrbird.csv")
-mlrland <- 
-  read.csv("https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/data/mlrland.csv")
-
-# NOTE: You will need to join these datasets to conduct the analysis.
-
-```
+Do not use the analysis presented in these papers, although you can refer to the paper for the ecological background. 
 
 ## Data descriptions: 
 
@@ -90,6 +78,26 @@ We also have landscape pattern variables similar to those used by Westphal et al
 + **MRF - mean annual rainfall
 + **PA - patch area
 + **PP - patch perimeter 
+
+```{r include = TRUE, eval = FALSE}
+
+# List of packages necessary to run this script:
+require(librarian, quietly = TRUE)
+shelf(tidyverse, cowplot,
+      AICcmodavg, # for aic.tab, model averaging, etc.
+      mgcv, # for qq.gam
+      quiet = TRUE,
+      lib = tempdir())
+
+# Load data:
+mlrbird <- 
+  read.csv("https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/data/mlrbird.csv")
+mlrland <- 
+  read.csv("https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/data/mlrland.csv")
+
+# NOTE: You will need to join these datasets to conduct the analysis.
+
+```
 
 ## Homework questions
 

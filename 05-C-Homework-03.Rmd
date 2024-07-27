@@ -35,13 +35,13 @@ Please provide a reproducible .Rmd script to address the scenario below and prod
 
 ### Background
 
+<p>
+!["Cirsium vulgare plant2" by Harry Rose is licensed under CC BY 2.0.](https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/CirsiumVulgare_HarryRose.jpg){width=400px}
+<p>
+
 One hypothesis for why some plants are able to invade novel ecosystems is that they “escape” the effect of herbivory by moving to the new environment. Bull Thistle (*Cirsium vulgare*) is a exotic plant introduced to North America from Eurasia. In many parts of the United States it is considered a highly invasive noxious plant.  In Nebraska however, it appears to be present but not reaching high abundances, even after many decades of establishment. There is a native thistle, the Tall Thistle (*Cirsium altissimum*), which flowers simultaneously with Bull Thistle. Many of the native herbivores found on Tall Thistles also attack Bull Thistle, and can consume up to 90% of all viable seeds. Could these native herbivores be suppressing invasive Bull Thistle populations, and could that suppression be related to distance from native Tall Thistle patches?
 
-<p>
-![](https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/nCirsiumVulgare_HarryRose.JPG){width=600px}
-<p>
-
-### Your mission
+### The scenario
 
 Hi! I'm a graduate student, and I set up an experiment testing the effects of distance to tall thistle patch on bull thistle seedling establishment density. I didn't  talk to a statistician before designing the experiment, which I know is a big no-no... So I know this is a big ask, but I **really** need your expert statistical advice! Here's the info on my experiment:
 
@@ -51,12 +51,12 @@ I tried a two way ANOVA for an initial analysis. But according to the ANOVA, the
 
 ### Data description
 
-- Region: the larger spatial grouping of sites.  All sites within the same region are within 1 km of each other.  
-- Site: a full set of the experimental treatments
-- Distance: distance (m) of bull thistle patch to a tall thistle patch
-- Spray: insecticide vs control
-- Plot: there are 10 plots at each site, labeled by the spray treatment and distance
-- Subplot: Each 4m2 plot is divided into 4-1m2 plots 
++ Region: the larger spatial grouping of sites.  All sites within the same region are within 1 km of each other.  
++ Site: a full set of the experimental treatments
++ Distance: distance (m) of bull thistle patch to a tall thistle patch
++ Spray: insecticide vs control
++ Plot: there are 10 plots at each site, labeled by the spray treatment and distance
++ Subplot: Each 4m2 plot is divided into 4-1m2 plots 
 		
  
 ```{r eval = FALSE, message = FALSE, include = TRUE}
@@ -93,6 +93,6 @@ thistles$subplot = factor(thistles$subplot)
 
 ```
 
-## Your assignment:
+## Your assignment
 
 Using these data, apply your knowledge of (generalized?) linear mixed models to determine if there is support for the enemy release hypothesis.  *Remember:* not only are you analyzing the data, but you are also doing a post-mortem on the experiment/data collection/study design. Make sure to do model diagnostics and include any glaring issues you identify in the Results. See the *Format* instructions in the Overview section for required format and elements.

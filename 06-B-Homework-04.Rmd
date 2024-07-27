@@ -33,27 +33,37 @@ Please provide a reproducible .Rmd script to address the scenario below and prod
 
 ### Background 
 
+<p>
+![Photo credit: Christine Bielski](https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/RS.jpg){width=300px}
+<p>
+
 In the face of woody plant encroachment, prescribed fire is an essential management tool for maintaining grassland ecosystems in the North American Great Plains. To safely and efficiently conduct prescribed fires, land managers often try to burn only under narrow weather conditions. For example, it can be unsafe to burn when the relative humidity (RH) is too low, and fires can be less effective in controlling woody plants if the humidity is too high. Likewise, fires can move too quickly and get out of control if wind speeds are too fast, but the fire may not move across the landscape if there is no wind at all.
 
-### Your assignment
+Climate change stands to further complicate the use of prescribed fire. Climate change may cause longer and more severe droughts and wind speeds may increase or become more erratic. To understand and adjust fire prescriptions under climate change--while still putting fire on landscapes to control woody plant encroachment--managers need to understand how current weather factors change across years, individual burn seasons, and across the extent of the Great Plains.
 
-For this homework, you will be using *hierarchical generalized additive models* to characterize daily minimum RH and daily maximum wind speeds using weather station data collected across a latitudinal gradient in the US Great Plains. The weather station data was collected from 2010 - 2019 and between days 121 - 273 in each year (roughly May - September). Specifically, you will be answering this question:
+### Data description
+
+To address this need, you will be using weather station data collected across a latitudinal gradient in the US Great Plains. The weather station data was collected from 2010 - 2019 and between days 121 - 273 in each year (roughly May - September). Descriptions of data in each column are as follows:
+
+| **Column Name**| **Description**                                             |
+|----------------|-------------------------------------------------------------|
+| Year       | years 2010 - 2019                                           |
+| Veg_Type   | vegetation type/ecoregion in which the weather station falls|
+| Station_ID | unique identifier for each weather station                  |
+| Lat        | latitude                                                    |
+| Long       | longitude                                                   |
+| Month      | numeric month of year (e.g., 5 = May)                       |
+| Day        | 
+| Wind_mph_max | maximum daily wind speed in miles per hour |
+| RH_per_min | minimum daily relative humidity as a percent |
+
+## Your assignment
+
+Use *hierarchical generalized additive models* to characterize daily minimum RH and daily maximum wind speeds.  Specifically, you will be answering this question:
 
 **How do the two weather metrics of interest (minimum RH and maximum wind speed) change over time and across space?**
 
 You will need to decide what statistical distributions to use, how to structure the "hierarchical" part of the models, etc. Use the Pederson et al. (2019) manuscript to help make modeling and figure creation decisions!
-
-### Data description
-
-- Year: years 2010 - 2019
-- Veg_Type: vegetation type/ecoregion in which the weather station falls
-- Station_ID: unique identifier for each weather station
-- Lat: latitude
-- Long: longitude
-- Month: numeric month of year
-- Day: numeric day of year
-- Wind_mph_max: maximum daily wind speed in miles per hour
-- RH_per_min: minimum daily relative humidity as a percent
 
 ```{r, include = TRUE, eval = TRUE, message = FALSE}
 

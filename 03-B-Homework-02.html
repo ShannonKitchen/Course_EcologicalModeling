@@ -524,6 +524,30 @@ div.tocify {
 
 <div id="overview" class="section level2">
 <h2>Overview</h2>
+<p>Please provide a reproducible .Rmd script that answers all questions
+below and produces all of your analysis and plots. Some reminders:</p>
+<ul>
+<li><strong>Reproducible:</strong> This means when I run your .Rmd file,
+it will run all analyses and create all plots without errors, without me
+having to reset my working directory, and without forcing me to install
+anything on my machine (i.e., use the require(librarian); shelf(your
+packages, lib = tempdir()) approach as in the code block below). This
+also means there should be <em>NO ERRORS</em> when I run it!</li>
+<li><strong>Format:</strong> Answer each question with text and code,
+plus figures/tables where appropriate.</li>
+</ul>
+<div id="background" class="section level3">
+<h3>Background</h3>
+<p>
+<div class="float">
+<img
+src="https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/MtLofty_RubenSchade.jpg"
+width="300"
+alt="“Mount Lofty in the Adelaide Hills” by Ruben Schade is licensed under CC BY-NC 2.0" />
+<div class="figcaption">“Mount Lofty in the Adelaide Hills” by Ruben
+Schade is licensed under CC BY-NC 2.0</div>
+</div>
+<p>
 <p>The discipline of landscape ecology frequently postulates that the
 spatial pattern of habitat is important, in addition to local
 characteristics such as patch area, vegetation type, and climate.
@@ -564,34 +588,8 @@ Estimating bird species richness: how should repeat surveys be organized
 in time?. Austral Ecology, 27(6), 624-629.</em></li>
 </ul>
 <p>Do not use the analysis presented in these papers, although you can
-refer to the paper for the ecological background. Please provide a
-reproducible .Rmd script that answers all questions below and produces
-all of your analysis and plots. Some reminders:</p>
-<ul>
-<li><strong>Reproducible:</strong> This means when I run your .Rmd file,
-it will run all analyses and create all plots without errors, without me
-having to reset my working directory, and without forcing me to install
-anything on my machine (i.e., use the require(librarian); shelf(your
-packages, lib = tempdir()) approach as in the code block below). This
-also means there should be <em>NO ERRORS</em> when I run it!</li>
-<li><strong>Format:</strong> Answer each question with text and code,
-plus figures/tables where appropriate.</li>
-</ul>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># List of packages necessary to run this script:</span></span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">require</span>(librarian, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">shelf</span>(tidyverse, cowplot,</span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>      AICcmodavg, <span class="co"># for aic.tab, model averaging, etc.</span></span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>      mgcv, <span class="co"># for qq.gam</span></span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>      <span class="at">quiet =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>      <span class="at">lib =</span> <span class="fu">tempdir</span>())</span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co"># Load data:</span></span>
-<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>mlrbird <span class="ot">&lt;-</span> </span>
-<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>  <span class="fu">read.csv</span>(<span class="st">&quot;https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/data/mlrbird.csv&quot;</span>)</span>
-<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>mlrland <span class="ot">&lt;-</span> </span>
-<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>  <span class="fu">read.csv</span>(<span class="st">&quot;https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/data/mlrland.csv&quot;</span>)</span>
-<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: You will need to join these datasets to conduct the analysis.</span></span></code></pre></div>
+refer to the paper for the ecological background.</p>
+</div>
 </div>
 <div id="data-descriptions" class="section level2">
 <h2>Data descriptions:</h2>
@@ -637,6 +635,21 @@ MPAR is a derived variable not found in the provided dataset.</li>
 <li>**PA - patch area</li>
 <li>**PP - patch perimeter</li>
 </ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># List of packages necessary to run this script:</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">require</span>(librarian, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">shelf</span>(tidyverse, cowplot,</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>      AICcmodavg, <span class="co"># for aic.tab, model averaging, etc.</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>      mgcv, <span class="co"># for qq.gam</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>      <span class="at">quiet =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>      <span class="at">lib =</span> <span class="fu">tempdir</span>())</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co"># Load data:</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>mlrbird <span class="ot">&lt;-</span> </span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>  <span class="fu">read.csv</span>(<span class="st">&quot;https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/data/mlrbird.csv&quot;</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>mlrland <span class="ot">&lt;-</span> </span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>  <span class="fu">read.csv</span>(<span class="st">&quot;https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/data/mlrland.csv&quot;</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: You will need to join these datasets to conduct the analysis.</span></span></code></pre></div>
 </div>
 <div id="homework-questions" class="section level2">
 <h2>Homework questions</h2>
