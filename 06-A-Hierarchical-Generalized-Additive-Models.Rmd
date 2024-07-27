@@ -49,7 +49,7 @@ A brief description of the data:
 - RH_per_min = minimum percent relative humidity between 0600 - 1800 per day
 - Wind_mph_max = maximum wind speed (mph) between 0600 - 1800 per day
 
-```{r, include = TRUE, eval = TRUE, message = FALSE}
+```{r, include = TRUE, eval = TRUE, message = FALSE, echo = FALSE}
 
 # List of packages necessary to run this script:
 require(librarian, quietly = TRUE)
