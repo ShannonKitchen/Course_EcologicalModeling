@@ -31,15 +31,16 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 ## Overview
 
-Invasive plants cause immense ecological and economic damage in many places. Understanding 
+Invasive plants cause immense ecological and economic damage. For example, in forested lands, invasive grasses can change fire regimes, invasive shrubs can reduce native tree regeneration, and invasive trees can reduce timber production. Determining how invasive plants are distributed across forested lands could help managers assess potential risks to their lands. But instead of just doing a million species distribution models, what if we could get at the underlying patterns of how different functional groups of invasive plants are distributed? For example: are invasive graminoids increasing more than other groups? OR: what if functional groups are the best explanation? What if order is a better explanation of increases in cover?
 
 <p>
-!['Cogongrass' by Nancy Loewenstein and John McGuire.](https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/Cogongrass_Alabama.jpg){width=600px}
+!['Cogongrass' by Nancy Loewenstein and John McGuire.](https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/Cogongrass_Alabama.jpg){width=400px}
 <p>
 
 ### Data description
 
-The data you will be using is from the U.S. Forest Service's "Forest Inventory and Analysis" dataset. 
+The data you will be using is from the U.S. Forest Service's "Forest Inventory and Analysis" (FIA) dataset. The FIA dataset is taken on public and private forested and timber lands throughout the U.S. on specific plots. The plots are revisited approximately every 4 - 5 years. One of the data collected at each plot is percent cover of various invasive plants. Here, I used the ["rFIA" R package](https://rfia.netlify.app/) to extract invasive species cover data from the Eastern U.S. from 2001 - 2020. I also extracted growth habits and orders of each plant species from the [USDA Plants Database](https://plants.usda.gov/). Below is a table with descriptions of columns in each dataset:
+
 
 | Data File Name | **Column Name**| **Description**                            |
 |:---------------|:---------------|:-------------------------------------------|
@@ -59,7 +60,9 @@ The data you will be using is from the U.S. Forest Service's "Forest Inventory a
 | | Latitude    | decimal degrees latitude
 ---
 
-```{r, include = TRUE, eval = TRUE, message = FALSE}
+Let's load the data and join the two files:
+
+```{r, include = TRUE, eval = TRUE, message = FALSE, echo = FALSE}
 
 # List of packages necessary to run this script:
 require(librarian, quietly = TRUE)
@@ -69,6 +72,7 @@ shelf(tidyverse,
       gratia, # for ggplot functionality with mgcv
       modelr, # for cross-validation
       vroom, # for loading data FAST
+      sf, # making spatial objects and maps
       lib = tempdir(),
       quiet = TRUE)
 
@@ -85,35 +89,81 @@ spp_info <- read_csv(paste0(repo_url, "data/FIA_Invasives_GrowthTaxonomy.csv"))
 # Join the cover and metadata
 fia <- left_join(fia, spp_info) 
 
+# Some preparations for mgcv
+fia <-
+  fia %>%
+  mutate(across(c(Order, GrowthHabit1, GrowthHabit2, GrowthHabit3, SCIENTIFIC_NAME, pltID),
+                as.factor), # mgcv wants factors for random effects
+         cover_0.001 = cover + 0.001, # for log link
+         across(c(Year, Latitude, Longitude),
+                ~ (.x - mean(.x)) / sd(.x),
+                .names = "{.col}_scaled")) # scale covariates
+
 ```
 
 ### Data Exploration
 
-**On your own, familiarize yourself with the data.** Below, you can see that we're deadling with >100k rows and a few potential grouping variables.
+**On your own, familiarize yourself with the data.** Below, you can see that we're dealing with >100k rows and a few potential grouping variables.
 
-```{r, eval = TRUE, message = FALSE, include = TRUE}
+```{r, eval = TRUE, message = FALSE, include = TRUE, echo = TRUE}
 
 # Number of columns and rows?
-dim(fia) # >100k rows!
+dim(fia) # > 100k rows!
 
 # How many unique values in each column?
 fia %>%
   summarize(across(everything(), ~ length(unique(.x))))
 
-# Some preparations for mgcv
-fia <-
-  fia %>%
-  mutate(across(c(Order, GrowthHabit1, GrowthHabit2, GrowthHabit3, SCIENTIFIC_NAME, pltID),
-                as.factor)) %>% # mgcv wants factors for random effects
-  mutate(cover = cover + 0.001, # for log link
-         ) %>%
-  mutate(across(c(Year, Latitude, Longitude),
-                ~ (.x - mean(.x)) / sd(.x),
-                .names = "{.col}_scaled")) # scale covariates
+# What's the max, min, mean, and median of the "cover" column?
+fia %>%
+  summarize(Mean = mean(cover),
+            Median = median(cover),
+            Min = min(cover),
+            Max = max(cover))
 
-# # First few rows
-# head(fia)
+# How many cover values = 0?
+sum(fia$cover == 0)
+
+## **QUESTION**: Given there is only a single zero in the cover data, how does that affect the scope of our inference?
+
+# Let's make a map! First, convert to an sf object for mapping
+fia_sf <- st_as_sf(fia,
+                   crs = st_crs(4326),
+                   coords = c("Longitude", "Latitude"))
+
+# Get a US states map
+states <- map_data("state") # Map of US states
+
+# Make a map to show where the weather stations are:
+ggplot() +
+  geom_polygon(data = states %>%
+                 filter(region %in% c("kentucky","tennessee", "mississippi", "texas",
+                                      "alabama", "georgia", "florida", "oklahoma",
+                                      "arkansas", "south carolina", "virginia",
+                                      "louisiana", "north carolina", "maryland")
+                        ),
+               mapping = aes(x = long, y = lat, group = group),
+               fill = "white",
+               color = "black") +
+  geom_sf(data = fia_sf,
+          shape = 15,
+          alpha = 0.5,
+          mapping = aes(color = Year)) +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 330),
+        axis.text = element_text(size = 6,
+                                 hjust = 0.1)) +
+  xlab("Longitude") +
+  ylab("Latitude")
+
 ```
+
+### Hypotheses
+
+
+
+### Should you 'gam' or 'bam'?
 
 ``` {r, eval = TRUE, message = FALSE, include = TRUE}
 # 

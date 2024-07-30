@@ -535,9 +535,8 @@ insect populations. Ecography, 2022(2).</li>
 </ul>
 <div id="overview" class="section level2">
 <h2>Overview</h2>
-<p>Invasive plants cause immense ecological and economic damage in U.S.
-forested lands. The U.S. Forest Service started collecting invasive
-species percent cover data</p>
+<p>Invasive plants cause immense ecological and economic damage in many
+places. Understanding</p>
 <p>
 <div class="float">
 <img
@@ -547,7 +546,19 @@ width="600" alt="‘Cogongrass’ by Nancy Loewenstein and John McGuire." />
 McGuire.</div>
 </div>
 <p>
-<p>A brief description of the data:</p>
+<div id="data-description" class="section level3">
+<h3>Data description</h3>
+<p>The data you will be using is from the U.S. Forest Service’s “Forest
+Inventory and Analysis” (FIA) dataset. The FIA dataset is taken on
+public and private forested and timber lands throughout the U.S. on
+specific plots. The plots are revisited approximately every 4 - 5 years.
+One of the data collected at each plot is percent cover of various
+invasive plants. Here, I used the <a
+href="https://rfia.netlify.app/">“rFIA” R package</a> to extract
+invasive species cover data from the Eastern U.S. from 2001 - 2020. I
+also extracted growth habits and orders of each plant species from the
+<a href="https://plants.usda.gov/">USDA Plants Database</a>. Below is a
+table with descriptions of columns in each dataset:</p>
 <table>
 <colgroup>
 <col width="21%" />
@@ -635,6 +646,7 @@ McGuire.</div>
 </tbody>
 </table>
 <hr />
+<p>Let’s load the data and join the two files:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># List of packages necessary to run this script:</span></span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">require</span>(librarian, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">shelf</span>(tidyverse, </span>
@@ -644,116 +656,156 @@ McGuire.</div>
 <span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>      modelr, <span class="co"># for cross-validation</span></span>
 <span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>      vroom, <span class="co"># for loading data FAST</span></span>
 <span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>      <span class="at">lib =</span> <span class="fu">tempdir</span>(),</span>
-<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>      <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co"># Set the web address where R will look for files from this repository</span></span>
-<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co"># Do not change this address</span></span>
-<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>repo_url <span class="ot">&lt;-</span> <span class="st">&quot;https://raw.githubusercontent.com/LivingLandscapes/Course_EcologicalModeling/master/&quot;</span></span>
-<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a></span>
-<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co"># Load invasive species cover data</span></span>
-<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>fia <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">paste0</span>(repo_url, <span class="st">&quot;data/FIA_Invasives_Cover.csv&quot;</span>))</span>
-<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a></span>
-<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co"># Load invasive species metadata </span></span>
-<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a>spp_info <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">paste0</span>(repo_url, <span class="st">&quot;data/FIA_Invasives_GrowthTaxonomy.csv&quot;</span>))</span>
-<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a></span>
-<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="co"># Join the cover and metadata</span></span>
-<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a>fia <span class="ot">&lt;-</span> <span class="fu">left_join</span>(fia, spp_info) <span class="sc">%&gt;%</span></span>
-<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">GrowthHabit1 =</span> <span class="fu">factor</span>(GrowthHabit1),</span>
-<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a>         <span class="at">Order =</span> <span class="fu">factor</span>(Order),</span>
-<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a>         <span class="at">cover =</span> cover <span class="sc">+</span> <span class="fl">0.0001</span>)</span>
-<span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a></span>
-<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a><span class="co"># Take a quick look at the data</span></span>
-<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a><span class="fu">head</span>(fia)</span></code></pre></div>
-<pre><code>## # A tibble: 6 × 12
-##    Year pltID SCIENTIFIC_NAME COMMON_NAME  cover Longitude Latitude GrowthHabit1
-##   &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;           &lt;chr&gt;        &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt; &lt;fct&gt;       
-## 1  2001 3_1_… Albizia julibr… silktree    0.267      -86.5     32.5 Tree        
-## 2  2001 3_1_… Lonicera japon… Japanese h… 0.438      -86.5     32.5 Vine        
-## 3  2001 3_1_… Lonicera japon… Japanese h… 0.433      -86.5     32.4 Vine        
-## 4  2001 3_1_… Melia azedarach Chinaberry… 0.0501     -86.5     32.4 Tree        
-## 5  2001 3_1_… Lonicera japon… Japanese h… 0.375      -86.6     32.7 Vine        
-## 6  2001 3_1_… Pueraria monta… kudzu       0.468      -86.6     32.7 Vine        
-## # ℹ 4 more variables: GrowthHabit2 &lt;chr&gt;, GrowthHabit3 &lt;chr&gt;,
-## #   GrowthHabit_Number &lt;dbl&gt;, Order &lt;fct&gt;</code></pre>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>      <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<pre><code>## 
+##   There is a binary version available but the source version is later:
+##      binary source needs_compilation
+## uuid  1.2-0  1.2-1              TRUE
+## 
+##   Binaries will be installed
+## package &#39;colorspace&#39; successfully unpacked and MD5 sums checked
+## package &#39;sys&#39; successfully unpacked and MD5 sums checked
+## package &#39;ps&#39; successfully unpacked and MD5 sums checked
+## package &#39;farver&#39; successfully unpacked and MD5 sums checked
+## package &#39;labeling&#39; successfully unpacked and MD5 sums checked
+## package &#39;munsell&#39; successfully unpacked and MD5 sums checked
+## package &#39;RColorBrewer&#39; successfully unpacked and MD5 sums checked
+## package &#39;viridisLite&#39; successfully unpacked and MD5 sums checked
+## package &#39;rematch&#39; successfully unpacked and MD5 sums checked
+## package &#39;askpass&#39; successfully unpacked and MD5 sums checked
+## package &#39;processx&#39; successfully unpacked and MD5 sums checked
+## package &#39;backports&#39; successfully unpacked and MD5 sums checked
+## package &#39;generics&#39; successfully unpacked and MD5 sums checked
+## package &#39;blob&#39; successfully unpacked and MD5 sums checked
+## package &#39;DBI&#39; successfully unpacked and MD5 sums checked
+## package &#39;data.table&#39; successfully unpacked and MD5 sums checked
+## package &#39;gtable&#39; successfully unpacked and MD5 sums checked
+## package &#39;isoband&#39; successfully unpacked and MD5 sums checked
+## package &#39;scales&#39; successfully unpacked and MD5 sums checked
+## package &#39;gargle&#39; successfully unpacked and MD5 sums checked
+## package &#39;uuid&#39; successfully unpacked and MD5 sums checked
+## package &#39;cellranger&#39; successfully unpacked and MD5 sums checked
+## package &#39;curl&#39; successfully unpacked and MD5 sums checked
+## package &#39;ids&#39; successfully unpacked and MD5 sums checked
+## package &#39;rematch2&#39; successfully unpacked and MD5 sums checked
+## package &#39;pkgconfig&#39; successfully unpacked and MD5 sums checked
+## package &#39;openssl&#39; successfully unpacked and MD5 sums checked
+## package &#39;timechange&#39; successfully unpacked and MD5 sums checked
+## package &#39;fansi&#39; successfully unpacked and MD5 sums checked
+## package &#39;utf8&#39; successfully unpacked and MD5 sums checked
+## package &#39;systemfonts&#39; successfully unpacked and MD5 sums checked
+## package &#39;textshaping&#39; successfully unpacked and MD5 sums checked
+## package &#39;clipr&#39; successfully unpacked and MD5 sums checked
+## package &#39;callr&#39; successfully unpacked and MD5 sums checked
+## package &#39;selectr&#39; successfully unpacked and MD5 sums checked
+## package &#39;Rcpp&#39; successfully unpacked and MD5 sums checked
+## package &#39;RcppArmadillo&#39; successfully unpacked and MD5 sums checked
+## package &#39;BH&#39; successfully unpacked and MD5 sums checked
+## package &#39;bit&#39; successfully unpacked and MD5 sums checked
+## package &#39;prettyunits&#39; successfully unpacked and MD5 sums checked
+## package &#39;broom&#39; successfully unpacked and MD5 sums checked
+## package &#39;conflicted&#39; successfully unpacked and MD5 sums checked
+## package &#39;dbplyr&#39; successfully unpacked and MD5 sums checked
+## package &#39;dplyr&#39; successfully unpacked and MD5 sums checked
+## package &#39;dtplyr&#39; successfully unpacked and MD5 sums checked
+## package &#39;forcats&#39; successfully unpacked and MD5 sums checked
+## package &#39;ggplot2&#39; successfully unpacked and MD5 sums checked
+## package &#39;googledrive&#39; successfully unpacked and MD5 sums checked
+## package &#39;googlesheets4&#39; successfully unpacked and MD5 sums checked
+## package &#39;haven&#39; successfully unpacked and MD5 sums checked
+## package &#39;hms&#39; successfully unpacked and MD5 sums checked
+## package &#39;httr&#39; successfully unpacked and MD5 sums checked
+## package &#39;lubridate&#39; successfully unpacked and MD5 sums checked
+## package &#39;pillar&#39; successfully unpacked and MD5 sums checked
+## package &#39;purrr&#39; successfully unpacked and MD5 sums checked
+## package &#39;ragg&#39; successfully unpacked and MD5 sums checked
+## package &#39;readr&#39; successfully unpacked and MD5 sums checked
+## package &#39;readxl&#39; successfully unpacked and MD5 sums checked
+## package &#39;reprex&#39; successfully unpacked and MD5 sums checked
+## package &#39;rstudioapi&#39; successfully unpacked and MD5 sums checked
+## package &#39;rvest&#39; successfully unpacked and MD5 sums checked
+## package &#39;tibble&#39; successfully unpacked and MD5 sums checked
+## package &#39;tidyr&#39; successfully unpacked and MD5 sums checked
+## package &#39;xml2&#39; successfully unpacked and MD5 sums checked
+## package &#39;insight&#39; successfully unpacked and MD5 sums checked
+## package &#39;patchwork&#39; successfully unpacked and MD5 sums checked
+## package &#39;mvnfast&#39; successfully unpacked and MD5 sums checked
+## package &#39;tidyselect&#39; successfully unpacked and MD5 sums checked
+## package &#39;ggokabeito&#39; successfully unpacked and MD5 sums checked
+## package &#39;withr&#39; successfully unpacked and MD5 sums checked
+## package &#39;bit64&#39; successfully unpacked and MD5 sums checked
+## package &#39;crayon&#39; successfully unpacked and MD5 sums checked
+## package &#39;tzdb&#39; successfully unpacked and MD5 sums checked
+## package &#39;cpp11&#39; successfully unpacked and MD5 sums checked
+## package &#39;progress&#39; successfully unpacked and MD5 sums checked
+## package &#39;tidyverse&#39; successfully unpacked and MD5 sums checked
+## package &#39;MuMIn&#39; successfully unpacked and MD5 sums checked
+## package &#39;gratia&#39; successfully unpacked and MD5 sums checked
+## package &#39;modelr&#39; successfully unpacked and MD5 sums checked
+## package &#39;vroom&#39; successfully unpacked and MD5 sums checked</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Set the web address where R will look for files from this repository</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co"># Do not change this address</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>repo_url <span class="ot">&lt;-</span> <span class="st">&quot;https://raw.githubusercontent.com/LivingLandscapes/Course_EcologicalModeling/master/&quot;</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co"># Load invasive species cover data</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>fia <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">paste0</span>(repo_url, <span class="st">&quot;data/FIA_Invasives_Cover.csv&quot;</span>))</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co"># Load invasive species metadata </span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>spp_info <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">paste0</span>(repo_url, <span class="st">&quot;data/FIA_Invasives_GrowthTaxonomy.csv&quot;</span>))</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co"># Join the cover and metadata</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>fia <span class="ot">&lt;-</span> <span class="fu">left_join</span>(fia, spp_info) </span></code></pre></div>
+</div>
 <div id="data-exploration" class="section level3">
 <h3>Data Exploration</h3>
 <p><strong>On your own, familiarize yourself with the data.</strong>
-Below, you can see that we’re deadling with &gt;100k rows and
-<em>many</em> potential grouping variables.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Number of columns and rows?</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">dim</span>(fia) <span class="co"># &gt;100k rows!</span></span></code></pre></div>
+Below, you can see that we’re dealing with &gt;100k rows and a few
+potential grouping variables.</p>
 <pre><code>## [1] 101979     12</code></pre>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># How many unique values in each column?</span></span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>fia <span class="sc">%&gt;%</span></span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span> <span class="fu">length</span>(<span class="fu">unique</span>(.x))))</span></code></pre></div>
 <pre><code>## # A tibble: 1 × 12
 ##    Year pltID SCIENTIFIC_NAME COMMON_NAME cover Longitude Latitude GrowthHabit1
 ##   &lt;int&gt; &lt;int&gt;           &lt;int&gt;       &lt;int&gt; &lt;int&gt;     &lt;int&gt;    &lt;int&gt;        &lt;int&gt;
 ## 1    21 29994              74          74 16069     29955    29916            6
 ## # ℹ 4 more variables: GrowthHabit2 &lt;int&gt;, GrowthHabit3 &lt;int&gt;,
 ## #   GrowthHabit_Number &lt;int&gt;, Order &lt;int&gt;</code></pre>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Some preparations for mgcv</span></span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>fia <span class="ot">&lt;-</span></span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  fia <span class="sc">%&gt;%</span></span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(Order, GrowthHabit1, GrowthHabit2, GrowthHabit3, SCIENTIFIC_NAME, pltID),</span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>                as.factor)) <span class="sc">%&gt;%</span> <span class="co"># mgcv wants factors for random effect</span></span>
-<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cover =</span> cover <span class="sc">+</span> <span class="fl">0.001</span>, <span class="co"># for log link</span></span>
-<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>         ) <span class="sc">%&gt;%</span></span>
-<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(Year, Latitude, Longitude),</span>
-<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>                <span class="sc">~</span> (.x <span class="sc">-</span> <span class="fu">mean</span>(.x)) <span class="sc">/</span> <span class="fu">sd</span>(.x),</span>
-<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>                <span class="at">.names =</span> <span class="st">&quot;{.col}_scaled&quot;</span>)) <span class="co"># scale covariates</span></span>
-<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a></span>
-<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="fu">head</span>(fia)</span></code></pre></div>
-<pre><code>## # A tibble: 6 × 15
-##    Year pltID SCIENTIFIC_NAME COMMON_NAME  cover Longitude Latitude GrowthHabit1
-##   &lt;dbl&gt; &lt;fct&gt; &lt;fct&gt;           &lt;chr&gt;        &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt; &lt;fct&gt;       
-## 1  2001 3_1_… Albizia julibr… silktree    0.268      -86.5     32.5 Tree        
-## 2  2001 3_1_… Lonicera japon… Japanese h… 0.439      -86.5     32.5 Vine        
-## 3  2001 3_1_… Lonicera japon… Japanese h… 0.434      -86.5     32.4 Vine        
-## 4  2001 3_1_… Melia azedarach Chinaberry… 0.0511     -86.5     32.4 Tree        
-## 5  2001 3_1_… Lonicera japon… Japanese h… 0.376      -86.6     32.7 Vine        
-## 6  2001 3_1_… Pueraria monta… kudzu       0.469      -86.6     32.7 Vine        
-## # ℹ 7 more variables: GrowthHabit2 &lt;fct&gt;, GrowthHabit3 &lt;fct&gt;,
-## #   GrowthHabit_Number &lt;dbl&gt;, Order &lt;fct&gt;, Year_scaled &lt;dbl&gt;,
-## #   Latitude_scaled &lt;dbl&gt;, Longitude_scaled &lt;dbl&gt;</code></pre>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="co"># fit1 &lt;- </span></span>
-<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="co">#   bam(cover ~ te(Longitude, Latitude) + </span></span>
-<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co">#               te(Longitude, Latitude, GrowthHabit1, bs = c(&quot;tp&quot;, &quot;tp&quot;, &quot;re&quot;)) +</span></span>
-<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co">#               s(Year),</span></span>
-<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co">#       family = Gamma(&quot;log&quot;),</span></span>
-<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co">#       data = fia,</span></span>
-<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co">#       discrete=TRUE,</span></span>
-<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="co">#       method=&quot;fREML&quot;)</span></span>
-<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="co"># summary(fit1)</span></span>
-<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a><span class="co"># # draw(fit1)</span></span>
-<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="co"># fit2 &lt;- </span></span>
-<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a><span class="co">#   bam(cover ~ te(Longitude, Latitude) + </span></span>
-<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a><span class="co">#         te(Longitude, Latitude, GrowthHabit1, bs = c(&quot;tp&quot;, &quot;tp&quot;, &quot;re&quot;)),</span></span>
-<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a><span class="co">#       family = Gamma(&quot;log&quot;),</span></span>
-<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a><span class="co">#       data = fia,</span></span>
-<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a><span class="co">#       discrete=TRUE,</span></span>
-<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a><span class="co">#       method=&quot;fREML&quot;)</span></span>
-<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a><span class="co"># summary(fit2)</span></span>
-<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a><span class="co"># fit3 &lt;- </span></span>
-<span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a><span class="co">#   bam(cover ~ te(Longitude, Latitude) + </span></span>
-<span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a><span class="co">#         te(Longitude, Latitude, by = GrowthHabit1) +</span></span>
-<span id="cb9-23"><a href="#cb9-23" tabindex="-1"></a><span class="co">#         GrowthHabit1,</span></span>
-<span id="cb9-24"><a href="#cb9-24" tabindex="-1"></a><span class="co">#       family = Gamma(&quot;log&quot;),</span></span>
-<span id="cb9-25"><a href="#cb9-25" tabindex="-1"></a><span class="co">#       data = fia,</span></span>
-<span id="cb9-26"><a href="#cb9-26" tabindex="-1"></a><span class="co">#       discrete=TRUE,</span></span>
-<span id="cb9-27"><a href="#cb9-27" tabindex="-1"></a><span class="co">#       method=&quot;fREML&quot;)</span></span>
-<span id="cb9-28"><a href="#cb9-28" tabindex="-1"></a><span class="co"># summary(fit3)</span></span>
-<span id="cb9-29"><a href="#cb9-29" tabindex="-1"></a><span class="co"># fit4 &lt;- </span></span>
-<span id="cb9-30"><a href="#cb9-30" tabindex="-1"></a><span class="co">#   bam(cover ~ te(Longitude, Latitude, by = GrowthHabit1) +</span></span>
-<span id="cb9-31"><a href="#cb9-31" tabindex="-1"></a><span class="co">#         GrowthHabit1,</span></span>
-<span id="cb9-32"><a href="#cb9-32" tabindex="-1"></a><span class="co">#       family = Gamma(&quot;log&quot;),</span></span>
-<span id="cb9-33"><a href="#cb9-33" tabindex="-1"></a><span class="co">#       data = fia,</span></span>
-<span id="cb9-34"><a href="#cb9-34" tabindex="-1"></a><span class="co">#       discrete=TRUE,</span></span>
-<span id="cb9-35"><a href="#cb9-35" tabindex="-1"></a><span class="co">#       method=&quot;fREML&quot;)</span></span>
-<span id="cb9-36"><a href="#cb9-36" tabindex="-1"></a><span class="co"># summary(fit4)</span></span>
-<span id="cb9-37"><a href="#cb9-37" tabindex="-1"></a><span class="co"># lapply(list(fit1, fit2, fit3, fit4), AICc)</span></span>
-<span id="cb9-38"><a href="#cb9-38" tabindex="-1"></a><span class="co"># # appraise(fit2)</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co"># fit1 &lt;- </span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">#   bam(cover ~ te(Longitude, Latitude) + </span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#               te(Longitude, Latitude, GrowthHabit1, bs = c(&quot;tp&quot;, &quot;tp&quot;, &quot;re&quot;)) +</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#               s(Year),</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#       family = Gamma(&quot;log&quot;),</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#       data = fia,</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#       discrete=TRUE,</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#       method=&quot;fREML&quot;)</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co"># summary(fit1)</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co"># # draw(fit1)</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co"># fit2 &lt;- </span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="co">#   bam(cover ~ te(Longitude, Latitude) + </span></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co">#         te(Longitude, Latitude, GrowthHabit1, bs = c(&quot;tp&quot;, &quot;tp&quot;, &quot;re&quot;)),</span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co">#       family = Gamma(&quot;log&quot;),</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="co">#       data = fia,</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="co">#       discrete=TRUE,</span></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a><span class="co">#       method=&quot;fREML&quot;)</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="co"># summary(fit2)</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a><span class="co"># fit3 &lt;- </span></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a><span class="co">#   bam(cover ~ te(Longitude, Latitude) + </span></span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a><span class="co">#         te(Longitude, Latitude, by = GrowthHabit1) +</span></span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a><span class="co">#         GrowthHabit1,</span></span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a><span class="co">#       family = Gamma(&quot;log&quot;),</span></span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a><span class="co">#       data = fia,</span></span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a><span class="co">#       discrete=TRUE,</span></span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a><span class="co">#       method=&quot;fREML&quot;)</span></span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a><span class="co"># summary(fit3)</span></span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a><span class="co"># fit4 &lt;- </span></span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a><span class="co">#   bam(cover ~ te(Longitude, Latitude, by = GrowthHabit1) +</span></span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a><span class="co">#         GrowthHabit1,</span></span>
+<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a><span class="co">#       family = Gamma(&quot;log&quot;),</span></span>
+<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a><span class="co">#       data = fia,</span></span>
+<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a><span class="co">#       discrete=TRUE,</span></span>
+<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a><span class="co">#       method=&quot;fREML&quot;)</span></span>
+<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a><span class="co"># summary(fit4)</span></span>
+<span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a><span class="co"># lapply(list(fit1, fit2, fit3, fit4), AICc)</span></span>
+<span id="cb6-38"><a href="#cb6-38" tabindex="-1"></a><span class="co"># # appraise(fit2)</span></span></code></pre></div>
 <!-- ### "Random Intercept": Model G -->
 <!-- Let's first try the simplest HGAM: estimate a single global function for our covariate of interest (Year) plus a individual-level random effect intercept for ecoregion. **On your own, investigate each model diagnostic call (commented out in the chunk below) and interpret.** Look at the R help for more information, and ask Caleb if you have more questions. -->
 <!-- ```{r eval = TRUE, message = FALSE, include = TRUE} -->

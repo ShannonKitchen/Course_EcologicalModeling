@@ -32,7 +32,7 @@ output: html_document
 | 10   | Tue | Oct. 22  |   No class                                                                     |------------|------------|
 |      | Thu | Oct. 24  |   Hierarchical generalized additive models                                     |            |------------|
 | 11   | Tue | Oct. 29  |   Hierarchical generalized additive models                                     |------------|------------|
-|      | Thu | Oct. 31  |   Guest lecture: TBD                                                           |------------|------------|
+|      | Thu | Oct. 31  |   Guest lecture: Brandon Edwards                                               |------------|------------|
 | 12   | Tue | Nov. 5   |   Hello, Bayes!                                                                |            |            |
 |      | Thu | Nov. 7   |   Bayesian models: Linear models lab                                           |------------|------------|
 | 13   | Tue | Nov. 12  |   Bayesian models: Stan language lab                                           |------------|------------|
