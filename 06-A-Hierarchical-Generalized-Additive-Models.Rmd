@@ -31,16 +31,18 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 ## Overview
 
-Invasive plants cause immense ecological and economic damage in U.S. forested lands. The U.S. Forest Service started collecting invasive species percent cover data
+Invasive plants cause immense ecological and economic damage in many places. Understanding 
 
 <p>
 !['Cogongrass' by Nancy Loewenstein and John McGuire.](https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/Cogongrass_Alabama.jpg){width=600px}
 <p>
 
-A brief description of the data:
+### Data description
+
+The data you will be using is from the U.S. Forest Service's "Forest Inventory and Analysis" dataset. 
 
 | Data File Name | **Column Name**| **Description**                            |
-|----------------|-------------------------------------------------------------|
+|:---------------|:---------------|:-------------------------------------------|
 | FIA_Invasives_GrowthTaxonomy.csv | SCIENTIFIC_NAME | Genus and species |
 | | GrowthHabit1 | Primary growth habit |
 | | GrowthHabit2 | Secondary growth habit, if applicable | 
@@ -55,8 +57,9 @@ A brief description of the data:
 | | cover       | areal cover of invasive species (acres)                    |
 | | Longitude   | decimal degrees longitude                       |
 | | Latitude    | decimal degrees latitude
+---
 
-```{r, include = TRUE, eval = TRUE, message = FALSE, echo = FALSE}
+```{r, include = TRUE, eval = TRUE, message = FALSE}
 
 # List of packages necessary to run this script:
 require(librarian, quietly = TRUE)
@@ -73,13 +76,47 @@ shelf(tidyverse,
 # Do not change this address
 repo_url <- "https://raw.githubusercontent.com/LivingLandscapes/Course_EcologicalModeling/master/"
 
-fia <- read_csv(paste0(repo_url, "FIA_Invasives.csv"))
-spp_info <- read_csv(paste0(repo_url, "FIA_Invasives_GrowthTaxonomy.csv"))
-fia <- left_join(fia, spp_info) %>%
-  mutate(GrowthHabit1 = factor(GrowthHabit1),
-         Order = factor(Order),
-         cover = cover + 0.0001)
-head(fia)
+# Load invasive species cover data
+fia <- read_csv(paste0(repo_url, "data/FIA_Invasives_Cover.csv"))
+
+# Load invasive species metadata 
+spp_info <- read_csv(paste0(repo_url, "data/FIA_Invasives_GrowthTaxonomy.csv"))
+
+# Join the cover and metadata
+fia <- left_join(fia, spp_info) 
+
+```
+
+### Data Exploration
+
+**On your own, familiarize yourself with the data.** Below, you can see that we're deadling with >100k rows and a few potential grouping variables.
+
+```{r, eval = TRUE, message = FALSE, include = TRUE}
+
+# Number of columns and rows?
+dim(fia) # >100k rows!
+
+# How many unique values in each column?
+fia %>%
+  summarize(across(everything(), ~ length(unique(.x))))
+
+# Some preparations for mgcv
+fia <-
+  fia %>%
+  mutate(across(c(Order, GrowthHabit1, GrowthHabit2, GrowthHabit3, SCIENTIFIC_NAME, pltID),
+                as.factor)) %>% # mgcv wants factors for random effects
+  mutate(cover = cover + 0.001, # for log link
+         ) %>%
+  mutate(across(c(Year, Latitude, Longitude),
+                ~ (.x - mean(.x)) / sd(.x),
+                .names = "{.col}_scaled")) # scale covariates
+
+# # First few rows
+# head(fia)
+```
+
+``` {r, eval = TRUE, message = FALSE, include = TRUE}
+# 
 # fit1 <- 
 #   bam(cover ~ te(Longitude, Latitude) + 
 #               te(Longitude, Latitude, GrowthHabit1, bs = c("tp", "tp", "re")) +
@@ -118,32 +155,6 @@ head(fia)
 # lapply(list(fit1, fit2, fit3, fit4), AICc)
 # # appraise(fit2)
 ```
-
-<!-- ### Data Exploration -->
-
-<!-- **On your own, familiarize yourself with the data.** Below, you can see that we're deadling with >100k rows and *many* potential grouping variables. -->
-
-<!-- ```{r, eval = TRUE, message = FALSE, include = TRUE} -->
-
-<!-- # Number of columns and rows? -->
-<!-- dim(weather) # >100k rows! -->
-
-<!-- # How many unique values in each column? -->
-<!-- weather %>% -->
-<!--   summarize(across(everything(), ~ length(unique(.x)))) -->
-
-<!-- # Some preparations for mgcv -->
-<!-- weather <-  -->
-<!--   weather %>% -->
-<!--   mutate(across(c(Veg_Type, Station_ID),  -->
-<!--                 as.factor)) %>% # mgcv wants factors for random effect  -->
-<!--   mutate(RH_per_min = RH_per_min + 0.001, -->
-<!--          Wind_mph_max = Wind_mph_max + 0.001) %>% # for log link -->
-<!--   mutate(across(c(Year, Day, Lat, Long), -->
-<!--                 ~ (.x - mean(.x)) / sd(.x), -->
-<!--                 .names = "{.col}_scaled")) # scale covariates -->
-
-<!-- ``` -->
 
 <!-- ### "Random Intercept": Model G -->
 
