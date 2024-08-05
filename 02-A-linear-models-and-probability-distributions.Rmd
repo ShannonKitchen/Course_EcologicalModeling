@@ -1,7 +1,9 @@
 ---
 layout: topic
 title: "Review of linear models, probability distributions"
-output: html_document
+output: 
+  html_document:
+    code_folding: hide
 runtime: shiny
 ---
 
@@ -132,6 +134,9 @@ server <- function(input, output, session) {
 
     p
   }, res = 100)
+  output$markdown <- renderUI({
+    HTML(markdown::markdownToHTML(knit('02-A-linear-models-and-probability-distributions.rmd', quiet = TRUE)))
+  })
 }
 
 shinyApp(ui, server)
