@@ -4,7 +4,6 @@ title: "Review of linear models, probability distributions"
 output: 
   html_document:
     code_folding: hide
-runtime: shiny
 ---
 
 **Assigned Reading:**
@@ -75,71 +74,19 @@ Note: there are two datasets included in the "palmerpenguins" package. We will u
 head(penguins)
 ```
 
-Try out some data exploration techniques that we've learned. Here, I've created an interactive scatterplot + density plots. Play around with it and look for some patterns. **On your own,  look for outliers and whatever else you want to try.**
+Try out some data exploration techniques that we've learned. Here, I’ve plotted histograms of body mass by species by island. **On your own,  look for outliers, make scatterplots, and whatever else you want to try.**
 
 ```{r include = TRUE, eval = TRUE, echo = FALSE, message = FALSE}
 
-# ggplot(penguins, 
-#        aes(x = body_mass_g, fill = species)) +
-#   geom_histogram(alpha = 0.4, position = "identity") +
-#   scale_fill_viridis_d() + # there are great pre-made color palettes in ggplot2. The viridis palette is color blind-friendly. 
-#   facet_wrap(~ island) +
-#   theme_bw() +
-#   theme(axis.text.x = element_text(size = 7, angle = 320)) + 
-#   xlab("Body Mass (g)") +
-#   ylab("Frequency")
-
-penguins_csv <- "https://raw.githubusercontent.com/jcheng5/simplepenguins.R/main/penguins.csv"
-
-df <- readr::read_csv(penguins_csv)
-# Find subset of columns that are suitable for scatter plot
-df_num <- df |> select(where(is.numeric), -Year)
-
-ui <- page_sidebar(
-  sidebar = sidebar(
-    varSelectInput("xvar", "X variable", df_num, selected = "Bill Length (mm)"),
-    varSelectInput("yvar", "Y variable", df_num, selected = "Bill Depth (mm)"),
-    checkboxGroupInput(
-      "species", "Filter by species",
-      choices = unique(df$Species), 
-      selected = unique(df$Species)
-    ),
-    hr(), # Add a horizontal rule
-    checkboxInput("by_species", "Show species", TRUE),
-    checkboxInput("show_margins", "Show marginal plots", TRUE),
-    checkboxInput("smooth", "Add smoother"),
-  ),
-  plotOutput("scatter")
-)
-
-server <- function(input, output, session) {
-  subsetted <- reactive({
-    req(input$species)
-    df |> filter(Species %in% input$species)
-  })
-
-  output$scatter <- renderPlot({
-    p <- ggplot(subsetted(), aes(!!input$xvar, !!input$yvar)) + list(
-      theme(legend.position = "bottom"),
-      if (input$by_species) aes(color = Species),
-      geom_point(),
-      if (input$smooth) geom_smooth()
-    )
-
-    if (input$show_margins) {
-      margin_type <- if (input$by_species) "density" else "histogram"
-      p <- ggExtra::ggMarginal(p, type = margin_type, margins = "both",
-        size = 8, groupColour = input$by_species, groupFill = input$by_species)
-    }
-
-    p
-  }, res = 100)
-  output$markdown <- renderUI({
-    HTML(markdown::markdownToHTML(knit('02-A-linear-models-and-probability-distributions.rmd', quiet = TRUE)))
-  })
-}
-
-shinyApp(ui, server)
+ggplot(penguins,
+       aes(x = body_mass_g, fill = species)) +
+  geom_histogram(alpha = 0.4, position = "identity") +
+  scale_fill_viridis_d() + # there are great pre-made color palettes in ggplot2. The viridis palette is color blind-friendly.
+  facet_wrap(~ island) +
+  theme_bw() +
+  theme(axis.text.x = element_text(size = 7, angle = 320)) +
+  xlab("Body Mass (g)") +
+  ylab("Frequency")
 
 ```
 
