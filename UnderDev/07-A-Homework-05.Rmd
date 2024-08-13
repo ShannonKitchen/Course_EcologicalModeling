@@ -1,0 +1,81 @@
+---
+layout: topic
+title: "Homework 5"
+output: html_document
+---
+
+```{r include = FALSE}
+
+# This code block sets up the r session when the page is rendered to html
+# include = FALSE means that it will not be included in the html document
+
+# Write every code block to the html document 
+knitr::opts_chunk$set(echo = TRUE)
+
+# Write the results of every code block to the html document 
+knitr::opts_chunk$set(eval = TRUE)
+
+# Set the web address where R will look for files from this repository
+# Do not change this address
+repo_url <- "https://raw.githubusercontent.com/LivingLandscapes/Course_EcologicalModeling/master/"
+
+# Suppress warnings and messages
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+
+```
+
+## Overview
+
+Please provide a reproducible .Rmd script to address the scenario below and produces all of your analysis and plots. Some reminders:
+
+- **Reproducible:** This means when I run your .Rmd file, it will run all analyses and create all plots without errors, without me having to reset my working directory, and without forcing me to install anything on my machine (i.e., use the require(librarian); shelf(your packages, lib = tempdir()) approach as in the code block below). This also means there should be *NO ERRORS* when I run it!
+- **Format:** In the .Rmd file, arrange and format similar to a scientific article. Specifically, I want to see 1) an analytical methods section, 2) a results section that includes figures, tables, and *text interpreting the figures and tables and model(s)*!, and 3) a brief conclusion (1 - 2 paragraphs) based on the results. **NOTE:** You do not need to create an introduction, reiterate the data collection methods, or produce a literature cited section!
+
+### Background 
+
+<p>
+![Photo credit: Christine Bielski](https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/.jpg){width=300px}
+<p>
+
+
+
+
+### Data description
+
+
+
+| **Column Name**| **Description**                                             |
+|----------------|-------------------------------------------------------------|
+| Year       | years 2010 - 2019                                           |
+| Veg_Type   | vegetation type/ecoregion in which the weather station falls|
+| Station_ID | unique identifier for each weather station                  |
+| Lat        | latitude                                                    |
+| Long       | longitude                                                   |
+| Month      | numeric month of year (e.g., 5 = May)                       |
+| Day        | 
+| Wind_mph_max | maximum daily wind speed in miles per hour |
+| RH_per_min | minimum daily relative humidity as a percent |
+--- 
+
+## Your assignment
+
+Create three hierarchical Bayesian models using the brms package (Stan language), compare them with model selection, assess the top model's fit, and make predictions. You will need to create priors too!
+
+```{r, include = TRUE, eval = TRUE, message = FALSE}
+
+# List of packages necessary to run this script:
+require(librarian, quietly = TRUE)
+shelf(tidyverse, 
+      palmerpenguins, 
+      here,
+      brms,
+      quiet = TRUE)
+
+# Set the web address where R will look for files from this repository
+# Do not change this address
+repo_url <- "https://raw.githubusercontent.com/LivingLandscapes/Course_EcologicalModeling/master/"
+
+# Load data
+
+
+```
