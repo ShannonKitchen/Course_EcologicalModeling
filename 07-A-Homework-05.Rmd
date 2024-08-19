@@ -33,33 +33,26 @@ Please provide a reproducible .Rmd script to address the scenario below and prod
 
 ### Background 
 
-<p>
-![Photo credit: Christine Bielski](https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/.jpg){width=300px}
-<p>
+For our final homework, you will be creating, running diagnostics, doing model selection, and predicting with Bayesian models. Because this Bayesian stuff is pretty new territory for us, we will be asking some familiar friends for help--the Palmer Penguins. Use our [Review of linear models lab](https://livinglandscapes.github.io/Course_EcologicalModeling/02-A-linear-models-and-probability-distributions.html) for modeling ideas, creating your priors, and expectations for model outputs.
 
-
+<p>
+![Artwork by @allison_horst](https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/penguins.png){width=300px}
+<p>
 
 
 ### Data description
 
-
-
-| **Column Name**| **Description**                                             |
-|----------------|-------------------------------------------------------------|
-| Year       | years 2010 - 2019                                           |
-| Veg_Type   | vegetation type/ecoregion in which the weather station falls|
-| Station_ID | unique identifier for each weather station                  |
-| Lat        | latitude                                                    |
-| Long       | longitude                                                   |
-| Month      | numeric month of year (e.g., 5 = May)                       |
-| Day        | 
-| Wind_mph_max | maximum daily wind speed in miles per hour |
-| RH_per_min | minimum daily relative humidity as a percent |
---- 
+Information the "penguins" data can be found here: https://allisonhorst.github.io/palmerpenguins/articles/intro.html
 
 ## Your assignment
 
-Create three hierarchical Bayesian models using the brms package (Stan language), compare them with model selection, assess the top model's fit, and make predictions. You will need to create priors too!
+Using the 'brms' package and the Palmer Penguins dataset, create hierarchical Bayesian models to explain penguin body mass. These models should attempt to explain body mass for all species and sexes and islands in the dataset (i.e., don't create separate models for the sexes, species, or islands). To complete this assignment, will need to do five main things:
+
+1) Create **three** candidate models to explain penguin body mass. IMPORTANT: you will need to specify priors for each population-level effect (fixed effect) and provide reasoning for your choices.
+2) Use a Bayesian model selection technique (e.g., LOO or WAIC) to compare models and identify the "top" model.
+3) Assess the top model's fit (e.g., Rhat, posterior predictive check, traceplots).
+4) Use the top model to make posterior predictions. Specifically, I want to see marginal effects plot(s) that include any hierarchical levels (i.e., random effects).
+5) Write out your hypotheses (your candidate models--but with words). Compile all the modeling steps and outputs into Methods and Results sections, and then interpret the results in a 1 - 2 paragraph Conclusions section. IMPORTANT: the Methods should include reasoning for your probability distribution choices, choices on priors, etc.
 
 ```{r, include = TRUE, eval = TRUE, message = FALSE}
 
@@ -75,7 +68,7 @@ shelf(tidyverse,
 # Do not change this address
 repo_url <- "https://raw.githubusercontent.com/LivingLandscapes/Course_EcologicalModeling/master/"
 
-# Load data
-
+# Read in a data file
+data(package = 'palmerpenguins', verbose = FALSE)
 
 ```
