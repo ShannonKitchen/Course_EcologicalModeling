@@ -36,10 +36,10 @@ navbar:
           href: 06-A-Hierarchical-Generalized-Additive-Models.html
         - text: "Homework 4"
           href: 06-B-Homework-04.html
-    # - text: "W9"
-    #   menu:
-    #     - text: "Time series"
-    #       href: 09-A-time-series.html
+    - text: "Hello, Bayes!"
+      menu:
+        - text: "Homeork 5"
+          href: 07-A-Homework-05.html
     #     - text: "Network analysis"
     #       href: 09-B-networks.html
     #     - text: "Occupancy models"
