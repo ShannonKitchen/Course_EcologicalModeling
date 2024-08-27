@@ -3,6 +3,13 @@ title: "Ecological Modeling"
 output: html_document
 ---
 
+```{css, echo=FALSE}
+#header {
+  background: url(https://linesteppers.com/tutorials/RMarkdown/img/BannerImage_TreeBlossoms_4470x3024.jpg);
+  padding: .5em;
+}
+```
+
 <!-- ## Syllabus -->
 
 **Instructor:** Caleb Roberts
