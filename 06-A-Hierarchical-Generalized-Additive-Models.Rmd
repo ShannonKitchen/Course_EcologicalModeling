@@ -1,7 +1,9 @@
 ---
 layout: topic
 title: "Hierarchical Generalized Additive Models"
-output: html_document
+output: 
+  html_document:
+    code_folding: hide
 ---
 
 **Assigned Reading:**
@@ -27,29 +29,57 @@ repo_url <- "https://raw.githubusercontent.com/LivingLandscapes/Course_Ecologica
 # Suppress warnings and messages
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 
+# Force text wrapping in code blocks
+knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE)
+
 ```
 
 ## Overview
 
-To learn about hierarchical generalized additive models (HGAMs), we are going to use weather station data from grassland ecoregions in the Great Plains, USA. We will be asking if two factors that affect fire intensity, *minimum relative humidity* and *maximum wind speed*, are changing between 2010 and 2019. 
+Invasive plants cause immense ecological and economic damage. For example, in forested lands, invasive grasses can change fire regimes, invasive shrubs can reduce native tree regeneration, and invasive trees can reduce timber production. Determining patterns in **1)** invasive plant abundance increases/decreases over time and **2)** spatial distribution across forested lands could help managers assess potential risks to their lands. For today's lab, we're going to be using *hierarchical generalized additive models* (HGAMs) to help us make these determinations--and add some theoretical flavor to them. 
+
+For the abundance increase/decrease over time issue, we will ask: 
+
++ **Does functional group (e.g., growth habits such as graminoid, tree, shrub, etc.) or taxonomy (e.g., order) best explain invasive plant abundance changes?**
+
+For the spatial distribution issue, we will ask:
+
++ **How do abundance patterns differ by growth habit across space?**
+
+The first question will help us understand how to construct HGAMs from our hypotheses, appraise HGAM fits, and conduct model selection with HGAMs. Through the second question, we will learn to do spatial predictions (i.e., making predictive maps) with our model outputs.
+
+---
 
 <p>
-![Photo credit: Christine Chitwood](https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/RS.jpg){width=300px}
+!['Cogongrass' by Nancy Loewenstein and John McGuire.](https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/Cogongrass_Alabama.jpg){width=400px}
 <p>
 
-A brief description of the data:
+## Data description
 
-- Year = years from 2010 - 2019
-- Month = numeric code for months May - Sept
-- Day = Julian day of year
-- Veg_Type = rangeland ecoregion
-- Lat = latitude
-- Long = longitude
-- Station_ID = weather station unique identifier code
-- RH_per_min = minimum percent relative humidity between 0600 - 1800 per day
-- Wind_mph_max = maximum wind speed (mph) between 0600 - 1800 per day
+The data you will be using is from the U.S. Forest Service's "Forest Inventory and Analysis" (FIA) dataset. The FIA dataset is taken on public and private forested and timber lands throughout the U.S. on specific plots. The plots are revisited approximately every 4 - 5 years, but some plots are never revisited. One of the data collected at each plot is percent cover of various invasive plants. Here, I used the ["rFIA" R package](https://rfia.netlify.app/) to extract invasive species cover data from the Eastern U.S. from 2001 - 2020. I also extracted growth habits and orders of each plant species from the [USDA Plants Database](https://plants.usda.gov/). Below is a table with descriptions of columns in each dataset:
 
-```{r, include = TRUE, eval = TRUE, message = FALSE}
+
+| Data File Name | **Column Name**| **Description**                            |
+|:---------------|:---------------|:-------------------------------------------|
+| FIA_Invasives_GrowthTaxonomy.csv | SCIENTIFIC_NAME | Genus and species |
+| | GrowthHabit1 | Primary growth habit |
+| | GrowthHabit2 | Secondary growth habit, if applicable | 
+| | GrowthHabit3 | Tertiary growth habit, if applicable |
+| | GrowthHabit_Number | Number of growth habits | 
+| | Order | Order of the species | 
+| | COMMON_NAME | Species' common name | 
+| FIA_Invasives_Cover.csv | Year       | years 2001 - 2020                   |
+| | pltID   | Unique identifier for each FIA plot                            |
+| | SCIENTIFIC_NAME | Genus and species                                      |
+| | COMMON_NAME | Species' common name                                       |
+| | cover       | areal cover of invasive species (acres)                    |
+| | Longitude   | decimal degrees longitude                       |
+| | Latitude    | decimal degrees latitude
+---
+
+Let's load the data and join the two files:
+
+```{r, include = TRUE, eval = TRUE, message = FALSE, echo = TRUE}
 
 # List of packages necessary to run this script:
 require(librarian, quietly = TRUE)
@@ -59,286 +89,452 @@ shelf(tidyverse,
       gratia, # for ggplot functionality with mgcv
       modelr, # for cross-validation
       vroom, # for loading data FAST
+      sf, # making spatial objects and maps
       lib = tempdir(),
       quiet = TRUE)
+
+# Set random number
+set.seed(9903)
 
 # Set the web address where R will look for files from this repository
 # Do not change this address
 repo_url <- "https://raw.githubusercontent.com/LivingLandscapes/Course_EcologicalModeling/master/"
 
-# Load data
-weather <- 
-  vroom(paste0(repo_url, "/data/FireWeather.csv"))
+# Load invasive species cover data
+fia <- read_csv(paste0(repo_url, "data/FIA_Invasives_Cover.csv"))
 
-```
+# Load invasive species metadata 
+spp_info <- read_csv(paste0(repo_url, "data/FIA_Invasives_GrowthTaxonomy.csv"))
 
-### Data Exploration
-
-**On your own, familiarize yourself with the data.** Below, you can see that we're deadling with >100k rows and *many* potential grouping variables.
-
-```{r, eval = TRUE, message = FALSE, include = TRUE}
-
-# Number of columns and rows?
-dim(weather) # >100k rows!
-
-# How many unique values in each column?
-weather %>%
-  summarize(across(everything(), ~ length(unique(.x))))
+# Join the cover and metadata
+fia <- left_join(fia, spp_info) 
 
 # Some preparations for mgcv
-weather <- 
-  weather %>%
-  mutate(across(c(Veg_Type, Station_ID), 
-                as.factor)) %>% # mgcv wants factors for random effect 
-  mutate(RH_per_min = RH_per_min + 0.001,
-         Wind_mph_max = Wind_mph_max + 0.001) %>% # for log link
-  mutate(across(c(Year, Day, Lat, Long),
+fia <-
+  fia %>%
+  mutate(across(c(Order, GrowthHabit1, GrowthHabit2, GrowthHabit3, SCIENTIFIC_NAME, pltID),
+                as.factor), # mgcv wants factors for random effects
+         cover_0.001 = cover + 0.001, # for log link
+         across(c(Year, Latitude, Longitude),
                 ~ (.x - mean(.x)) / sd(.x),
                 .names = "{.col}_scaled")) # scale covariates
 
 ```
 
-### "Random Intercept": Model G
+## Data Exploration
 
-Let's first try the simplest HGAM: estimate a single global function for our covariate of interest (Year) plus a individual-level random effect intercept for ecoregion. **On your own, investigate each model diagnostic call (commented out in the chunk below) and interpret.** Look at the R help for more information, and ask Caleb if you have more questions.
+**On your own, familiarize yourself with the data.** Below, you can see that we're dealing with >100k rows and a few potential grouping variables.
 
-```{r eval = TRUE, message = FALSE, include = TRUE}
+```{r, eval = TRUE, message = FALSE, include = TRUE, echo = TRUE}
 
-# Create model G using bam()
-rh_modG <- 
-  bam(RH_per_min ~ s(Year) + 
-        s(Day, bs = "cc") + # Note cubic regression spline
-        te(Long, Lat) + # tensor smooth lets latitude/longitude 'interact'
-        s(Veg_Type, bs = "re"), # Random effect for ecoregion
-      family = gaussian("log"), # Why this link?!
-      data = weather,
-      method = "fREML") # need to use fREML for fast fitting.
+# Number of columns and rows?
+dim(fia) # > 100k rows!
 
-# # Some basic model diagnostics
-# summary(rh_modG)
-# gam.check(rh_modG)
-# gratia::appraise(rh_modG)
+# How many unique values in each column?
+fia %>%
+  summarize(across(everything(), ~ length(unique(.x))))
 
-# # Use gratia::draw to show effects
-# gratia::draw(rh_modG)
+# What's the max, min, mean, and median of the "cover" column?
+fia %>%
+  summarize(Mean = mean(cover),
+            Median = median(cover),
+            Min = min(cover),
+            Max = max(cover))
 
-```
+# How many cover values = 0?
+sum(fia$cover == 0)
 
-Okay, so the model isn't the greatest for a few reasons (can you list some?). However, for fun--and so we can see how "random intercepts" work with HGAMs--let's plot some predictions. We'll also do a quick comparison of fitted vs. observed to gauge how well the models are performing.
+## **QUESTION**: Given there is only a single zero in the cover data, how does that affect the scope of our inference?
 
-```{r eval = TRUE, message = FALSE, include = TRUE}
+# Let's make a map! First, convert to an sf object for mapping
+fia_sf <- st_as_sf(fia,
+                   crs = st_crs(4326),
+                   coords = c("Longitude", "Latitude"))
 
-# setup prediction data. This is a little tricky because for ggplot, we only
-# want one latitude/longitude for each ecoregion AND we want to make sure the
-# correct latitude/longitudes get paired with their respective ecoregions. Doing
-# this with a left_join()
-rh_pred_df <-
-  with(
-    weather,
-    left_join(
-      expand.grid(
-        Year = 2010:2019,
-        Day = median(Day),  # Only using the median day here!
-        Veg_Type = unique(Veg_Type)
-      ),
-      weather %>%
-        filter(Day == median(Day)) %>%
-        group_by(Veg_Type) %>%
-        filter(Station_ID %in% sample(Station_ID, 1, replace = FALSE)) %>%
-        select(c(Veg_Type, Lat, Long, Year, RH_per_min)),
-     keep = FALSE
-    )
-  )
+# Get a US states map
+states <- map_data("state") # Map of US states
 
-# make the prediction, add this and a column of standard errors to the prediction
-# data.frame. Predictions are on the log scale.
-rh_modG_pred <- cbind(rh_pred_df,
-                       predict(rh_modG, 
-                               rh_pred_df, 
-                               se.fit = TRUE, 
-                               type = "response"))
-
-# make the prediction plots
-ggplot(data = rh_modG_pred) +
-  facet_wrap(~ Veg_Type) +
-  geom_ribbon(aes(ymin = fit - 1.96 * se.fit, 
-                  ymax = fit + 1.96 * se.fit, 
-                  x = Year, 
-                  group = Veg_Type),
-              fill = "grey80") +
-  geom_line(aes(x = Year, 
-                y = fit, 
-                group = Veg_Type),
-            color = "darkred") +
-  scale_x_continuous(breaks = c(2010, 2013, 2016, 2019)) + 
-  labs(x = "Year",
-       y = "Minimum Relative Humidity (%)") + 
-  ggtitle("Model G")
-
-# Now, let's create a data.frame comparing observed vs. fitted values
-rh_modG_predVSobs <- 
-  transform(rh_modG_pred, 
-            modG = predict(rh_modG, 
-                           rh_modG_pred,
-                           type = "response"))
-
-# Plot observed vs. fitted values. This is a "quick" way to see how well
-# the model predicted the data.
-ggplot(rh_modG_predVSobs,
-       aes(x = modG, 
-           y = RH_per_min)) +
-  facet_wrap(~ Veg_Type) +
-  geom_point(alpha = 0.6) +
-  geom_abline(color = "gold",
-              alpha = 0.5) +
-  labs(x="Predicted RH", y="Observed RH") + 
-  ggtitle("Model G")
+# # Make a map to show where the weather stations are:
+# ggplot() +
+#   geom_polygon(data = states %>%
+#                  filter(region %in% c("kentucky","tennessee", "mississippi", "texas",
+#                                       "alabama", "georgia", "florida", "oklahoma",
+#                                       "arkansas", "south carolina", "virginia",
+#                                       "louisiana", "north carolina", "maryland")
+#                         ),
+#                mapping = aes(x = long, y = lat, group = group),
+#                fill = "white",
+#                color = "black") +
+#   geom_sf(data = fia_sf,
+#           shape = 15,
+#           alpha = 0.5,
+#           mapping = aes(color = Year)) +
+#   theme_bw() +
+#   theme(panel.grid.minor = element_blank(),
+#         axis.text.x = element_text(angle = 330),
+#         axis.text = element_text(size = 6,
+#                                  hjust = 0.1)) +
+#   xlab("Longitude") +
+#   ylab("Latitude")
 
 ```
 
-**On your own, interpret these prediction plots.** Remember the values we fed the predict() function when you're interpreting. For instance, what does it mean that we only used the median Julian day in these predictions? Does it matter that we only used one randomly-selected weather station?
+### Sidenote: Should you 'gam' or 'bam'?
+
+This is a logistic issue relevant to using (H)GAMs with large datasets. The 'gam' function is the main mgcv way to run a (hierarchical) generalized additive model, but if you're analyzing a lot of data (e.g., >100k rows), you may consider switching to the 'bam' function. The outputs are very similar, but there are some differences due to some shortcuts the 'bam' function uses behind the curtains. If you're interested, read about that [here](https://www.rdocumentation.org/packages/mgcv/versions/1.9-0/topics/bam) and [also here](https://stackoverflow.com/questions/71926851/different-estimates-between-bam-and-gam-model-mgcv-and-interaction-term-estima).
+
+Also, to prove the difference in runtimes, check this out:
+
+```{r, eval = TRUE, message = FALSE, include = TRUE, echo = TRUE}
+
+# # runtime for 'bam'
+# system.time(
+#   bam(cover_0.001 ~ 
+#               te(Longitude_scaled, Latitude_scaled) +
+#               s(Year_scaled) +
+#               s(Year_scaled, GrowthHabit1, bs = "fs"),
+#       family = Gamma("log"),
+#       data = fia,
+#       discrete = TRUE,
+#       method = "fREML")
+#   )
+# 
+# # runtime for 'gam' 
+# system.time(
+#   gam(cover_0.001 ~ 
+#               te(Longitude_scaled, Latitude_scaled) +
+#               s(Year_scaled) +
+#               s(Year_scaled, GrowthHabit1, bs = "fs"),
+#       family = Gamma("log"),
+#       data = fia,
+#       method = "REML")
+#   )
+
+```
+
+## Abundance changes: Growth habit or taxonomy?
+
+
 
 ### "Random Slope": Model GS
 
-Let's try for a 
+Let's try our first HGAM: estimate a global function for our main covariate of interest (Year) plus a individual-level random slope for Year per growth habitat/order. We'll also throw latitude and longitude into a tensor smooth to account for spatial autocorrelation.
+
+**On your own, investigate each model diagnostic call (commented out in the chunk below) and interpret.** Look at the R help for more information, and ask Caleb if you have more questions.
 
 ```{r eval = TRUE, message = FALSE, include = TRUE}
 
 # Create model GS using bam()
-rh_modGS <-
-  bam(
-    RH_per_min ~ s(Year) +
-      s(Year, Veg_Type, bs = "fs", m = 2) +
-      s(Day, bs = "cc") +
-      te(Long, Lat),
-    family = gaussian("log"),
-    data = weather,
-    method = "fREML"
-  )
+growth_modGS <-
+  bam(cover_0.001 ~ 
+              te(Longitude_scaled, Latitude_scaled) + # tensor smooth lets latitude/longitude 'interact'
+              s(Year_scaled) +
+              s(Year_scaled, GrowthHabit1, bs = "fs"),
+      family = Gamma("log"), # Why this link?!
+      data = fia,
+      discrete = TRUE,
+      method = "fREML") # need to use fREML for fast fitting.
 
 # # Some basic model diagnostics
-# summary(rh_modGS)
-# gam.check(rh_modGS)
-# gratia::appraise(rh_modGS)
+# summary(growth_modGS)
+# gam.check(growth_modGS)
+# gratia::appraise(growth_modGS)
 
-# # Use gratia::draw to show effects. This is slow, so commenting out
-# gratia::draw(rh_modGS)
+order_modGS <-
+  bam(cover_0.001 ~ 
+              te(Longitude_scaled, Latitude_scaled) + # tensor smooth lets latitude/longitude 'interact'
+              s(Year_scaled) +
+              s(Year_scaled, Order, bs = "fs"),
+      family = Gamma("log"), # Why this link?!
+      data = fia,
+      discrete = TRUE,
+      method = "fREML") # need to use fREML for fast fitting.
+
+# # Some basic model diagnostics
+# summary(order_modGS)
+# gam.check(order_modGS)
+# gratia::appraise(order_modGS)
 
 ```
 
-**On your own, run the model diagnostics and compare to diagnostics from Model G.** Are there improvements, and if so, where do you see them? Should we consider increasing "k" for any of the smoothers?
+Okay, so the models aren't the greatest for a few reasons. **On your own, check out the gratia::appraise calls that are commented out, and list some issues with these models.**
 
-To be thorough, let's also plot predictions and compare fitted to observed:
+### "Group smoothers with differing wiggliness (no global smoother)": Model I
+
+Okay, now let's create models for our other hypothesis (order or growth habit alone best explain changes in invasive species abundance, and abundance changes occur idiosyncratically based on growth habit/order). To do this, we'll use model "I" per Pederson et al. (2019).
 
 ```{r eval = TRUE, message = FALSE, include = TRUE}
 
-# make the prediction, add this and a column of standard errors to the prediction
-# data.frame. Predictions are on the log scale.
-rh_modGS_pred <- cbind(rh_pred_df,
-                       predict(rh_modGS, 
-                               rh_pred_df, 
-                               se.fit = TRUE, 
-                               type = "response"))
+# Growth habit
+growth_modI <-
+  bam(cover_0.001 ~ 
+              te(Longitude_scaled, Latitude_scaled) + 
+              s(Year_scaled, by = GrowthHabit1) +
+              s(Year_scaled, bs = "re"), # Why include this??
+      family = Gamma("log"),
+      data = fia,
+      discrete = TRUE,
+      method = "fREML") 
 
-# make the prediction plots
-ggplot(data = rh_modGS_pred) +
-  facet_wrap(~ Veg_Type) +
-  geom_ribbon(aes(ymin = fit - 1.96 * se.fit, 
-                  ymax = fit + 1.96 * se.fit, 
-                  x = Year, 
-                  group = Veg_Type),
-              fill = "grey80") +
-  geom_line(aes(x = Year, 
-                y = fit, 
-                group = Veg_Type),
-            color = "darkred") +
-  scale_x_continuous(breaks = c(2010, 2013, 2016, 2019)) + 
-  labs(x = "Year",
-       y = "Minimum Relative Humidity (%)") + 
-  ggtitle("Model GS")
-
-# Now, let's create a data.frame comparing observed vs. fitted values
-rh_modGS_predVSobs <- 
-  transform(rh_modGS_pred, 
-            modGS = predict(rh_modGS, 
-                           rh_modGS_pred,
-                           type = "response"))
-
-# Plot observed vs. fitted values. This is a "quick" way to see how well
-# the model predicted the data.
-ggplot(rh_modGS_predVSobs,
-       aes(x = modGS, 
-           y = RH_per_min)) +
-  facet_wrap(~ Veg_Type) +
-  geom_point(alpha = 0.6) +
-  geom_abline(color = "gold",
-              alpha = 0.5) +
-  labs(x="Predicted RH", y="Observed RH") + 
-  ggtitle("Model GS")
+# Order
+order_modI <-
+  bam(cover_0.001 ~ 
+              te(Longitude_scaled, Latitude_scaled) + 
+              s(Year_scaled, by = Order) +
+              s(Year_scaled, bs = "re"), 
+      family = Gamma("log"),
+      data = fia,
+      discrete = TRUE,
+      method = "fREML")
 
 ```
 
-Hmmm. The predictions are fairly different now. Also, it looks like some predictions are tightening up (e.g., compare Flint Hills fitted vs. observed between Models G and GS) while others got worse (can you spot any?).
+**On your own, run the model diagnostics and compare to diagnostics from Model I.** Are there improvements, and if so, where do you see them? Should we consider increasing "k" for any of the smoothers?
 
-### Comparing HGAMs
+### Model selection
 
-We learned from the Pedersen et al. (2019) paper that we can use AIC to compare HGAMs, which is awesome! But--model selection via AIC should not be our stopping point. In this section, we're going to dip our toes into cross validation to compare the *predictive power* of HGAMs. 
+We learned from the Pedersen et al. (2019) paper that we can use AIC to compare HGAMs, which is awesome! But--model selection via AIC should not be our stopping point. In this section, we're going to dip our toes into cross validation to compare the *predictive power* of HGAMs.
 
 But first, let's just see what AIC(c) has to say about our two HGAMs:
 
 ```{r eval = TRUE, message = FALSE, include = TRUE}
 
-model.sel(list(GS = rh_modGS, G = rh_modG))
+model.sel(list(growth_modGS = growth_modGS, 
+               order_modGS = order_modGS,
+               growth_modI = growth_modI,
+               order_modI = order_modI))
 
 ```
 
-We have a *very* clear winner per AICc rankings: model GS. 
+We have a *very* clear winner per AICc rankings: the order random slope (GS) model. **In your own words, articulate what that means ecologically.**
 
-Let's check on the cross validation. 
+### Cross validation
+
+Model selection is not the only way to check for model performance. Here, we'll do a "quick and dirty" cross validation exercise to see how our models perform relative to the observations--and in comparison with each other. For brevity's sake, we'll just look at the top two models from our model selection.
 
 ``` {r eval = TRUE, message = FALSE, include = TRUE}
 
 # Create training and testing data.frames
-train_df <- 
-  sample_n(weather %>% mutate(id = 1:n()), 
-           ceiling(nrow(weather)/10))
-test_df <- 
-  anti_join(weather %>% mutate(id = 1:n()), 
-            train_df, by = "id")
+train_df <-
+  sample_n(fia %>% mutate(id = 1:n()),
+           ceiling(nrow(fia)/10)) # Using 90% of the data for training
+test_df <-
+  anti_join(fia %>% mutate(id = 1:n()),
+            train_df, by = "id") # Use the remaining 10% of the data to test
 
 # train models
-rh_modG_train <- 
-  bam(
-    RH_per_min ~ s(Year) +
-      s(Day, bs = "cc") +
-      te(Long, Lat) +
-      s(Veg_Type, bs = "re"),
-    family = gaussian("log"),
-    data = train_df,
-    method = "fREML"
-  )
-rh_modGS_train <-
-  bam(
-    RH_per_min ~ s(Year) +
-      s(Year, Veg_Type, bs = "fs", m = 2) +
-      s(Day, bs = "cc") +
-      te(Long, Lat),
-    family = gaussian("log"),
-    data = weather,
-    method = "fREML"
-  )  
+order_modGS_train <-
+  bam(cover_0.001 ~ 
+              te(Longitude_scaled, Latitude_scaled) + 
+              s(Year_scaled) +
+              s(Year_scaled, Order, bs = "fs"),
+      family = Gamma("log"), 
+      data = fia,
+      discrete = TRUE,
+      method = "fREML")
+growth_modGS_train <-
+  bam(cover_0.001 ~ 
+              te(Longitude_scaled, Latitude_scaled) + 
+              s(Year_scaled) +
+              s(Year_scaled, GrowthHabit1, bs = "fs"),
+      family = Gamma("log"), 
+      data = fia,
+      discrete = TRUE,
+      method = "fREML")
 
-# Root mean square error and mean absolute error
-data.frame(Model = c("G", "GS"),
-           RMSE = c(rmse(rh_modG_train, test_df), 
-                    rmse(rh_modGS_train, test_df)),
-           MAE = c(mae(rh_modG_train, test_df), 
-                    mae(rh_modGS_train, test_df)))
+# Root mean square error and mean absolute error to test models
+data.frame(Model = c("order_modGS", "growth_modGS"),
+           RMSE = c(rmse(order_modGS_train, test_df),
+                    rmse(growth_modGS_train, test_df)),
+           MAE = c(mae(order_modGS_train, test_df),
+                    mae(growth_modGS_train, test_df)))
 
 ```
 
-Oof! Looks like both our (quick and dirty) cross-validation tests show the models have negligible differences in predictive ability. Just goes to show that we need to assess models from multiple angles. 
+Oof! Looks like both our quick and dirty cross-validation tests show the models have negligible differences in predictive ability. Also, the values of MAE and RMSE suggest that our models are pretty crumby at predictions!! Just goes to show that we need to assess models from multiple angles. **On your own, consider what would make these models better predictors.** 
 
-### Try other models!
+### Visualize HGAM smooth estimates
 
-**On your own, try some different model formulations (e.g., model I, model GI, etc.) from Pedersen et al. (2019).** Do you see any clear patterns?
+Now, let's plot the smooth estimates from our top model. Recall what a "smooth estimate" is in a generalized additive model. How does it differ from a "prediction?"
+
+There are multiple ways to visualize the smooth estimates, but here, we'll take the easy way out and use functions from the "gratia" package.
+
+```{r eval = TRUE, message = FALSE, include = TRUE}
+
+# Luckily, the gratia package has some nice functions for creating customized model prediction plots:
+
+# See the exact names of the smooths in the model object
+smooths(order_modGS)
+
+# Save smooth estimates.
+sm <- smooth_estimates(order_modGS)
+
+# Plot the global "s(Year_scaled)" estimate
+sm %>%
+  filter(.smooth == "s(Year_scaled)") |>
+  add_confint(coverage = 0.80) |> # 80% confidence intervals
+  ggplot(aes(y = .estimate,
+             x = Year_scaled)) +
+  geom_ribbon(aes(ymin = .lower_ci,
+                  ymax = .upper_ci),
+              alpha = 0.3,
+              fill = "gray70") +
+  geom_line(linewidth = 1) +
+  geom_hline(data = data.frame(yintercept = 0),
+             mapping = aes(yintercept = yintercept),
+             linetype = 2,
+             color = "darkred") + # Adding to make it clear where confidence intervals encompass zero.
+  theme_bw() +
+  ylab("Estimate")
+
+# Plot the factor smooths for each growth habit
+sm %>%
+  filter(.smooth == "s(Year_scaled,Order)") |>
+  add_confint(coverage = 0.80) |> # 80% confidence intervals
+  ggplot(aes(y = .estimate,
+             x = Year_scaled,
+             group = Order)) +
+  geom_ribbon(aes(ymin = .lower_ci,
+                  ymax = .upper_ci),
+              alpha = 0.3,
+              fill = "gray70") +
+  scale_color_viridis_d() +
+  geom_line(linewidth = 1,
+            mapping = aes(color = Order)) +
+  geom_hline(data = data.frame(yintercept = 0),
+             mapping = aes(yintercept = yintercept),
+             linetype = 2,
+             color = "darkred") + # Adding to make it clear where confidence intervals encompass zero.
+  theme_bw() +
+  # facet_wrap(~ Order) +
+  ylab("Estimate")
+
+
+```
+
+**On your own, interpret the prediction plots.** How does the global smoother ( "s(Year_scaled)" ) estimate compare to the individual factor smooths ( "s(Year_scaled,Order)" )? What does it mean for the estimate to be above the zero line, encompassing the zero line, and below the zero line?
+
+**IMPORTANT**: Circle back to a question from the beginning of the lab. Given the trend you're seeing in the "s(Year_scaled)" plot, what does it mean for our inferece that there are no zeroes in this dataset???
+
+## Spatial predictions
+
+In this final section, we're going to deviate from our hypotheses a bit in order to show you how to do some spatial predictions--and then create maps with your spatial predictions. There are MANY resources that show how to do this--particularly for raster data. So to be additive and not repetitive, here, we will predict an HGAM's outputs across a vector dataset.
+
+To be even more fun, we'll make a "honeycomb" (hexagonal) map. There are some actual reasons to use a honeycomb instead of a "fishnet" (square grid), some of which are listed in this [paper](https://link.springer.com/article/10.1007/s10980-015-0295-0). Also, the nature of the FIA data lends itself to being re-aggregated into large polygons. 
+
+As a first step, let's make the honeycomb! 
+
+```{r eval = TRUE, message = FALSE, include = TRUE}
+
+# First, convert the FIA data to an sf object
+fia_sf <- st_as_sf(fia,
+                   crs = st_crs(4326), # This number is the code for the Lat/Long Coordinate Reference System. You can look other codes up (e.g., UTM zone 14 = 32614)
+                   coords = c("Longitude", "Latitude"))
+
+# Read in a shapefile with all extensions of the US states of interest
+states <- 
+  st_read(paste0("/vsicurl/", # need to add this to get all shapefile extensions
+                 repo_url, 
+                 "data/US_States/cb_2018_us_state_5m.shp")) %>%
+  filter(NAME %in% c("Kentucky","Tennessee", "Mississippi",
+                     "Alabama", "Georgia", "Florida", 
+                     "Arkansas", "South Carolina", "Virginia",
+                     "Louisiana", "North Carolina"))
+
+# Create hexagonal grid...
+honeycomb_grid <- 
+  st_make_grid(st_union(states),  # Need to combine all state polygons
+               cellsize = 0.5, 
+               what = "polygons", 
+               square = FALSE) %>%
+  st_sf() %>% # Force geometry into a sf "data.frame" like object 
+  rowid_to_column('hex_id')  %>% # Make an ID column for the hex polygons
+  st_make_valid() # Not sure why we need this, but it was necessary for the intersection to work haha
+
+# ... and clip to our study extent (states)
+honeycomb_grid <- 
+  st_intersection(honeycomb_grid, 
+                  st_union(states))
+```
+
+Now that we've made the honeycomb polygons, let's make the data to predict onto. To do that, we'll need coordinates (latitude and longitude, scaled). But... which coordinates do we choose? For raster cells, it's pretty easy as every pixel has an associated coordinate. But for vector data, there are an infinite number of coordinates we could choose from. 
+
+**On your own, think of a solution to this problem!** Once you've got an idea, reveal the code below.
+
+``` {r eval = TRUE, message = FALSE, include = TRUE}
+
+# (One) solution: get hexagonal centroids!
+honeycomb_centroids <- st_centroid(honeycomb_grid)
+
+# Scale prediction covariates--on the same scale as the covariates used for fitting the model!
+nd_0 <- data.frame(Latitude_scaled = rep((st_coordinates(honeycomb_centroids)[,2] - mean(fia$Latitude)) / sd(fia$Latitude), 2),
+                   Longitude_scaled = rep((st_coordinates(honeycomb_centroids)[,1] - mean(fia$Longitude)) / sd(fia$Longitude), 2),
+                   Year_scaled = rep(c(min(fia$Year_scaled),
+                                       max(fia$Year_scaled)), 
+                                     each = nrow(honeycomb_centroids)), # Since we're not interested in time, pick most recent year.
+                   hex_id = rep(honeycomb_centroids$hex_id, 2)) 
+
+# Make a data.frame for prediction
+nd <- 
+  do.call(rbind,
+          lapply(unique(fia$Order),
+                 function(X) {
+                   # We need to get latitudes and longitudes for each grid cell 
+                   # for each growth habit. We'll use a lapply function to do this
+                   # quickly.
+                   df <- data.frame(Order = X,
+                                    nd_0) 
+                   return(df)
+                 }))
+```
+
+Final step: make the prediction and the map! You should be familiar with all this from previous labs. The only new parts are the color ramp and the "geom_sf" code. Thankfully, the folks who created the "sf" package made it compatable with ggplot, so all you need is an sf object (e.g., our "fia_sf" object). The rest takes care of itself!
+
+``` {r eval = TRUE, message = FALSE, include = TRUE}
+# Prediction. We won't worry about the standard error/confidence here. However, it's best practice to create maps of uncertainty whenever you create a predictive map.
+spFit_pred <- 
+  predict(order_modGS, 
+          newdata = nd, 
+          type = "response")
+
+# Create prediction data.frame
+spFit_pred_df <- data.frame(fit = spFit_pred, nd)
+
+# Join prediction with the honeycomb grid
+pred_sf <- 
+  left_join(honeycomb_grid, 
+            spFit_pred_df)
+
+# Create a custom color ramp. We'll need this because the predictions are CRAZY skewed. So if we allowed R to generate a color ramp for us, we wouldn't be able to see the nuance in the predictions.
+colorBreaks <- seq(min(pred_sf$fit), 
+                 max(pred_sf$fit), 
+                 0.01)
+colorRamp <- c(colorRampPalette(rev(c("#fde725", # these are viridis color-blind friendly colors
+                              "#5ec962", 
+                              "#21918c", 
+                              "#3b528b", 
+                              "#440154")),
+                            bias = 1.5)(length(colorBreaks[colorBreaks < quantile(pred_sf$fit, 0.99)])), # Cutoff at 99th quantile
+               rep("#fde725", length(colorBreaks) - length(colorBreaks[colorBreaks < quantile(pred_sf$fit, 0.99)])))
+
+# Make the map! Let's just use the first year (2001)
+ggplot(pred_sf %>% filter(Year_scaled == min(Year_scaled)), 
+       aes(fill = fit)) +
+  facet_wrap(~ Order, ncol = 6) +
+  scale_fill_gradientn(colors = colorRamp,
+                       name = "Cover") +
+  geom_sf()
+
+```
+
+We did it! 
+
+## Discussion questions
+
+1. Given the global time smooth estimate ( "s(Year_scaled)" ), what would the prediction maps look like in the final year of our FIA data? 
+
+2. What are similarities and differences in the prediction maps? What aspects of the HGAM we used makes them similar/different?
+
+3. What kind(s) of HGAM would create very different predictive maps/smooth estimates for the different order?
+
+4. Given there were no zeroes in our response variable (cover), what can these models actually tell us? What can they **not** tell us? What would be a way to add zeroes to the data?

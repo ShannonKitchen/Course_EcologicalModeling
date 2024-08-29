@@ -13,7 +13,7 @@
 
 <title>Generalized Linear Mixed Models</title>
 
-<script src="site_libs/header-attrs-2.23/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.27/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -55,7 +55,7 @@
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -418,33 +418,6 @@ div.tocify {
         <li>
   <a href="index.html">Home</a>
 </li>
-<li>
-  <a href="00-computer-setup.html">Computer Setup</a>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Hello, World!
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="00-A-R-intro.html">Intro to R</a>
-    </li>
-    <li>
-      <a href="00-B-Rmarkdown-intro.html">R markdown</a>
-    </li>
-    <li>
-      <a href="00-C-R-workshop.html">R workshop</a>
-    </li>
-    <li>
-      <a href="00-D-tidyr.html">ggplot2 and tidyr</a>
-    </li>
-    <li>
-      <a href="00-E-git-intro.html">Intro to git</a>
-    </li>
-  </ul>
-</li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Data Exploration
@@ -529,6 +502,18 @@ div.tocify {
     </li>
     <li>
       <a href="06-B-Homework-04.html">Homework 4</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Hello, Bayes!
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="07-A-Homework-05.html">Homeork 5</a>
     </li>
   </ul>
 </li>
@@ -694,30 +679,30 @@ length could vary by farm.</p>
 ## 
 ## Scaled residuals: 
 ##     Min      1Q  Median      3Q     Max 
-## -5.7920 -0.5973  0.2499  0.4944  3.1072 
+## -5.7870 -0.5971  0.2498  0.4947  3.1101 
 ## 
 ## Random effects:
 ##  Groups Name               Variance Std.Dev. Corr             
-##  Farm   (Intercept)        2.163520 1.47089                   
-##         fSexFemale         0.228873 0.47841  -0.05            
+##  Farm   (Intercept)        2.163852 1.47100                   
+##         fSexFemale         0.228874 0.47841  -0.06            
 ##         cLength            0.001641 0.04051   0.58  0.09      
-##         fSexFemale:cLength 0.001296 0.03600  -0.47  0.66 -0.69
+##         fSexFemale:cLength 0.001296 0.03600  -0.48  0.66 -0.69
 ## Number of obs: 826, groups:  Farm, 24
 ## 
 ## Fixed effects:
 ##                    Estimate Std. Error z value Pr(&gt;|z|)   
-## (Intercept)         1.08708    0.35721   3.043  0.00234 **
-## fSexFemale          0.65104    0.33614   1.937  0.05277 . 
-## cLength             0.04372    0.01329   3.289  0.00100 **
-## fSexFemale:cLength  0.03521    0.01783   1.975  0.04827 * 
+## (Intercept)         1.08697    0.35723   3.043  0.00234 **
+## fSexFemale          0.65000    0.33597   1.935  0.05303 . 
+## cLength             0.04370    0.01329   3.289  0.00101 **
+## fSexFemale:cLength  0.03521    0.01782   1.976  0.04820 * 
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## Correlation of Fixed Effects:
 ##             (Intr) fSxFml cLngth
-## fSexFemale  -0.245              
-## cLength      0.325  0.035       
-## fSxFml:cLng -0.190  0.526 -0.578
+## fSexFemale  -0.246              
+## cLength      0.325  0.036       
+## fSxFml:cLng -0.191  0.526 -0.578
 ## optimizer (Nelder_Mead) convergence code: 0 (OK)
 ## boundary (singular) fit: see help(&#39;isSingular&#39;)</code></pre>
 <p>That model fails to converge. Asking for the sex by length
@@ -765,8 +750,8 @@ that allow fSex or csLength to vary across farms.</p>
 <span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>        <span class="at">family =</span> binomial)</span>
 <span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a></span>
 <span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a><span class="co"># # </span><span class="al">NOTE</span><span class="co">: So we don&#39;t clutter things up, check the summaries on your own.</span></span>
-<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a><span class="co"># summary(M0a)</span></span>
-<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a><span class="co"># summary(M0b)</span></span></code></pre></div>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a><span class="co"># summary(M0_LF)</span></span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a><span class="co"># summary(M0_SF)</span></span></code></pre></div>
 <p>Both of those models converge. Check residuals for both.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Get residuals with DHARMa: QQ plot and residuals vs. predicted</span></span>
 <span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>simulationOutput_LF <span class="ot">&lt;-</span> </span>
@@ -795,11 +780,52 @@ ones using <span class="math inline">\(AIC_c\)</span>. We can build the
 set with all possible random effects, and all possible fixed effects
 models. The number of variables is small, so this will be a reasonable
 thing to do–at least for the purposes of this lab…</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co"># All fixed effect combinations</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>fe <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;1&quot;</span>,<span class="st">&quot;fSex&quot;</span>,</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>        <span class="st">&quot;csLength&quot;</span>,</span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>        <span class="st">&quot;fSex + csLength&quot;</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>        <span class="st">&quot;fSex * csLength&quot;</span>)</span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a><span class="co"># All random effect combinations</span></span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a>re <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;(1 | Farm)&quot;</span>, </span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a>        <span class="st">&quot;(1 | Farm) + (0 + fSex | Farm)&quot;</span>,</span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a>        <span class="st">&quot;(1 | Farm) + (0 + csLength | Farm)&quot;</span>,</span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a>        <span class="st">&quot;(1 | Farm) + (0 + fSex | Farm) + (0 + csLength | Farm)&quot;</span>,</span>
+<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a>        <span class="st">&quot;(1 + fSex | Farm)&quot;</span>,</span>
+<span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a>        <span class="st">&quot;(1 + csLength | Farm)&quot;</span>)</span>
+<span id="cb13-14"><a href="#cb13-14" tabindex="-1"></a></span>
+<span id="cb13-15"><a href="#cb13-15" tabindex="-1"></a><span class="co"># Get all combinations in a data.frame</span></span>
+<span id="cb13-16"><a href="#cb13-16" tabindex="-1"></a>forms <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">LHS =</span> <span class="st">&quot;Ecervi.pa ~&quot;</span>, </span>
+<span id="cb13-17"><a href="#cb13-17" tabindex="-1"></a>                     <span class="at">fe =</span> fe, </span>
+<span id="cb13-18"><a href="#cb13-18" tabindex="-1"></a>                     <span class="at">re =</span> re)</span>
+<span id="cb13-19"><a href="#cb13-19" tabindex="-1"></a></span>
+<span id="cb13-20"><a href="#cb13-20" tabindex="-1"></a><span class="co"># Collapse into formulas for models</span></span>
+<span id="cb13-21"><a href="#cb13-21" tabindex="-1"></a>models <span class="ot">&lt;-</span> </span>
+<span id="cb13-22"><a href="#cb13-22" tabindex="-1"></a>  forms <span class="sc">%&gt;%</span></span>
+<span id="cb13-23"><a href="#cb13-23" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">RHS =</span> <span class="fu">paste</span>(fe, re, <span class="at">sep =</span> <span class="st">&quot;+&quot;</span>),</span>
+<span id="cb13-24"><a href="#cb13-24" tabindex="-1"></a>         <span class="at">model =</span> <span class="fu">paste</span>(LHS, RHS))</span>
+<span id="cb13-25"><a href="#cb13-25" tabindex="-1"></a></span>
+<span id="cb13-26"><a href="#cb13-26" tabindex="-1"></a><span class="co"># Fit all the models</span></span>
+<span id="cb13-27"><a href="#cb13-27" tabindex="-1"></a>fits <span class="ot">&lt;-</span> <span class="fu">lapply</span>(models<span class="sc">$</span>model, </span>
+<span id="cb13-28"><a href="#cb13-28" tabindex="-1"></a>               <span class="cf">function</span>(X) { </span>
+<span id="cb13-29"><a href="#cb13-29" tabindex="-1"></a>                 <span class="fu">glmer</span>(X,</span>
+<span id="cb13-30"><a href="#cb13-30" tabindex="-1"></a>                       <span class="at">data =</span> ecervi,</span>
+<span id="cb13-31"><a href="#cb13-31" tabindex="-1"></a>                       <span class="at">family =</span> binomial)</span>
+<span id="cb13-32"><a href="#cb13-32" tabindex="-1"></a>               }</span>
+<span id="cb13-33"><a href="#cb13-33" tabindex="-1"></a>)</span>
+<span id="cb13-34"><a href="#cb13-34" tabindex="-1"></a></span>
+<span id="cb13-35"><a href="#cb13-35" tabindex="-1"></a><span class="co"># Name the fitted objects in the list</span></span>
+<span id="cb13-36"><a href="#cb13-36" tabindex="-1"></a><span class="fu">names</span>(fits) <span class="ot">&lt;-</span> models<span class="sc">$</span>model</span></code></pre></div>
 <p>Some models may not have failed to converge. Use the handy
 “check_convergence” function in the “performance” package to check the
 list:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># # Check for convergence</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="co"># lapply(fits, check_convergence)</span></span></code></pre></div>
 <p>Now we’re ready to see which models are the best, keeping a wary eye
 out for the model(s) that did not converge…</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co"># Using MuMIn for model selection</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>modSelection <span class="ot">&lt;-</span> <span class="fu">model.sel</span>(fits)</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="co"># modSelection</span></span></code></pre></div>
 <p><strong>On your own, interpret the model selection table. Which model
 or models should we use going forward?</strong></p>
 <p>Critically, one difference from the “regular” linear mixed model with
@@ -808,35 +834,35 @@ estimation to compare models with different fixed effects.
 <code>glmer()</code> is already using maximum likelihood for
 everything.</p>
 <p>For simplicity’s sake, let’s go ahead and use the top model:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>topmod <span class="ot">&lt;-</span> fits<span class="sc">$</span><span class="st">`</span><span class="at">Ecervi.pa ~ fSex * csLength+(1 + csLength | Farm)</span><span class="st">`</span></span>
-<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="co"># summary(fits$`Ecervi.pa ~ fSex * csLength+(1 + csLength | Farm)`)</span></span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>topmod <span class="ot">&lt;-</span> fits<span class="sc">$</span><span class="st">`</span><span class="at">Ecervi.pa ~ fSex * csLength+(1 + csLength | Farm)</span><span class="st">`</span></span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="co"># summary(fits$`Ecervi.pa ~ fSex * csLength+(1 + csLength | Farm)`)</span></span></code></pre></div>
 <p>Next we want to make some plots of the effects so we can interpret
 what is going on. First we’ll create some new data and go from there as
 we have in the past. The additional wrinkle is that we have to think
 about what we want predict to do with the random effects. The first
 option is to look at the “population average” response, which we do by
 setting <code>re.form=~0</code>.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># Get range of &#39;csLength&#39; values</span></span>
-<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>lr <span class="ot">=</span> <span class="fu">range</span>(ecervi<span class="sc">$</span>csLength)</span>
-<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a></span>
-<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a><span class="co"># Create new data.frame for predictions</span></span>
-<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>nd <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">csLength =</span> <span class="fu">seq</span>(lr[<span class="dv">1</span>], lr[<span class="dv">2</span>], <span class="at">length =</span> <span class="dv">20</span>),</span>
-<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>                  <span class="at">fSex =</span> <span class="fu">factor</span>(<span class="fu">levels</span>(ecervi<span class="sc">$</span>fSex)))</span>
-<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a></span>
-<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a><span class="co"># Unconditional prediction</span></span>
-<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a>nd<span class="sc">$</span>pp <span class="ot">&lt;-</span> </span>
-<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a>  <span class="fu">predict</span>(topmod,</span>
-<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a>          <span class="at">newdata =</span> nd,</span>
-<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a>          <span class="at">type =</span> <span class="st">&quot;response&quot;</span>, <span class="co"># No need for plogis. Why?</span></span>
-<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a>          <span class="at">re.form =</span>  <span class="sc">~</span> <span class="dv">0</span>)</span>
-<span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a></span>
-<span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a><span class="co"># Plot unconditional prediction</span></span>
-<span id="cb14-16"><a href="#cb14-16" tabindex="-1"></a><span class="fu">ggplot</span>(nd, <span class="fu">aes</span>(<span class="at">x=</span>csLength, <span class="at">y=</span>pp, <span class="at">col=</span>fSex)) <span class="sc">+</span> </span>
-<span id="cb14-17"><a href="#cb14-17" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
-<span id="cb14-18"><a href="#cb14-18" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Centered and scaled Length&quot;</span>) <span class="sc">+</span> </span>
-<span id="cb14-19"><a href="#cb14-19" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Probability of E. cervi infection&quot;</span>) <span class="sc">+</span></span>
-<span id="cb14-20"><a href="#cb14-20" tabindex="-1"></a>  <span class="fu">geom_rug</span>(<span class="fu">aes</span>(<span class="at">x=</span>csLength), <span class="at">data=</span><span class="fu">filter</span>(ecervi, Ecervi.pa),<span class="at">sides=</span><span class="st">&quot;t&quot;</span>, <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb14-21"><a href="#cb14-21" tabindex="-1"></a>  <span class="fu">geom_rug</span>(<span class="fu">aes</span>(<span class="at">x=</span>csLength), <span class="at">data=</span><span class="fu">filter</span>(ecervi, <span class="sc">!</span>Ecervi.pa),<span class="at">sides=</span><span class="st">&quot;b&quot;</span>, <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="co"># Get range of &#39;csLength&#39; values</span></span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>lr <span class="ot">=</span> <span class="fu">range</span>(ecervi<span class="sc">$</span>csLength)</span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="co"># Create new data.frame for predictions</span></span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a>nd <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">csLength =</span> <span class="fu">seq</span>(lr[<span class="dv">1</span>], lr[<span class="dv">2</span>], <span class="at">length =</span> <span class="dv">20</span>),</span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a>                  <span class="at">fSex =</span> <span class="fu">factor</span>(<span class="fu">levels</span>(ecervi<span class="sc">$</span>fSex)))</span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a><span class="co"># Unconditional prediction</span></span>
+<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a>nd<span class="sc">$</span>pp <span class="ot">&lt;-</span> </span>
+<span id="cb17-10"><a href="#cb17-10" tabindex="-1"></a>  <span class="fu">predict</span>(topmod,</span>
+<span id="cb17-11"><a href="#cb17-11" tabindex="-1"></a>          <span class="at">newdata =</span> nd,</span>
+<span id="cb17-12"><a href="#cb17-12" tabindex="-1"></a>          <span class="at">type =</span> <span class="st">&quot;response&quot;</span>, <span class="co"># No need for plogis. Why?</span></span>
+<span id="cb17-13"><a href="#cb17-13" tabindex="-1"></a>          <span class="at">re.form =</span>  <span class="sc">~</span> <span class="dv">0</span>)</span>
+<span id="cb17-14"><a href="#cb17-14" tabindex="-1"></a></span>
+<span id="cb17-15"><a href="#cb17-15" tabindex="-1"></a><span class="co"># Plot unconditional prediction</span></span>
+<span id="cb17-16"><a href="#cb17-16" tabindex="-1"></a><span class="fu">ggplot</span>(nd, <span class="fu">aes</span>(<span class="at">x=</span>csLength, <span class="at">y=</span>pp, <span class="at">col=</span>fSex)) <span class="sc">+</span> </span>
+<span id="cb17-17"><a href="#cb17-17" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb17-18"><a href="#cb17-18" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Centered and scaled Length&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb17-19"><a href="#cb17-19" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Probability of E. cervi infection&quot;</span>) <span class="sc">+</span></span>
+<span id="cb17-20"><a href="#cb17-20" tabindex="-1"></a>  <span class="fu">geom_rug</span>(<span class="fu">aes</span>(<span class="at">x=</span>csLength), <span class="at">data=</span><span class="fu">filter</span>(ecervi, Ecervi.pa),<span class="at">sides=</span><span class="st">&quot;t&quot;</span>, <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb17-21"><a href="#cb17-21" tabindex="-1"></a>  <span class="fu">geom_rug</span>(<span class="fu">aes</span>(<span class="at">x=</span>csLength), <span class="at">data=</span><span class="fu">filter</span>(ecervi, <span class="sc">!</span>Ecervi.pa),<span class="at">sides=</span><span class="st">&quot;b&quot;</span>, <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
 <p><img src="05-B-Generalized-Linear-Mixed-Models_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 <p>These lines represent the effect of length and sex for a typical
 farm.</p>
@@ -861,11 +887,11 @@ the predictions and confidence intervals on the coefficients.
 <code>lme4</code> has a pre-made function to get confidence intervals on
 the coefficients. <em>WARNING</em> this line of code will take &gt; 20
 minutes to run. Forget about these unless you’ve got a lot of time.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co"># Returns a matrix with estimates plus confidence intervals for all fixed and</span></span>
-<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="co"># random effects parameters. </span><span class="al">NOTE</span><span class="co">: you can reduce the number of simulations to</span></span>
-<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="co"># speed it up.</span></span>
-<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>topmod.CI <span class="ot">&lt;-</span> <span class="fu">confint</span>(topmod, <span class="at">method =</span> <span class="st">&quot;boot&quot;</span>, <span class="at">oldNames =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a>topmod.CI</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="co"># Returns a matrix with estimates plus confidence intervals for all fixed and</span></span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a><span class="co"># random effects parameters. </span><span class="al">NOTE</span><span class="co">: you can reduce the number of simulations to</span></span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a><span class="co"># speed it up.</span></span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a>topmod.CI <span class="ot">&lt;-</span> <span class="fu">confint</span>(topmod, <span class="at">method =</span> <span class="st">&quot;boot&quot;</span>, <span class="at">oldNames =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a>topmod.CI</span></code></pre></div>
 <p>This function draws random samples of the random effects and the
 i.i.d. errors, generates a simulated response based on those error
 values, and then re-estimates the model. The confidence limits are based
@@ -880,57 +906,57 @@ here.</p>
 <h4>Profile and Wald intervals</h4>
 <p>Profile intervals are also good, slow, but not as bad as
 bootstrap.</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="co"># profile limits</span></span>
-<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>topmod.profCI <span class="ot">&lt;-</span></span>
-<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>  <span class="fu">as.data.frame</span>(<span class="fu">confint</span>(topmod, <span class="at">method =</span> <span class="st">&quot;profile&quot;</span>, <span class="at">oldNames =</span> <span class="cn">FALSE</span>)) </span>
-<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="co"># Wald limits</span></span>
-<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a>topmod.WaldCI <span class="ot">&lt;-</span></span>
-<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a>  <span class="fu">as.data.frame</span>(<span class="fu">confint</span>(topmod, <span class="at">method =</span> <span class="st">&quot;Wald&quot;</span>, <span class="at">oldNames =</span> <span class="cn">FALSE</span>))</span>
-<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a></span>
-<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a><span class="co"># get rid of rownames</span></span>
-<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a><span class="fu">rownames</span>(topmod.profCI) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
-<span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a><span class="fu">rownames</span>(topmod.WaldCI) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
-<span id="cb16-11"><a href="#cb16-11" tabindex="-1"></a></span>
-<span id="cb16-12"><a href="#cb16-12" tabindex="-1"></a><span class="co"># and change names to include type of CI</span></span>
-<span id="cb16-13"><a href="#cb16-13" tabindex="-1"></a><span class="fu">names</span>(topmod.profCI) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Profile_CI2.5&quot;</span>, <span class="st">&quot;Profile_CI97.5&quot;</span>)</span>
-<span id="cb16-14"><a href="#cb16-14" tabindex="-1"></a><span class="fu">names</span>(topmod.WaldCI) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Wald_CI2.5&quot;</span>, <span class="st">&quot;Wald_CI97.5&quot;</span>)</span>
-<span id="cb16-15"><a href="#cb16-15" tabindex="-1"></a></span>
-<span id="cb16-16"><a href="#cb16-16" tabindex="-1"></a><span class="co"># Get the coefficients from the top model, add the Wald and profile intervals,</span></span>
-<span id="cb16-17"><a href="#cb16-17" tabindex="-1"></a><span class="co"># do some data manipulation to prepare for ggplot.</span></span>
-<span id="cb16-18"><a href="#cb16-18" tabindex="-1"></a>topmod.CI <span class="ot">&lt;-</span> </span>
-<span id="cb16-19"><a href="#cb16-19" tabindex="-1"></a>  broom.mixed<span class="sc">::</span><span class="fu">tidy</span>(topmod) <span class="sc">%&gt;%</span> <span class="co"># add the profile intervals -- confint() uses a different order from tidy() </span></span>
-<span id="cb16-20"><a href="#cb16-20" tabindex="-1"></a>  <span class="fu">cbind</span>(topmod.profCI[<span class="fu">c</span>(<span class="dv">4</span><span class="sc">:</span><span class="dv">7</span>,<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">2</span>),],</span>
-<span id="cb16-21"><a href="#cb16-21" tabindex="-1"></a>        topmod.WaldCI[<span class="fu">c</span>(<span class="dv">4</span><span class="sc">:</span><span class="dv">7</span>,<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">2</span>),]) <span class="sc">%&gt;%</span></span>
-<span id="cb16-22"><a href="#cb16-22" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="fu">c</span>(term, estimate, Profile_CI2<span class="fl">.5</span>, </span>
-<span id="cb16-23"><a href="#cb16-23" tabindex="-1"></a>                  Profile_CI97<span class="fl">.5</span>, Wald_CI2<span class="fl">.5</span>, Wald_CI97<span class="fl">.5</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb16-24"><a href="#cb16-24" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(Profile_CI2<span class="fl">.5</span><span class="sc">:</span>Wald_CI97<span class="fl">.5</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb16-25"><a href="#cb16-25" tabindex="-1"></a>  <span class="fu">separate_wider_delim</span>(<span class="at">cols =</span> <span class="st">&quot;name&quot;</span>,</span>
-<span id="cb16-26"><a href="#cb16-26" tabindex="-1"></a>                       <span class="at">delim =</span> <span class="st">&quot;_&quot;</span>,</span>
-<span id="cb16-27"><a href="#cb16-27" tabindex="-1"></a>                       <span class="at">names =</span> <span class="fu">c</span>(<span class="st">&quot;type&quot;</span>, <span class="st">&quot;level&quot;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb16-28"><a href="#cb16-28" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">Estimate =</span> estimate, <span class="at">Type =</span> type, <span class="at">Term =</span> term) <span class="sc">%&gt;%</span></span>
-<span id="cb16-29"><a href="#cb16-29" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">id_cols =</span> <span class="fu">c</span>(Term, Estimate, Type),</span>
-<span id="cb16-30"><a href="#cb16-30" tabindex="-1"></a>              <span class="at">names_from =</span> level, </span>
-<span id="cb16-31"><a href="#cb16-31" tabindex="-1"></a>              <span class="at">values_from =</span> value)</span>
-<span id="cb16-32"><a href="#cb16-32" tabindex="-1"></a></span>
-<span id="cb16-33"><a href="#cb16-33" tabindex="-1"></a><span class="co"># Plot the profile and Wald confidence intervals on coefficients.</span></span>
-<span id="cb16-34"><a href="#cb16-34" tabindex="-1"></a><span class="fu">ggplot</span>(topmod.CI, </span>
-<span id="cb16-35"><a href="#cb16-35" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> Term, </span>
-<span id="cb16-36"><a href="#cb16-36" tabindex="-1"></a>           <span class="at">y =</span> Estimate, </span>
-<span id="cb16-37"><a href="#cb16-37" tabindex="-1"></a>           <span class="at">color =</span> Type)) <span class="sc">+</span></span>
-<span id="cb16-38"><a href="#cb16-38" tabindex="-1"></a>  <span class="fu">scale_color_viridis_d</span>(<span class="at">option =</span> <span class="st">&quot;plasma&quot;</span>) <span class="sc">+</span></span>
-<span id="cb16-39"><a href="#cb16-39" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.5</span>),</span>
-<span id="cb16-40"><a href="#cb16-40" tabindex="-1"></a>             <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb16-41"><a href="#cb16-41" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> CI2<span class="fl">.5</span>, </span>
-<span id="cb16-42"><a href="#cb16-42" tabindex="-1"></a>                    <span class="at">ymax =</span> CI97<span class="fl">.5</span>), </span>
-<span id="cb16-43"><a href="#cb16-43" tabindex="-1"></a>                <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.5</span>),</span>
-<span id="cb16-44"><a href="#cb16-44" tabindex="-1"></a>                <span class="at">width =</span> <span class="fl">0.2</span>) <span class="sc">+</span> </span>
-<span id="cb16-45"><a href="#cb16-45" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">data =</span> <span class="fu">data.frame</span>(<span class="at">yIntercept =</span> <span class="dv">0</span>),</span>
-<span id="cb16-46"><a href="#cb16-46" tabindex="-1"></a>             <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">yintercept =</span> yIntercept),</span>
-<span id="cb16-47"><a href="#cb16-47" tabindex="-1"></a>             <span class="at">color =</span> <span class="st">&quot;darkred&quot;</span>) <span class="sc">+</span></span>
-<span id="cb16-48"><a href="#cb16-48" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;grey60&quot;</span>),</span>
-<span id="cb16-49"><a href="#cb16-49" tabindex="-1"></a>        <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>()) <span class="sc">+</span> </span>
-<span id="cb16-50"><a href="#cb16-50" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Term&quot;</span>) <span class="sc">+</span></span>
-<span id="cb16-51"><a href="#cb16-51" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Coefficient Estimate&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="co"># profile limits</span></span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>topmod.profCI <span class="ot">&lt;-</span></span>
+<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a>  <span class="fu">as.data.frame</span>(<span class="fu">confint</span>(topmod, <span class="at">method =</span> <span class="st">&quot;profile&quot;</span>, <span class="at">oldNames =</span> <span class="cn">FALSE</span>)) </span>
+<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a><span class="co"># Wald limits</span></span>
+<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a>topmod.WaldCI <span class="ot">&lt;-</span></span>
+<span id="cb19-6"><a href="#cb19-6" tabindex="-1"></a>  <span class="fu">as.data.frame</span>(<span class="fu">confint</span>(topmod, <span class="at">method =</span> <span class="st">&quot;Wald&quot;</span>, <span class="at">oldNames =</span> <span class="cn">FALSE</span>))</span>
+<span id="cb19-7"><a href="#cb19-7" tabindex="-1"></a></span>
+<span id="cb19-8"><a href="#cb19-8" tabindex="-1"></a><span class="co"># get rid of rownames</span></span>
+<span id="cb19-9"><a href="#cb19-9" tabindex="-1"></a><span class="fu">rownames</span>(topmod.profCI) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb19-10"><a href="#cb19-10" tabindex="-1"></a><span class="fu">rownames</span>(topmod.WaldCI) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb19-11"><a href="#cb19-11" tabindex="-1"></a></span>
+<span id="cb19-12"><a href="#cb19-12" tabindex="-1"></a><span class="co"># and change names to include type of CI</span></span>
+<span id="cb19-13"><a href="#cb19-13" tabindex="-1"></a><span class="fu">names</span>(topmod.profCI) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Profile_CI2.5&quot;</span>, <span class="st">&quot;Profile_CI97.5&quot;</span>)</span>
+<span id="cb19-14"><a href="#cb19-14" tabindex="-1"></a><span class="fu">names</span>(topmod.WaldCI) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Wald_CI2.5&quot;</span>, <span class="st">&quot;Wald_CI97.5&quot;</span>)</span>
+<span id="cb19-15"><a href="#cb19-15" tabindex="-1"></a></span>
+<span id="cb19-16"><a href="#cb19-16" tabindex="-1"></a><span class="co"># Get the coefficients from the top model, add the Wald and profile intervals,</span></span>
+<span id="cb19-17"><a href="#cb19-17" tabindex="-1"></a><span class="co"># do some data manipulation to prepare for ggplot.</span></span>
+<span id="cb19-18"><a href="#cb19-18" tabindex="-1"></a>topmod.CI <span class="ot">&lt;-</span> </span>
+<span id="cb19-19"><a href="#cb19-19" tabindex="-1"></a>  broom.mixed<span class="sc">::</span><span class="fu">tidy</span>(topmod) <span class="sc">%&gt;%</span> <span class="co"># add the profile intervals -- confint() uses a different order from tidy() </span></span>
+<span id="cb19-20"><a href="#cb19-20" tabindex="-1"></a>  <span class="fu">cbind</span>(topmod.profCI[<span class="fu">c</span>(<span class="dv">4</span><span class="sc">:</span><span class="dv">7</span>,<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">2</span>),],</span>
+<span id="cb19-21"><a href="#cb19-21" tabindex="-1"></a>        topmod.WaldCI[<span class="fu">c</span>(<span class="dv">4</span><span class="sc">:</span><span class="dv">7</span>,<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">2</span>),]) <span class="sc">%&gt;%</span></span>
+<span id="cb19-22"><a href="#cb19-22" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="fu">c</span>(term, estimate, Profile_CI2<span class="fl">.5</span>, </span>
+<span id="cb19-23"><a href="#cb19-23" tabindex="-1"></a>                  Profile_CI97<span class="fl">.5</span>, Wald_CI2<span class="fl">.5</span>, Wald_CI97<span class="fl">.5</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb19-24"><a href="#cb19-24" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(Profile_CI2<span class="fl">.5</span><span class="sc">:</span>Wald_CI97<span class="fl">.5</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb19-25"><a href="#cb19-25" tabindex="-1"></a>  <span class="fu">separate_wider_delim</span>(<span class="at">cols =</span> <span class="st">&quot;name&quot;</span>,</span>
+<span id="cb19-26"><a href="#cb19-26" tabindex="-1"></a>                       <span class="at">delim =</span> <span class="st">&quot;_&quot;</span>,</span>
+<span id="cb19-27"><a href="#cb19-27" tabindex="-1"></a>                       <span class="at">names =</span> <span class="fu">c</span>(<span class="st">&quot;type&quot;</span>, <span class="st">&quot;level&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb19-28"><a href="#cb19-28" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">Estimate =</span> estimate, <span class="at">Type =</span> type, <span class="at">Term =</span> term) <span class="sc">%&gt;%</span></span>
+<span id="cb19-29"><a href="#cb19-29" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">id_cols =</span> <span class="fu">c</span>(Term, Estimate, Type),</span>
+<span id="cb19-30"><a href="#cb19-30" tabindex="-1"></a>              <span class="at">names_from =</span> level, </span>
+<span id="cb19-31"><a href="#cb19-31" tabindex="-1"></a>              <span class="at">values_from =</span> value)</span>
+<span id="cb19-32"><a href="#cb19-32" tabindex="-1"></a></span>
+<span id="cb19-33"><a href="#cb19-33" tabindex="-1"></a><span class="co"># Plot the profile and Wald confidence intervals on coefficients.</span></span>
+<span id="cb19-34"><a href="#cb19-34" tabindex="-1"></a><span class="fu">ggplot</span>(topmod.CI, </span>
+<span id="cb19-35"><a href="#cb19-35" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> Term, </span>
+<span id="cb19-36"><a href="#cb19-36" tabindex="-1"></a>           <span class="at">y =</span> Estimate, </span>
+<span id="cb19-37"><a href="#cb19-37" tabindex="-1"></a>           <span class="at">color =</span> Type)) <span class="sc">+</span></span>
+<span id="cb19-38"><a href="#cb19-38" tabindex="-1"></a>  <span class="fu">scale_color_viridis_d</span>(<span class="at">option =</span> <span class="st">&quot;plasma&quot;</span>) <span class="sc">+</span></span>
+<span id="cb19-39"><a href="#cb19-39" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.5</span>),</span>
+<span id="cb19-40"><a href="#cb19-40" tabindex="-1"></a>             <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb19-41"><a href="#cb19-41" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> CI2<span class="fl">.5</span>, </span>
+<span id="cb19-42"><a href="#cb19-42" tabindex="-1"></a>                    <span class="at">ymax =</span> CI97<span class="fl">.5</span>), </span>
+<span id="cb19-43"><a href="#cb19-43" tabindex="-1"></a>                <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.5</span>),</span>
+<span id="cb19-44"><a href="#cb19-44" tabindex="-1"></a>                <span class="at">width =</span> <span class="fl">0.2</span>) <span class="sc">+</span> </span>
+<span id="cb19-45"><a href="#cb19-45" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">data =</span> <span class="fu">data.frame</span>(<span class="at">yIntercept =</span> <span class="dv">0</span>),</span>
+<span id="cb19-46"><a href="#cb19-46" tabindex="-1"></a>             <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">yintercept =</span> yIntercept),</span>
+<span id="cb19-47"><a href="#cb19-47" tabindex="-1"></a>             <span class="at">color =</span> <span class="st">&quot;darkred&quot;</span>) <span class="sc">+</span></span>
+<span id="cb19-48"><a href="#cb19-48" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;grey60&quot;</span>),</span>
+<span id="cb19-49"><a href="#cb19-49" tabindex="-1"></a>        <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>()) <span class="sc">+</span> </span>
+<span id="cb19-50"><a href="#cb19-50" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Term&quot;</span>) <span class="sc">+</span></span>
+<span id="cb19-51"><a href="#cb19-51" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Coefficient Estimate&quot;</span>)</span></code></pre></div>
 <p><img src="05-B-Generalized-Linear-Mixed-Models_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 <p>It can be hard to see what is going on unless you use the “zoom” to
 make this plot large enough for the term names to not overlap. So the
@@ -950,9 +976,9 @@ random effects were uncorrelated.</p>
 <p>The basic idea is best illustrated with a figure showing how the
 log-likelihood of a model changes as one of the parameter values is
 changed.</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="co"># get a profile for the fixed effect csLength</span></span>
-<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>lengthProf <span class="ot">&lt;-</span> <span class="fu">profile</span>(topmod, <span class="at">which=</span><span class="st">&quot;csLength&quot;</span>)</span>
-<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="fu">xyplot</span>(lengthProf, <span class="at">absVal=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="co"># get a profile for the fixed effect csLength</span></span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a>lengthProf <span class="ot">&lt;-</span> <span class="fu">profile</span>(topmod, <span class="at">which=</span><span class="st">&quot;csLength&quot;</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a><span class="fu">xyplot</span>(lengthProf, <span class="at">absVal=</span><span class="cn">TRUE</span>)</span></code></pre></div>
 <p><img src="05-B-Generalized-Linear-Mixed-Models_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 <p>The x-axis on that figure are values of the coefficient csLength. The
 y-axis is a measure of the change in deviance as the coefficient is

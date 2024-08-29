@@ -13,7 +13,7 @@
 
 <title>Homework 2</title>
 
-<script src="site_libs/header-attrs-2.23/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.27/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -55,7 +55,7 @@
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -418,33 +418,6 @@ div.tocify {
         <li>
   <a href="index.html">Home</a>
 </li>
-<li>
-  <a href="00-computer-setup.html">Computer Setup</a>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Hello, World!
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="00-A-R-intro.html">Intro to R</a>
-    </li>
-    <li>
-      <a href="00-B-Rmarkdown-intro.html">R markdown</a>
-    </li>
-    <li>
-      <a href="00-C-R-workshop.html">R workshop</a>
-    </li>
-    <li>
-      <a href="00-D-tidyr.html">ggplot2 and tidyr</a>
-    </li>
-    <li>
-      <a href="00-E-git-intro.html">Intro to git</a>
-    </li>
-  </ul>
-</li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Data Exploration
@@ -532,6 +505,18 @@ div.tocify {
     </li>
   </ul>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Hello, Bayes!
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="07-A-Homework-05.html">Homeork 5</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -551,6 +536,30 @@ div.tocify {
 
 <div id="overview" class="section level2">
 <h2>Overview</h2>
+<p>Please provide a reproducible .Rmd script that answers all questions
+below and produces all of your analysis and plots. Some reminders:</p>
+<ul>
+<li><strong>Reproducible:</strong> This means when I run your .Rmd file,
+it will run all analyses and create all plots without errors, without me
+having to reset my working directory, and without forcing me to install
+anything on my machine (i.e., use the require(librarian); shelf(your
+packages, lib = tempdir()) approach as in the code block below). This
+also means there should be <em>NO ERRORS</em> when I run it!</li>
+<li><strong>Format:</strong> Answer each question with text and code,
+plus figures/tables where appropriate.</li>
+</ul>
+<div id="background" class="section level3">
+<h3>Background</h3>
+<p>
+<div class="float">
+<img
+src="https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/MtLofty_RubenSchade.jpg"
+width="300"
+alt="“Mount Lofty in the Adelaide Hills” by Ruben Schade is licensed under CC BY-NC 2.0" />
+<div class="figcaption">“Mount Lofty in the Adelaide Hills” by Ruben
+Schade is licensed under CC BY-NC 2.0</div>
+</div>
+<p>
 <p>The discipline of landscape ecology frequently postulates that the
 spatial pattern of habitat is important, in addition to local
 characteristics such as patch area, vegetation type, and climate.
@@ -591,34 +600,8 @@ Estimating bird species richness: how should repeat surveys be organized
 in time?. Austral Ecology, 27(6), 624-629.</em></li>
 </ul>
 <p>Do not use the analysis presented in these papers, although you can
-refer to the paper for the ecological background. Please provide a
-reproducible .Rmd script that answers all questions below and produces
-all of your analysis and plots. Some reminders:</p>
-<ul>
-<li><strong>Reproducible:</strong> This means when I run your .Rmd file,
-it will run all analyses and create all plots without errors, without me
-having to reset my working directory, and without forcing me to install
-anything on my machine (i.e., use the require(librarian); shelf(your
-packages, lib = tempdir()) approach as in the code block below).</li>
-<li><strong>Format:</strong> Please write/format your .Rmd file similar
-to a scientific report or manuscript. For this assignment, we will just
-need a ‘Results’ and ‘Discussion’ section.</li>
-</ul>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># List of packages necessary to run this script:</span></span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">require</span>(librarian, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">shelf</span>(tidyverse, cowplot,</span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>      AICcmodavg, <span class="co"># for aic.tab, model averaging, etc.</span></span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>      mgcv, <span class="co"># for qq.gam</span></span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>      <span class="at">quiet =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>      <span class="at">lib =</span> <span class="fu">tempdir</span>())</span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co"># Load data:</span></span>
-<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>mlrbird <span class="ot">&lt;-</span> </span>
-<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>  <span class="fu">read.csv</span>(<span class="st">&quot;https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/data/mlrbird.csv&quot;</span>)</span>
-<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>mlrland <span class="ot">&lt;-</span> </span>
-<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>  <span class="fu">read.csv</span>(<span class="st">&quot;https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/data/mlrland.csv&quot;</span>)</span>
-<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: You will need to join these datasets to conduct the analysis.</span></span></code></pre></div>
+refer to the paper for the ecological background.</p>
+</div>
 </div>
 <div id="data-descriptions" class="section level2">
 <h2>Data descriptions:</h2>
@@ -664,6 +647,21 @@ MPAR is a derived variable not found in the provided dataset.</li>
 <li>**PA - patch area</li>
 <li>**PP - patch perimeter</li>
 </ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># List of packages necessary to run this script:</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">require</span>(librarian, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">shelf</span>(tidyverse, cowplot,</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>      AICcmodavg, <span class="co"># for aic.tab, model averaging, etc.</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>      mgcv, <span class="co"># for qq.gam</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>      <span class="at">quiet =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>      <span class="at">lib =</span> <span class="fu">tempdir</span>())</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co"># Load data:</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>mlrbird <span class="ot">&lt;-</span> </span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>  <span class="fu">read.csv</span>(<span class="st">&quot;https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/data/mlrbird.csv&quot;</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>mlrland <span class="ot">&lt;-</span> </span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>  <span class="fu">read.csv</span>(<span class="st">&quot;https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/data/mlrland.csv&quot;</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: You will need to join these datasets to conduct the analysis.</span></span></code></pre></div>
 </div>
 <div id="homework-questions" class="section level2">
 <h2>Homework questions</h2>
@@ -677,21 +675,24 @@ linear models (GLMs) for at least two bird species. I recommend using
 grcu (Grey Currawong), silv (Silvereye), or yfhe (Yellow faced
 Honeyeater) – at first glance they appear to have something interesting
 to say with this limited dataset.</li>
-<li>Use AIC – based model selection (or your preferred alternative!) to
-compare your approximating models with each other, and draw conclusions
-about the relative importance of patch vs. landscape effects for the
-species you considered. Be sure to justify the model selection criterion
-(e.g. AIC, AICc, QAIC, QAICc or whatever) you use.</li>
+<li>Use AICc – based model selection to compare your approximating
+models with each other, and draw conclusions about the relative
+importance of patch vs. landscape effects for the species you
+considered.</li>
 <li>Calculate a model averaged estimate for one or more of the
 biologically important parameters in your models. For example, the
 effect of patch area (PA) is directly relevant to estimating the effects
 of proposed land use changes (e.g. vegetation clearance) on bird
 species.</li>
-<li>Create model ranking tables (e.g., AICc tables) and create “marginal
+<li>Create model ranking tables (AICc tables) and create “marginal
 effects” plots for the model-averaged parameters from question #4.
 Marginal effects tells us how the response variable changes when a
 specific predictor variable changes. Other covariates held constant
-(e.g., at zero, at their means, etc.).</li>
+(e.g., at zero, at their means, etc.). There are multiple ways to
+generate marginal effects plots (e.g., ggeffects R package, use the base
+R package ‘predict’ function), but make sure the confidence interval
+calculations are correct (Hint: you may want to revisit Question #6 from
+Homework #1 for this).</li>
 <li>Interpret the results of your model selection and model
 averaging.</li>
 </ol>

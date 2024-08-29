@@ -294,7 +294,21 @@ How do the simulated residuals look for you? Given they're simulated, they could
 
 ### Model selection
 
-Let's fit a range of models with different random effects structures, and compare using AICc. The problem with comparing different random effects using Likelihood Ratio tests is that our null hypothesis is "on the boundary" of the parameter space, because you can't have negative variances. Choosing a model that has the minimum AICc won't be bothered by this consideration, but this would affect the calculation of the weights.
+Let's fit a range of models with different random effects structures, and compare using AICc. Here is a table from the [lme4 package vignette](https://cran.r-project.org/web/packages/lme4/vignettes/lmer.pdf) describing random effect syntax and meaning:
+
+```{r eval = TRUE, message = FALSE, include = TRUE, echo = FALSE}
+
+knitr::kable(
+  cbind(Formula =  c("(1 | g)", "0 + offset(o) + (1 | g)", "(1 | g1/g2)", "(1 | g1) + (1 | g2)", "x + (x | g)", "x + (x || g)"),
+        `Alternative Formula` = c(" 1 + (1 | g)", "-1 + offset(o) + (1 | g)", "(1 | g1)+(1 | g1:g2)", "1 + (1 | g1) + (1 | g2)", "1 + x + (1 + x | g)", "1 + x + (1 | g) + (0 + x | g)"),
+        Meaning = c("Random intercept with fixed mean.", "Random intercept with a priori means.", "Intercept varying among g1 and g2 within g1.", "Intercept varying among g1 and g2.", "Correlated random intercept and slope.", "Uncorrelated random intercept and slope.")
+  )
+)
+
+```
+
+
+The problem with comparing different random effects using Likelihood Ratio tests is that our null hypothesis is "on the boundary" of the parameter space, because you can't have negative variances. Choosing a model that has the minimum AICc won't be bothered by this consideration, but this would affect the calculation of the weights.
 
 ```{r eval = TRUE, message = FALSE, include = TRUE}
 

@@ -1,0 +1,74 @@
+---
+layout: topic
+title: "Homework 5"
+output: html_document
+---
+
+```{r include = FALSE}
+
+# This code block sets up the r session when the page is rendered to html
+# include = FALSE means that it will not be included in the html document
+
+# Write every code block to the html document 
+knitr::opts_chunk$set(echo = TRUE)
+
+# Write the results of every code block to the html document 
+knitr::opts_chunk$set(eval = TRUE)
+
+# Set the web address where R will look for files from this repository
+# Do not change this address
+repo_url <- "https://raw.githubusercontent.com/LivingLandscapes/Course_EcologicalModeling/master/"
+
+# Suppress warnings and messages
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+
+```
+
+## Overview
+
+Please provide a reproducible .Rmd script to address the scenario below and produces all of your analysis and plots. Some reminders:
+
+- **Reproducible:** This means when I run your .Rmd file, it will run all analyses and create all plots without errors, without me having to reset my working directory, and without forcing me to install anything on my machine (i.e., use the require(librarian); shelf(your packages, lib = tempdir()) approach as in the code block below). This also means there should be *NO ERRORS* when I run it!
+- **Format:** In the .Rmd file, arrange and format similar to a scientific article. Specifically, I want to see 1) an analytical methods section, 2) a results section that includes figures, tables, and *text interpreting the figures and tables and model(s)*!, and 3) a brief conclusion (1 - 2 paragraphs) based on the results. **NOTE:** You do not need to create an introduction, reiterate the data collection methods, or produce a literature cited section!
+
+### Background 
+
+For our final homework, you will be creating, running diagnostics, doing model selection, and predicting with Bayesian models. Because this Bayesian stuff is pretty new territory for us, we will be asking some familiar friends for help--the Palmer Penguins. Use our [Review of linear models lab](https://livinglandscapes.github.io/Course_EcologicalModeling/02-A-linear-models-and-probability-distributions.html) for modeling ideas, creating your priors, and expectations for model outputs.
+
+<p>
+![Artwork by @allison_horst](https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/penguins.png){width=300px}
+<p>
+
+
+### Data description
+
+Information the "penguins" data can be found here: https://allisonhorst.github.io/palmerpenguins/articles/intro.html
+
+## Your assignment
+
+Using the 'brms' package and the Palmer Penguins dataset, create hierarchical Bayesian models to explain penguin body mass. These models should attempt to explain body mass for all species and sexes and islands in the dataset (i.e., don't create separate models for the sexes, species, or islands). To complete this assignment, will need to do five main things:
+
+1) Create **three** candidate models to explain penguin body mass. IMPORTANT: you will need to specify priors for each population-level effect (fixed effect) and provide reasoning for your choices.
+2) Use a Bayesian model selection technique (e.g., LOO or WAIC) to compare models and identify the "top" model.
+3) Assess the top model's fit (e.g., Rhat, posterior predictive check, traceplots).
+4) Use the top model to make posterior predictions. Specifically, I want to see marginal effects plot(s) that include any hierarchical levels (i.e., random effects).
+5) Write out your hypotheses (your candidate models--but with words). Compile all the modeling steps and outputs into Methods and Results sections, and then interpret the results in a 1 - 2 paragraph Conclusions section. IMPORTANT: the Methods should include reasoning for your probability distribution choices, choices on priors, etc.
+
+```{r, include = TRUE, eval = TRUE, message = FALSE}
+
+# List of packages necessary to run this script:
+require(librarian, quietly = TRUE)
+shelf(tidyverse, 
+      palmerpenguins, 
+      here,
+      brms,
+      quiet = TRUE)
+
+# Set the web address where R will look for files from this repository
+# Do not change this address
+repo_url <- "https://raw.githubusercontent.com/LivingLandscapes/Course_EcologicalModeling/master/"
+
+# Read in a data file
+data(package = 'palmerpenguins', verbose = FALSE)
+
+```
