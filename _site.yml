@@ -28,6 +28,8 @@ navbar:
           href: 05-A-Linear-Mixed-Models.html
         - text: "Lab: Generalized Linear Mixed Models"
           href: 05-B-Generalized-Linear-Mixed-Models.html
+        - text: "Lab: Confidence Intervals for Mixed Models"
+          href: 05-C-Confidence-Intervals-Mixed-Models.html
         - text: "Homework 3"
           href: 05-C-Homework-03.html
     - text: "HGAMs"
