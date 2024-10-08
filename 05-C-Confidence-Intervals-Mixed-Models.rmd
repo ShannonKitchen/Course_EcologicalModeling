@@ -4,6 +4,11 @@ title: "Confidence Intervals for Mixed Models"
 output: html_document
 ---
 
+**Assigned Reading:**
+
+- Shipley, J. R., Twining, C. W., Taff, C. C., Vitousek, M. N., & Winkler, D. W. (2022). Selection counteracts developmental plasticity in body-size responses to climate change. Nature Climate Change, 12(9), 863-868.
+- Christensen, S. A., Ruder, M. G., Williams, D. M., Porter, W. F., & Stallknecht, D. E. (2020). The role of drought as a determinant of hemorrhagic disease in the eastern United States. Global Change Biology, 26(7), 3799-3808.
+
 ```{r include = FALSE}
 
 # This code block sets up the r session when the page is rendered to html
@@ -28,6 +33,9 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 We'll continue to look at Linear and Generalized linear mixed effects models, emphasizing how to get confidence intervals on the predictions.
 
+<p>
+![](https://github.com/LivingLandscapes/Course_EcologicalModeling/raw/master/images/Shipley2022Bootstrap.jpg){width=600px}
+<p>
 
 ```{r, include = TRUE, eval = TRUE, message = FALSE}
 
@@ -272,20 +280,28 @@ ggplot(nd, aes(x=csLength, y=pp, col=fSex)) +
 
 ```
 
-I like this one with `facet_wrap()` better than the one from last week. OK, now we want to do the bootstrap. But fitting this model already is slow, so doing it 1000 times is even slower! Bootstrapping is one of the things that benefits from parallel computing very easily. The bit of code below sets up a "cluster" on my computer and splits the computation up 4 ways. 4 times faster. Most modern CPU's have multiple cores that can run independently. In normal operation R uses just one core. Depending on how many cores your computer has, running this code in parallel could speed up this computation by a lot. 
+OK, now we want to do the bootstrap. But fitting this model already is slow, so doing it 1000 times is even slower! Bootstrapping is one of the things that benefits from parallel computing very easily. The bit of code below sets up a "cluster" on my computer and splits the computation up 4 ways. 4 times faster. Most modern CPU's have multiple cores that can run independently. In normal operation R uses just one core. Depending on how many cores your computer has, running this code in parallel could speed up this computation by a lot. 
 
 ```{r bigBoot2}
-# Don't run this code!
-# this package sets up the cluster
-# cl <- makeCluster(4, type = "SOCK")
+
+# Make the cluster
+cl <- makeCluster(4, type = "SOCK")
+
+# Export to the cluster
+clusterEvalQ(cl, library("lme4"))
+clusterExport(cl, list("myFunc", "M0", "cl"))
+
 # now we pass the cluster object to bootMer
 # note that I can use the same myFunc!
-# bigBoot2 <- bootMer(M0, myFunc, nsim=100,
-#                     parallel = "snow",
-#                     cl = cl)
-bigBoot2 <- bootMer(M0, myFunc, nsim=100)
-# stopCluster(cl) ## hmmm, makeCluster doesn't appear to be working
-# takes a loooong time ...
+bigBoot2 <- bootMer(M0, myFunc, nsim=100,
+                    parallel = "snow",
+                    cl = cl)
+stopCluster(cl) # takes a long time ...
+
+# # Without running parallel
+# bigBoot2 <- bootMer(M0, myFunc, nsim=100)
+
+
 ```
 
 ```{r calculateEnvelope}
