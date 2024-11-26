@@ -42,8 +42,8 @@ navbar:
       menu:
         - text: "Homeork 5"
           href: 07-A-Homework-05.html
-    #     - text: "Network analysis"
-    #       href: 09-B-networks.html
+        - text: "Lab: Hello, Bayes!"
+          href: 07-B-HelloBayes.html
     #     - text: "Occupancy models"
     #       href: 09-C-occupancy-models.html
 output_dir: "."
