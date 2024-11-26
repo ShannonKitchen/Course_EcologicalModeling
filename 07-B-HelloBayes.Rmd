@@ -71,6 +71,9 @@ require(librarian)
 shelf(tidyverse, here, sf, brms, maps, terra, tidybayes,
       lib = tempdir())
 
+# Set path
+repo_url <- "https://raw.githubusercontent.com/LivingLandscapes/Course_EcologicalModeling/master/data/"
+
 # Set seed
 set.seed(2252)
 
